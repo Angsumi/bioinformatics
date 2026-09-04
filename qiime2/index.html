@@ -1040,23 +1040,142 @@ input:focus, select:focus, textarea:focus {
   margin-left: 4px;
 }
 
-/* DECISION TREES */
-.decision-tree { padding: 16px; }
-.dt-node {
+/* DECISION TREES (INTERACTIVE) */
+.decision-tree { padding: 18px 20px; }
+.dt-interactive-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.dt-q-card {
   background: var(--panel-alt);
   border: 1px solid var(--border);
-  border-radius: 10px;
-  padding: 12px 16px;
-  margin: 8px 0;
-  transition: all 0.2s;
+  border-radius: 12px;
+  padding: 14px 16px;
+  transition: all 0.2s ease;
 }
-.dt-node:hover {
+.dt-q-card:hover {
+  border-color: rgba(2, 132, 199, 0.3);
+}
+.dt-q-title {
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--text);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dt-q-badge {
+  background: var(--primary);
+  color: #fff;
+  font-size: 10.5px;
+  font-weight: 800;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+}
+.dt-options-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.dt-option-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 14px;
+  border-radius: 9px;
+  font-size: 12.5px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  user-select: none;
+}
+.dt-option-btn:hover {
   border-color: var(--primary);
-  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+  background: var(--primary-light);
+  color: var(--primary);
 }
-.dt-node strong { display: block; margin-bottom: 4px; color: var(--text); }
-.dt-node div { font-size: 12.5px; color: var(--text-muted); padding: 2px 0; }
-.dt-arrow { text-align: center; color: var(--text-dim); font-size: 18px; margin: 4px 0; }
+.dt-option-btn.selected {
+  background: var(--primary);
+  border-color: var(--primary);
+  color: #ffffff;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+.dt-result-box {
+  background: var(--panel-alt);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 16px 20px;
+  margin-top: 8px;
+  transition: all 0.25s ease;
+  position: relative;
+  overflow: hidden;
+}
+.dt-result-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 10px;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 10px;
+}
+.dt-result-title {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.dt-result-recommendation {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--primary);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.dt-result-reason {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  line-height: 1.55;
+  margin-bottom: 10px;
+}
+.dt-result-command {
+  background: var(--code-bg);
+  color: var(--code-text);
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  padding: 8px 12px;
+  border-radius: 8px;
+  margin-top: 8px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  overflow-x: auto;
+}
+.dt-reset-btn {
+  background: transparent;
+  border: none;
+  color: var(--text-muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 2px 4px;
+}
+.dt-reset-btn:hover {
+  color: var(--primary);
+}
 
 .diff-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 14px; }
 .diff-label { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 6px; }
@@ -2863,35 +2982,141 @@ qiime vsearch cluster-features-de-novo \
 
     <!-- Decision Guide: DADA2 vs Deblur vs VSEARCH -->
     <section id="sec-decide-denoise" data-category="dada2">
-      <h2>🔀 Decision Guide: DADA2 vs Deblur vs VSEARCH</h2>
-      <div class="hint">Answer these questions to pick the right denoising strategy for your dataset.</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:6px">
+        <h2 style="margin:0">🔀 Decision Guide: DADA2 vs Deblur vs VSEARCH</h2>
+        <div class="explain-btn-wrapper">
+          <button class="explain-card-btn" onclick="toggleHoverCard(this)" title="Hover or click to view detailed functions, process, and comparison need">
+            <span>💡 Explain Denoising Decision & Need</span>
+          </button>
+          <div class="explain-hover-card">
+            <div class="hover-card-header">
+              <strong>🔀 Denoising Strategy: Functions, Comparison & Need</strong>
+              <span class="hover-card-close" onclick="closeHoverCard(this)">✕</span>
+            </div>
+            <div class="hover-card-body">
+              <div class="hover-section">
+                <div class="hover-sec-title">🎯 The Core Denoising Dilemma</div>
+                <p>
+                  Microbiome amplicon sequencing produces millions of raw reads corrupted by PCR errors, Illumina base substitution errors, and chimeras. Choosing between <strong>DADA2 (ASVs)</strong>, <strong>Deblur (ASVs)</strong>, and <strong>VSEARCH (97% OTUs)</strong> determines resolution, cross-study comparability, and computational cost.
+                </p>
+              </div>
+              <div class="hover-section">
+                <div class="hover-sec-title">⚙️ Algorithm Comparison Breakdown</div>
+                <ul class="hover-list">
+                  <li><strong>DADA2:</strong> Infers exact amplicon sequence variants (ASVs) via a sample-specific error learning model. Joins forward and reverse reads with built-in quality-aware overlap consensus and removes bimeras. Single-nucleotide resolution.</li>
+                  <li><strong>Deblur:</strong> Uses a static global Illumina error profile. Extremely fast on massive datasets (e.g. 50,000+ samples) but requires all reads to be trimmed to an identical length and operates exclusively on single-end (or pre-joined) reads.</li>
+                  <li><strong>VSEARCH 97% OTUs:</strong> Collapses sequences differing by ≤3% into operational taxonomic units (OTUs). Blurs microdiversity, hides distinct bacterial strains, but remains useful for meta-analyses integrating legacy 454/pyrosequencing datasets.</li>
+                  <li><strong>ITSxpress + DADA2:</strong> Required for fungal ITS because ITS variable lengths prevent quality-based truncation. Trims conserved flanking genes (18S/5.8S/28S) before non-truncated DADA2.</li>
+                </ul>
+              </div>
+              <div class="hover-section">
+                <div class="hover-sec-title">🔄 Recommended Decision Workflow</div>
+                <ol class="hover-steps">
+                  <li>For Illumina standard 16S/18S paired-end data → Always use <strong>DADA2 denoise-paired</strong>.</li>
+                  <li>For fungal ITS → Run <strong>ITSxpress</strong> then DADA2 with <code>--p-trunc-len-f 0 --p-trunc-len-r 0</code>.</li>
+                  <li>For PacBio HiFi / Nanopore → Use <strong>DADA2 denoise-ccs</strong>.</li>
+                  <li>For legacy meta-analysis → Use <strong>VSEARCH 97% OTUs</strong>.</li>
+                </ol>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hint">Click your experimental parameters below to instantly calculate the recommended denoising strategy with mathematical and biological justification.</div>
+      
       <div class="interactive-box decision-tree">
-        <div class="dt-node">
-          <strong>Q1: Do you have paired-end reads?</strong>
-          <div>✅ Yes → <strong>DADA2 denoise-paired</strong> (recommended) or VSEARCH join-pairs + cluster</div>
-          <div>❌ No → DADA2 denoise-single or Deblur</div>
-        </div>
-        <div class="dt-arrow">↓</div>
-        <div class="dt-node">
-          <strong>Q2: Do you need exact sequence variants (ASVs)?</strong>
-          <div>✅ Yes → <strong>DADA2 or Deblur</strong> (modern standard, single-nucleotide resolution)</div>
-          <div>❌ No → VSEARCH 97% OTU clustering (legacy approach, compatible with older studies)</div>
-        </div>
-        <div class="dt-arrow">↓</div>
-        <div class="dt-node">
-          <strong>Q3: Do you have PacBio HiFi or Nanopore long reads?</strong>
-          <div>✅ Yes → <strong>DADA2 denoise-ccs</strong> (PacBio CCS) or specialized long-read tools</div>
-          <div>❌ No → Standard DADA2 denoise-paired or denoise-single</div>
-        </div>
-        <div class="dt-arrow">↓</div>
-        <div class="dt-node">
-          <strong>Q4: Is your dataset ITS (fungal)?</strong>
-          <div>✅ Yes → Run ITSxpress first, then DADA2 with <code>--p-trunc-len 0</code> (variable length)</div>
-          <div>❌ No → Standard DADA2 with quality-based truncation parameters</div>
-        </div>
-        <div class="dt-arrow">↓</div>
-        <div style="padding:14px;background:var(--success-bg,#ecfdf5);border:1px solid var(--success-border,#86efac);border-radius:10px;color:var(--success-text,#166534);font-weight:600">
-          ✓ Recommendation: For most Illumina 16S studies, use <strong>DADA2 denoise-paired</strong> with Cutadapt primer removal. It handles chimera filtering and error correction simultaneously.
+        <div class="dt-interactive-container">
+          
+          <!-- Q1: Read Layout -->
+          <div class="dt-q-card">
+            <div class="dt-q-title">
+              <span class="dt-q-badge">Q1</span>
+              <span>Do you have paired-end or single-end sequencing reads?</span>
+            </div>
+            <div class="dt-options-grid">
+              <button class="dt-option-btn selected" id="dt_denoise_q1_paired" onclick="selectDenoiseTreeOption('q1', 'paired', this)">
+                <span>⚡ Paired-End (Forward + Reverse)</span>
+              </button>
+              <button class="dt-option-btn" id="dt_denoise_q1_single" onclick="selectDenoiseTreeOption('q1', 'single', this)">
+                <span>📄 Single-End Reads</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Q2: Resolution / ASVs vs OTUs -->
+          <div class="dt-q-card">
+            <div class="dt-q-title">
+              <span class="dt-q-badge">Q2</span>
+              <span>Do you require exact sequence variants (ASVs) or legacy 97% OTUs?</span>
+            </div>
+            <div class="dt-options-grid">
+              <button class="dt-option-btn selected" id="dt_denoise_q2_asv" onclick="selectDenoiseTreeOption('q2', 'asv', this)">
+                <span>🔬 Exact ASVs (Single-Nucleotide Resolution, Modern Standard)</span>
+              </button>
+              <button class="dt-option-btn" id="dt_denoise_q2_otu" onclick="selectDenoiseTreeOption('q2', 'otu', this)">
+                <span>📦 97% OTU Clusters (Legacy / Meta-analysis with older studies)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Q3: Sequencing Technology / Platform -->
+          <div class="dt-q-card">
+            <div class="dt-q-title">
+              <span class="dt-q-badge">Q3</span>
+              <span>Sequencing Platform & Read Length Type?</span>
+            </div>
+            <div class="dt-options-grid">
+              <button class="dt-option-btn selected" id="dt_denoise_q3_illumina" onclick="selectDenoiseTreeOption('q3', 'illumina', this)">
+                <span>🖥️ Short-Read (Illumina MiSeq / NovaSeq / NextSeq)</span>
+              </button>
+              <button class="dt-option-btn" id="dt_denoise_q3_pacbio" onclick="selectDenoiseTreeOption('q3', 'pacbio', this)">
+                <span>🧬 Long-Read HiFi (PacBio CCS / Circular Consensus)</span>
+              </button>
+              <button class="dt-option-btn" id="dt_denoise_q3_ont" onclick="selectDenoiseTreeOption('q3', 'ont', this)">
+                <span>🔌 Long-Read Nanopore (ONT / MinION)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Q4: Target Marker Biology -->
+          <div class="dt-q-card">
+            <div class="dt-q-title">
+              <span class="dt-q-badge">Q4</span>
+              <span>Target Genetic Marker & Biological Group?</span>
+            </div>
+            <div class="dt-options-grid">
+              <button class="dt-option-btn selected" id="dt_denoise_q4_16s" onclick="selectDenoiseTreeOption('q4', '16s', this)">
+                <span>🦠 16S / 18S rRNA (Fixed Length Genes)</span>
+              </button>
+              <button class="dt-option-btn" id="dt_denoise_q4_its" onclick="selectDenoiseTreeOption('q4', 'its', this)">
+                <span>🍄 Fungal ITS (ITS1 / ITS2 Variable Biological Length)</span>
+              </button>
+              <button class="dt-option-btn" id="dt_denoise_q4_coi" onclick="selectDenoiseTreeOption('q4', 'coi', this)">
+                <span>🐾 Animal COI / Plant rbcL (Protein-Coding Markers)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Interactive Live Decision Output -->
+          <div class="dt-result-box" id="dt_denoise_result">
+            <div class="dt-result-header">
+              <div class="dt-result-title">
+                <span>🎯 Computed Strategy & Action Plan</span>
+              </div>
+              <button class="dt-reset-btn" onclick="resetDenoiseTree()">↺ Reset Questions</button>
+            </div>
+            <div class="dt-result-recommendation" id="dt_denoise_rec">
+              <!-- Dynamically populated -->
+            </div>
+            <div class="dt-result-reason" id="dt_denoise_reason">
+              <!-- Dynamically populated -->
+            </div>
+            <div class="dt-result-command" id="dt_denoise_cmd_wrap">
+              <span id="dt_denoise_cmd">qiime dada2 denoise-paired ...</span>
+              <button class="copy" style="padding:3px 8px;font-size:11px" onclick="copyDynamicText('dt_denoise_cmd')">Copy</button>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
@@ -3318,30 +3543,127 @@ qiime feature-classifier extract-reads \
 
     <!-- Decision Guide: Which Classifier & Database? -->
     <section id="sec-decide-taxa" data-category="taxonomy">
-      <h2>🔀 Decision Guide: Which Reference Database & Classifier?</h2>
-      <div class="hint">Selecting the right reference database and algorithm is vital for accurate taxonomic assignment.</div>
+      <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:6px">
+        <h2 style="margin:0">🔀 Decision Guide: Which Reference Database & Classifier?</h2>
+        <div class="explain-btn-wrapper">
+          <button class="explain-card-btn" onclick="toggleHoverCard(this)" title="Hover or click to view detailed functions, process, and taxonomy database comparison">
+            <span>💡 Explain Taxonomy Strategy & Need</span>
+          </button>
+          <div class="explain-hover-card">
+            <div class="hover-card-header">
+              <strong>🔀 Taxonomy Annotation: Database, Algorithm & Need</strong>
+              <span class="hover-card-close" onclick="closeHoverCard(this)">✕</span>
+            </div>
+            <div class="hover-card-body">
+              <div class="hover-section">
+                <div class="hover-sec-title">🎯 Why Taxonomy Strategy Dictates Study Quality</div>
+                <p>
+                  Classifying microbial representative sequences assigns biological identity (Phylum through Species) to anonymous ASVs. The accuracy of taxonomic profiles depends critically on matching your biological target to the appropriate curated reference repository and classifier algorithm.
+                </p>
+              </div>
+              <div class="hover-section">
+                <div class="hover-sec-title">📚 Curated Databases Compared</div>
+                <ul class="hover-list">
+                  <li><strong>SILVA 138.1:</strong> The gold standard for environmental, aquatic, agricultural, and human microbiomes. Comprehensive coverage across Bacteria, Archaea, and Eukaryotes with standardized 7-rank taxonomy.</li>
+                  <li><strong>Greengenes2 (2022.10):</strong> Built on the Web of Life (WoL) genomic tree. Harmonizes 16S amplicons directly with shotgun metagenomic whole genomes; best for phylogenetic integration.</li>
+                  <li><strong>UNITE (v8/v9):</strong> The definitive international database for fungal ITS (ITS1, ITS2, and Full ITS) based on dynamic similarity threshold species hypotheses (SHs).</li>
+                  <li><strong>PR2 (Protist Ribosomal Reference):</strong> Specialized curated database for protistan and microeukaryotic 18S sequences.</li>
+                  <li><strong>BOLD / Midori:</strong> Curated cytochrome c oxidase I (COI) databases for metazoan/animal metabarcoding and environmental DNA (eDNA).</li>
+                </ul>
+              </div>
+              <div class="hover-section">
+                <div class="hover-sec-title">🤖 Classifier Algorithms Compared</div>
+                <ul class="hover-list">
+                  <li><strong>Naive Bayes (classify-sklearn):</strong> High-speed k-mer frequency classifier. When trained on primer-extracted subregions (e.g. 515F-806R), achieves superior classification accuracy and fewer over-confident false assignments.</li>
+                  <li><strong>Consensus VSEARCH / BLAST+:</strong> Local sequence alignment. Essential for atypical environments, novel phyla, or when training custom classifiers is computationally infeasible.</li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="hint">Select your study parameters below to determine the ideal reference database and classification engine with biological rationale.</div>
+      
       <div class="interactive-box decision-tree">
-        <div class="dt-node">
-          <strong>Q1: What is your target marker gene?</strong>
-          <div>🦠 <strong>16S rRNA (Bacteria & Archaea)</strong> → SILVA 138 or Greengenes2</div>
-          <div>🍄 <strong>ITS1 or ITS2 (Fungi)</strong> → UNITE database (dynamic clustering release)</div>
-          <div>🔬 <strong>18S rRNA (Eukaryotes / Protists)</strong> → SILVA 138 18S or PR2 (Protist Ribosomal Reference)</div>
-        </div>
-        <div class="dt-arrow">↓</div>
-        <div class="dt-node">
-          <strong>Q2: Should you use SILVA 138 or Greengenes2 for 16S?</strong>
-          <div>🌲 <strong>Greengenes2</strong>: Best when integrating with shotgun metagenomics or using phylogenetic diversity (built into WoL2 whole-genome tree).</div>
-          <div>📚 <strong>SILVA 138.1</strong>: Gold-standard for environmental, soil, aquatic, and host-associated microbiomes; most widely cited.</div>
-        </div>
-        <div class="dt-arrow">↓</div>
-        <div class="dt-node">
-          <strong>Q3: Which classification method should you run?</strong>
-          <div>🤖 <strong>Naive Bayes (classify-sklearn)</strong>: Most accurate for short Illumina amplicons (e.g. 515F-806R) when trained on specific primer region.</div>
-          <div>🔍 <strong>VSEARCH / BLAST+ Consensus (classify-consensus-vsearch)</strong>: Recommended for novel or extreme environments with low representation in reference databases.</div>
-        </div>
-        <div class="dt-arrow">↓</div>
-        <div style="padding:14px;background:var(--success-bg,#ecfdf5);border:1px solid var(--success-border,#86efac);border-radius:10px;color:var(--success-text,#166534);font-weight:600">
-          ✓ Golden Rule: Always train the Naive Bayes classifier on the <strong>exact primer trimmed region</strong> rather than full-length 16S to achieve higher classification precision at genus/species levels!
+        <div class="dt-interactive-container">
+          
+          <!-- Taxa Q1: Marker Gene -->
+          <div class="dt-q-card">
+            <div class="dt-q-title">
+              <span class="dt-q-badge">Q1</span>
+              <span>What is your target marker gene & biological kingdom?</span>
+            </div>
+            <div class="dt-options-grid">
+              <button class="dt-option-btn selected" id="dt_taxa_q1_16s" onclick="selectTaxaTreeOption('q1', '16s', this)">
+                <span>🦠 16S rRNA (Bacteria & Archaea)</span>
+              </button>
+              <button class="dt-option-btn" id="dt_taxa_q1_its" onclick="selectTaxaTreeOption('q1', 'its', this)">
+                <span>🍄 ITS1 / ITS2 (Fungi)</span>
+              </button>
+              <button class="dt-option-btn" id="dt_taxa_q1_18s" onclick="selectTaxaTreeOption('q1', '18s', this)">
+                <span>🧫 18S rRNA (Eukaryotes & Protists)</span>
+              </button>
+              <button class="dt-option-btn" id="dt_taxa_q1_coi" onclick="selectTaxaTreeOption('q1', 'coi', this)">
+                <span>🐾 COI / rbcL (Metazoa Animals / Plant Chloroplast)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Taxa Q2: Study Goal / Integration -->
+          <div class="dt-q-card">
+            <div class="dt-q-title">
+              <span class="dt-q-badge">Q2</span>
+              <span>What is your analytical focus and reference priority?</span>
+            </div>
+            <div class="dt-options-grid">
+              <button class="dt-option-btn selected" id="dt_taxa_q2_standard" onclick="selectTaxaTreeOption('q2', 'standard', this)">
+                <span>📚 Standard Publication (Environmental / Host / Soil Gold Standard)</span>
+              </button>
+              <button class="dt-option-btn" id="dt_taxa_q2_shotgun" onclick="selectTaxaTreeOption('q2', 'shotgun', this)">
+                <span>🌲 Shotgun Metagenome & Genome Tree Integration</span>
+              </button>
+              <button class="dt-option-btn" id="dt_taxa_q2_novel" onclick="selectTaxaTreeOption('q2', 'novel', this)">
+                <span>🌋 Extreme / Deep-Sea / Uncultivated Novel Ecosystem</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Taxa Q3: Amplicon Strategy -->
+          <div class="dt-q-card">
+            <div class="dt-q-title">
+              <span class="dt-q-badge">Q3</span>
+              <span>Amplicon Length & Classifier Training Type?</span>
+            </div>
+            <div class="dt-options-grid">
+              <button class="dt-option-btn selected" id="dt_taxa_q3_targeted" onclick="selectTaxaTreeOption('q3', 'targeted', this)">
+                <span>🎯 Region-Trimmed Short Amplicon (V4, V3-V4, etc.)</span>
+              </button>
+              <button class="dt-option-btn" id="dt_taxa_q3_full" onclick="selectTaxaTreeOption('q3', 'full', this)">
+                <span>🧬 Full-Length Gene (PacBio / Nanopore ~1500 bp)</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Interactive Taxonomy Decision Result -->
+          <div class="dt-result-box" id="dt_taxa_result">
+            <div class="dt-result-header">
+              <div class="dt-result-title">
+                <span>🧬 Recommended Database & Classifier Configuration</span>
+              </div>
+              <button class="dt-reset-btn" onclick="resetTaxaTree()">↺ Reset Questions</button>
+            </div>
+            <div class="dt-result-recommendation" id="dt_taxa_rec">
+              <!-- Dynamically populated -->
+            </div>
+            <div class="dt-result-reason" id="dt_taxa_reason">
+              <!-- Dynamically populated -->
+            </div>
+            <div class="dt-result-command" id="dt_taxa_cmd_wrap">
+              <span id="dt_taxa_cmd">qiime feature-classifier classify-sklearn ...</span>
+              <button class="copy" style="padding:3px 8px;font-size:11px" onclick="copyDynamicText('dt_taxa_cmd')">Copy</button>
+            </div>
+          </div>
+
         </div>
       </div>
     </section>
@@ -3552,27 +3874,100 @@ qiime tools view core-metrics-results/unweighted_unifrac_emperor.qzv</pre>
 </section>
 
 <section id="sec-decide-beta" data-category="diversity">
-  <h2>🔀 Decision Guide: Which Beta Diversity Metric?</h2>
+  <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:6px">
+    <h2 style="margin:0">🔀 Decision Guide: Which Beta Diversity Metric?</h2>
+    <div class="explain-btn-wrapper">
+      <button class="explain-card-btn" onclick="toggleHoverCard(this)" title="Hover or click to view detailed functions, process, and mathematical need">
+        <span>💡 Explain Beta Diversity Decision & Need</span>
+      </button>
+      <div class="explain-hover-card">
+        <div class="hover-card-header">
+          <strong>🔀 Beta Diversity Selection: Matrix Mathematics & Ecology</strong>
+          <span class="hover-card-close" onclick="closeHoverCard(this)">✕</span>
+        </div>
+        <div class="hover-card-body">
+          <div class="hover-section">
+            <div class="hover-sec-title">🎯 The 4 Core Distance Metrics Compared</div>
+            <ul class="hover-list">
+              <li><strong>Unweighted UniFrac (Qualitative + Phylogenetic):</strong> Measures phylogenetic branch lengths unique to either sample. Extremely sensitive to community membership shifts and rare ancestral lineages.</li>
+              <li><strong>Weighted UniFrac (Quantitative + Phylogenetic):</strong> Weights phylogenetic branch lengths by the relative abundances of taxa. Emphasizes dominant lineages and is robust against PCR noise.</li>
+              <li><strong>Bray-Curtis Dissimilarity (Quantitative Non-Phylogenetic):</strong> Computes differences in read counts ($BC_{jk} = 1 - \frac{2C_{jk}}{S_j + S_k}$). Ideal for non-alignable markers (ITS, COI) or when abundance shifts dominate.</li>
+              <li><strong>Jaccard Distance (Qualitative Non-Phylogenetic):</strong> Measures fraction of non-shared species ($1 - \frac{A \cap B}{A \cup B}$). Useful for presence/absence comparison without assuming phylogenetic lineage trees.</li>
+              <li><strong>Aitchison / Robust Aitchison (DEICODE):</strong> Compositional distance based on centered log-ratio (CLR) transformation. Highly recommended for sparse datasets without rarefaction!</li>
+            </ul>
+          </div>
+          <div class="hover-section">
+            <div class="hover-sec-title">🔄 Recommended Decision Protocol</div>
+            <ol class="hover-steps">
+              <li>For 16S/18S with a rooted tree → Test both <strong>Unweighted & Weighted UniFrac</strong> to contrast membership vs abundance effects.</li>
+              <li>For fungal ITS → Rely on <strong>Bray-Curtis</strong> and <strong>Jaccard</strong>.</li>
+              <li>Always execute <code>qiime diversity beta-group-significance</code> (PERMANOVA) to test statistical significance ($p < 0.05$).</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="hint">Answer the questions below to calculate which beta diversity distance matrix best fits your biological hypothesis.</div>
+  
   <div class="interactive-box decision-tree">
-    <div class="dt-node">
-      <strong>Q1: Do you have a phylogenetic tree?</strong>
-      <div>Yes → Consider UniFrac metrics (phylogeny-aware)</div>
-      <div>No → Use Bray-Curtis (abundance) or Jaccard (presence/absence)</div>
-    </div>
-    <div class="dt-arrow">↓</div>
-    <div class="dt-node">
-      <strong>Q2: Are rare taxa important to your hypothesis?</strong>
-      <div>Yes → Unweighted UniFrac (presence/absence, sensitive to rare lineages)</div>
-      <div>No → Weighted UniFrac (abundance-weighted, robust to noise)</div>
-    </div>
-    <div class="dt-arrow">↓</div>
-    <div class="dt-node">
-      <strong>Q3: Is this an ITS/non-phylogenetic dataset?</strong>
-      <div>Yes → Bray-Curtis (quantitative) or Jaccard (qualitative)</div>
-    </div>
-    <div class="dt-arrow">↓</div>
-    <div style="padding:14px;background:var(--success-bg);border:1px solid var(--success-border);border-radius:10px;color:var(--success-text);font-weight:600">
-      ✓ Best practice: Run ALL metrics via core-metrics-phylogenetic and compare patterns across ordinations.
+    <div class="dt-interactive-container">
+      
+      <!-- Beta Q1: Tree Availability -->
+      <div class="dt-q-card">
+        <div class="dt-q-title">
+          <span class="dt-q-badge">Q1</span>
+          <span>Do you have a valid rooted phylogenetic tree (e.g. rooted-tree.qza)?</span>
+        </div>
+        <div class="dt-options-grid">
+          <button class="dt-option-btn selected" id="dt_beta_q1_yes" onclick="selectBetaTreeOption('q1', 'yes', this)">
+            <span>🌲 Yes (16S / 18S Phylogenetic Pipeline)</span>
+          </button>
+          <button class="dt-option-btn" id="dt_beta_q1_no" onclick="selectBetaTreeOption('q1', 'no', this)">
+            <span>🚫 No (Fungal ITS / COI or Non-Alignable Data)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Beta Q2: Hypothesis Focus -->
+      <div class="dt-q-card">
+        <div class="dt-q-title">
+          <span class="dt-q-badge">Q2</span>
+          <span>What is the primary driver of your biological hypothesis?</span>
+        </div>
+        <div class="dt-options-grid">
+          <button class="dt-option-btn selected" id="dt_beta_q2_abundance" onclick="selectBetaTreeOption('q2', 'abundance', this)">
+            <span>📊 Quantitative Shifts in Dominant Taxa Abundance</span>
+          </button>
+          <button class="dt-option-btn" id="dt_beta_q2_presence" onclick="selectBetaTreeOption('q2', 'presence', this)">
+            <span>🧬 Qualitative Presence/Absence & Rare Lineage Colonization</span>
+          </button>
+          <button class="dt-option-btn" id="dt_beta_q2_compositional" onclick="selectBetaTreeOption('q2', 'compositional', this)">
+            <span>📐 True Compositional Scale-Free Shifts (No Rarefaction / DEICODE)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Interactive Beta Result Output -->
+      <div class="dt-result-box" id="dt_beta_result">
+        <div class="dt-result-header">
+          <div class="dt-result-title">
+            <span>📊 Recommended Beta Diversity Metric & Visualization</span>
+          </div>
+          <button class="dt-reset-btn" onclick="resetBetaTree()">↺ Reset Questions</button>
+        </div>
+        <div class="dt-result-recommendation" id="dt_beta_rec">
+          <!-- Dynamically populated -->
+        </div>
+        <div class="dt-result-reason" id="dt_beta_reason">
+          <!-- Dynamically populated -->
+        </div>
+        <div class="dt-result-command" id="dt_beta_cmd_wrap">
+          <span id="dt_beta_cmd">qiime diversity beta-group-significance ...</span>
+          <button class="copy" style="padding:3px 8px;font-size:11px" onclick="copyDynamicText('dt_beta_cmd')">Copy</button>
+        </div>
+      </div>
+
     </div>
   </div>
 </section>
@@ -5744,6 +6139,274 @@ function resetGlobalParams() {
 }
 
 
+// ==========================================
+// INTERACTIVE DECISION TREE STATE & ENGINES
+// ==========================================
+
+const denoiseTreeState = {
+  q1: 'paired',     // 'paired' | 'single'
+  q2: 'asv',        // 'asv' | 'otu'
+  q3: 'illumina',   // 'illumina' | 'pacbio' | 'ont'
+  q4: '16s'         // '16s' | 'its' | 'coi'
+};
+
+function selectDenoiseTreeOption(question, value, btnElem) {
+  denoiseTreeState[question] = value;
+  const parent = btnElem.closest('.dt-options-grid');
+  if (parent) {
+    parent.querySelectorAll('.dt-option-btn').forEach(b => b.classList.remove('selected'));
+    btnElem.classList.add('selected');
+  }
+  updateDenoiseTreeDecision();
+}
+
+function updateDenoiseTreeDecision() {
+  const { q1, q2, q3, q4 } = denoiseTreeState;
+  const recElem = document.getElementById('dt_denoise_rec');
+  const reasonElem = document.getElementById('dt_denoise_reason');
+  const cmdElem = document.getElementById('dt_denoise_cmd');
+  const resBox = document.getElementById('dt_denoise_result');
+  if (!recElem || !reasonElem || !cmdElem) return;
+
+  let recommendation = '';
+  let reason = '';
+  let cmd = '';
+
+  if (q3 === 'pacbio') {
+    recommendation = '🚀 Recommended Tool: DADA2 denoise-ccs (PacBio CCS Long-Reads)';
+    reason = 'PacBio Circular Consensus Sequencing (CCS) produces long (~1.5 kb) reads with high base accuracy (>Q30). DADA2 denoise-ccs uses a specialized error model for full-length 16S/18S without 3\' quality truncation, resolving species-level taxonomy.';
+    cmd = 'qiime dada2 denoise-ccs \\\n  --i-demultiplexed-seqs demux-pacbio.qza \\\n  --p-min-len 1000 --p-max-len 1600 \\\n  --o-table table.qza --o-representative-sequences rep-seqs.qza';
+  } else if (q3 === 'ont') {
+    recommendation = '⚡ Recommended Tool: NanoCLUST / Minimap2 or qiime vsearch cluster-features-de-novo';
+    reason = 'Oxford Nanopore Technologies (ONT) raw reads have higher indel error rates (typically 1-3%). Standard DADA2 is designed for substitution errors. For ONT, use consensus clustering (e.g. VSEARCH 97% or medaka/NanoCLUST) to accurately collapse read noise into consensus features.';
+    cmd = 'qiime vsearch cluster-features-de-novo \\\n  --i-table derep-table.qza --i-sequences derep-seqs.qza \\\n  --p-perc-identity 0.97 \\\n  --o-clustered-table table-ont.qza --o-clustered-sequences rep-seqs-ont.qza';
+  } else if (q4 === 'its') {
+    if (q1 === 'paired') {
+      recommendation = '🍄 Recommended Tool: ITSxpress Trim → DADA2 denoise-paired (--p-trunc-len 0)';
+      reason = 'Fungal ITS regions (ITS1/ITS2) vary in physical biological length between taxa (150 bp to 500+ bp). Quality-based truncation (--p-trunc-len > 0) will artificially discard genuine biological taxa. Running ITSxpress first removes conserved 18S/5.8S/28S flanking sequences, allowing DADA2 with zero truncation to preserve all biological lengths.';
+      cmd = 'qiime itsxpress trim-pair-output-unmerged \\\n  --i-per-sample-sequences demux-paired.qza \\\n  --p-region ITS1 --p-taxa F \\\n  --o-trimmed-sequences demux-its-trimmed.qza\n\nqiime dada2 denoise-paired \\\n  --i-demultiplexed-seqs demux-its-trimmed.qza \\\n  --p-trunc-len-f 0 --p-trunc-len-r 0 \\\n  --o-table table.qza --o-representative-sequences rep-seqs.qza';
+    } else {
+      recommendation = '🍄 Recommended Tool: ITSxpress Trim → DADA2 denoise-single (--p-trunc-len 0)';
+      reason = 'Single-end ITS data requires ITSxpress flanking excision followed by DADA2 single-end with --p-trunc-len 0 to avoid length-filtering biological fungi.';
+      cmd = 'qiime itsxpress trim-single \\\n  --i-per-sample-sequences demux-single.qza \\\n  --p-region ITS1 --p-taxa F \\\n  --o-trimmed-sequences demux-its-trimmed.qza\n\nqiime dada2 denoise-single \\\n  --i-demultiplexed-seqs demux-its-trimmed.qza \\\n  --p-trunc-len 0 \\\n  --o-table table.qza --o-representative-sequences rep-seqs.qza';
+    }
+  } else if (q2 === 'otu') {
+    recommendation = '📦 Recommended Tool: VSEARCH 97% OTU Clustering (Legacy Standard)';
+    reason = 'You selected 97% OTU clustering. Sequences will be grouped based on 97% sequence similarity regardless of single-nucleotide biological variation. Use this if your study requires direct meta-analytic harmonization with pre-2018 publications.';
+    if (q1 === 'paired') {
+      cmd = 'qiime vsearch join-pairs \\\n  --i-demultiplexed-seqs demux-paired.qza \\\n  --o-joined-sequences demux-joined.qza\n\nqiime vsearch cluster-features-de-novo \\\n  --i-table derep-table.qza --i-sequences derep-seqs.qza \\\n  --p-perc-identity 0.97 \\\n  --o-clustered-table table-97.qza --o-clustered-sequences rep-seqs-97.qza';
+    } else {
+      cmd = 'qiime vsearch cluster-features-de-novo \\\n  --i-table derep-table.qza --i-sequences derep-seqs.qza \\\n  --p-perc-identity 0.97 \\\n  --o-clustered-table table-97.qza --o-clustered-sequences rep-seqs-97.qza';
+    }
+  } else {
+    // ASV on Illumina 16S/18S/COI
+    if (q1 === 'paired') {
+      recommendation = '✅ Recommended Tool: DADA2 denoise-paired (Gold Standard ASVs)';
+      reason = 'DADA2 denoise-paired is the modern gold standard for Illumina paired-end amplicon datasets. It builds a sample-specific parametric error model, corrects Illumina base substitution errors, merges forward and reverse reads with ≥12 bp overlap consensus, and automatically removes PCR chimeras (bimeras), delivering exact single-nucleotide ASVs.';
+      cmd = 'qiime dada2 denoise-paired \\\n  --i-demultiplexed-seqs demux-paired.qza \\\n  --p-trim-left-f 0 --p-trim-left-r 0 \\\n  --p-trunc-len-f 240 --p-trunc-len-r 200 \\\n  --p-n-threads 8 \\\n  --o-table table.qza --o-representative-sequences rep-seqs.qza';
+    } else {
+      recommendation = '✅ Recommended Tool: DADA2 denoise-single (or Deblur for massive datasets)';
+      reason = 'For single-end Illumina reads, DADA2 denoise-single constructs a per-sample error matrix to resolve single-nucleotide variants. If working with over 20,000+ samples, Deblur is also a viable fast alternative with static error filtering.';
+      cmd = 'qiime dada2 denoise-single \\\n  --i-demultiplexed-seqs demux-single.qza \\\n  --p-trim-left 0 \\\n  --p-trunc-len 240 \\\n  --p-n-threads 8 \\\n  --o-table table.qza --o-representative-sequences rep-seqs.qza';
+    }
+  }
+
+  recElem.innerHTML = recommendation;
+  reasonElem.innerHTML = `<strong>Biological & Computational Rationale:</strong> ${reason}`;
+  cmdElem.innerText = cmd;
+  if (resBox) {
+    resBox.style.borderColor = 'var(--primary)';
+  }
+}
+
+function resetDenoiseTree() {
+  denoiseTreeState.q1 = 'paired';
+  denoiseTreeState.q2 = 'asv';
+  denoiseTreeState.q3 = 'illumina';
+  denoiseTreeState.q4 = '16s';
+
+  document.querySelectorAll('#sec-decide-denoise .dt-option-btn').forEach(b => b.classList.remove('selected'));
+  const btn1 = document.getElementById('dt_denoise_q1_paired'); if (btn1) btn1.classList.add('selected');
+  const btn2 = document.getElementById('dt_denoise_q2_asv'); if (btn2) btn2.classList.add('selected');
+  const btn3 = document.getElementById('dt_denoise_q3_illumina'); if (btn3) btn3.classList.add('selected');
+  const btn4 = document.getElementById('dt_denoise_q4_16s'); if (btn4) btn4.classList.add('selected');
+
+  updateDenoiseTreeDecision();
+  toast('Denoising Decision Tree reset to default parameters');
+}
+
+
+// ------------------------------------------
+// TAXONOMY DECISION TREE ENGINE
+// ------------------------------------------
+
+const taxaTreeState = {
+  q1: '16s',       // '16s' | 'its' | '18s' | 'coi'
+  q2: 'standard',  // 'standard' | 'shotgun' | 'novel'
+  q3: 'targeted'   // 'targeted' | 'full'
+};
+
+function selectTaxaTreeOption(question, value, btnElem) {
+  taxaTreeState[question] = value;
+  const parent = btnElem.closest('.dt-options-grid');
+  if (parent) {
+    parent.querySelectorAll('.dt-option-btn').forEach(b => b.classList.remove('selected'));
+    btnElem.classList.add('selected');
+  }
+  updateTaxaTreeDecision();
+}
+
+function updateTaxaTreeDecision() {
+  const { q1, q2, q3 } = taxaTreeState;
+  const recElem = document.getElementById('dt_taxa_rec');
+  const reasonElem = document.getElementById('dt_taxa_reason');
+  const cmdElem = document.getElementById('dt_taxa_cmd');
+  if (!recElem || !reasonElem || !cmdElem) return;
+
+  let recommendation = '';
+  let reason = '';
+  let cmd = '';
+
+  if (q1 === 'its') {
+    recommendation = '🍄 Recommended Database: UNITE Developer (v8/v9) + Naive Bayes Classifier';
+    reason = 'UNITE is the international gold standard curated database for fungal internal transcribed spacer (ITS) sequences. Use the 99% or dynamic Species Hypothesis (SH) release with classify-sklearn.';
+    cmd = 'qiime feature-classifier classify-sklearn \\\n  --i-classifier unite-ver8-99-classifier.qza \\\n  --i-reads rep-seqs.qza \\\n  --o-classification taxonomy.qza';
+  } else if (q1 === '18s') {
+    recommendation = '🧫 Recommended Database: PR2 (Protist Ribosomal Reference) or SILVA 138 18S';
+    reason = 'For microeukaryotes, protists, and aquatic plankton, PR2 provides superior eukaryotic curated taxonomy down to genus/species level compared to generalist databases.';
+    cmd = 'qiime feature-classifier classify-sklearn \\\n  --i-classifier pr2-v5-18s-nb-classifier.qza \\\n  --i-reads rep-seqs.qza \\\n  --o-classification taxonomy.qza';
+  } else if (q1 === 'coi') {
+    recommendation = '🐾 Recommended Database: BOLD (Barcode of Life) or Midori COI';
+    reason = 'Animal, metazoan, and insect metabarcoding targeting cytochrome c oxidase I requires organellar reference sets rather than ribosomal 16S/18S databases.';
+    cmd = 'qiime feature-classifier classify-consensus-vsearch \\\n  --i-query rep-seqs.qza \\\n  --i-reference-reads bold-coi-seqs.qza \\\n  --i-reference-taxonomy bold-coi-taxa.qza \\\n  --p-perc-identity 0.95 \\\n  --o-classification taxonomy.qza';
+  } else {
+    // 16S
+    if (q2 === 'shotgun') {
+      recommendation = '🌲 Recommended Database: Greengenes2 (2022.10 WoL Whole-Genome Tree)';
+      reason = 'Greengenes2 is directly anchored to the Web of Life whole-genome phylogenetic database. It enables seamless integration between 16S amplicon ASVs and shotgun metagenomic species/MAGs.';
+      cmd = 'qiime feature-classifier classify-sklearn \\\n  --i-classifier greengenes2-2022.10.backbone.v4.nb.qza \\\n  --i-reads rep-seqs.qza \\\n  --o-classification taxonomy.qza';
+    } else if (q2 === 'novel') {
+      recommendation = '🔍 Recommended Method: classify-consensus-vsearch with SILVA 138.1 Full Database';
+      reason = 'Extreme environments (deep sea vents, hot springs, saline lakes) often contain uncultivated novel phyla that Naive Bayes may over-confidently misclassify. VSEARCH alignment provides robust multi-hit consensus with exact identity thresholds.';
+      cmd = 'qiime feature-classifier classify-consensus-vsearch \\\n  --i-query rep-seqs.qza \\\n  --i-reference-reads silva-138-99-seqs.qza \\\n  --i-reference-taxonomy silva-138-99-tax.qza \\\n  --p-perc-identity 0.90 \\\n  --p-min-consensus 0.51 \\\n  --o-classification taxonomy.qza';
+    } else {
+      if (q3 === 'targeted') {
+        recommendation = '📚 Recommended Database: SILVA 138.1 (Region-Trimmed Naive Bayes Classifier)';
+        reason = 'SILVA 138.1 is the most widely cited and comprehensively curated database for environmental, soil, human, and animal microbiomes. Training a Naive Bayes classifier on your exact primer region (e.g. 515F-806R V4 or 341F-805R V3-V4) delivers optimal genus-level precision without overclassification.';
+        cmd = 'qiime feature-classifier classify-sklearn \\\n  --i-classifier silva-138-99-515-806-nb-classifier.qza \\\n  --i-reads rep-seqs.qza \\\n  --p-n-threads 8 \\\n  --o-classification taxonomy.qza';
+      } else {
+        recommendation = '🧬 Recommended Database: SILVA 138.1 (Full-Length 16S Classifier)';
+        reason = 'For full-length PacBio HiFi or Nanopore 16S amplicons (~1.5 kb), use a full-length trained SILVA 138 Naive Bayes classifier.';
+        cmd = 'qiime feature-classifier classify-sklearn \\\n  --i-classifier silva-138-99-nb-classifier.qza \\\n  --i-reads rep-seqs.qza \\\n  --p-n-threads 8 \\\n  --o-classification taxonomy.qza';
+      }
+    }
+  }
+
+  recElem.innerHTML = recommendation;
+  reasonElem.innerHTML = `<strong>Taxonomic Assignment Rationale:</strong> ${reason}`;
+  cmdElem.innerText = cmd;
+}
+
+function resetTaxaTree() {
+  taxaTreeState.q1 = '16s';
+  taxaTreeState.q2 = 'standard';
+  taxaTreeState.q3 = 'targeted';
+
+  document.querySelectorAll('#sec-decide-taxa .dt-option-btn').forEach(b => b.classList.remove('selected'));
+  const btn1 = document.getElementById('dt_taxa_q1_16s'); if (btn1) btn1.classList.add('selected');
+  const btn2 = document.getElementById('dt_taxa_q2_standard'); if (btn2) btn2.classList.add('selected');
+  const btn3 = document.getElementById('dt_taxa_q3_targeted'); if (btn3) btn3.classList.add('selected');
+
+  updateTaxaTreeDecision();
+  toast('Taxonomy Decision Tree reset to default parameters');
+}
+
+
+// ------------------------------------------
+// BETA DIVERSITY DECISION TREE ENGINE
+// ------------------------------------------
+
+const betaTreeState = {
+  q1: 'yes',        // 'yes' | 'no'
+  q2: 'abundance'   // 'abundance' | 'presence' | 'compositional'
+};
+
+function selectBetaTreeOption(question, value, btnElem) {
+  betaTreeState[question] = value;
+  const parent = btnElem.closest('.dt-options-grid');
+  if (parent) {
+    parent.querySelectorAll('.dt-option-btn').forEach(b => b.classList.remove('selected'));
+    btnElem.classList.add('selected');
+  }
+  updateBetaTreeDecision();
+}
+
+function updateBetaTreeDecision() {
+  const { q1, q2 } = betaTreeState;
+  const recElem = document.getElementById('dt_beta_rec');
+  const reasonElem = document.getElementById('dt_beta_reason');
+  const cmdElem = document.getElementById('dt_beta_cmd');
+  if (!recElem || !reasonElem || !cmdElem) return;
+
+  let recommendation = '';
+  let reason = '';
+  let cmd = '';
+
+  if (q2 === 'compositional') {
+    recommendation = '📐 Recommended Metric: Robust Aitchison Distance (DEICODE / RPCA Biplot)';
+    reason = 'Microbiome read count tables are strictly compositional simplexes with high sparsity. DEICODE uses robust centered log-ratio (rCLR) transformation to compute true scale-free beta diversity without the loss of statistical power caused by rarefaction.';
+    cmd = 'qiime deicode rpca \\\n  --i-table table.qza \\\n  --p-min-feature-count 10 --p-min-sample-count 500 \\\n  --o-biplot rpca-biplot.qza --o-distance-matrix rpca-distance.qza\n\nqiime emperor biplot \\\n  --i-biplot rpca-biplot.qza --m-sample-metadata-file sample-metadata.tsv \\\n  --o-visualization rpca-emperor.qzv';
+  } else if (q1 === 'yes') {
+    if (q2 === 'abundance') {
+      recommendation = '🌲 Recommended Metric: Weighted UniFrac (Quantitative Phylogenetic Distance)';
+      reason = 'Weighted UniFrac accounts for both phylogenetic branch distance on rooted-tree.qza and the relative abundance of taxa. It is sensitive to major community dominance shifts between treatment groups and highly robust against rare PCR artifacts.';
+      cmd = 'qiime diversity beta-group-significance \\\n  --i-distance-matrix core-metrics-results/weighted_unifrac_distance_matrix.qza \\\n  --m-metadata-file sample-metadata.tsv \\\n  --m-metadata-column treatment \\\n  --p-pairwise \\\n  --o-visualization weighted-unifrac-significance.qzv';
+    } else {
+      recommendation = '🧬 Recommended Metric: Unweighted UniFrac (Qualitative Phylogenetic Distance)';
+      reason = 'Unweighted UniFrac evaluates phylogenetic lineage presence/absence. It gives equal weight to rare and abundant lineages, making it the ideal test if your hypothesis involves specialized rare taxa colonization or lineage extinction.';
+      cmd = 'qiime diversity beta-group-significance \\\n  --i-distance-matrix core-metrics-results/unweighted_unifrac_distance_matrix.qza \\\n  --m-metadata-file sample-metadata.tsv \\\n  --m-metadata-column treatment \\\n  --p-pairwise \\\n  --o-visualization unweighted-unifrac-significance.qzv';
+    }
+  } else {
+    // Non-phylogenetic (ITS, COI)
+    if (q2 === 'abundance') {
+      recommendation = '📊 Recommended Metric: Bray-Curtis Dissimilarity (Quantitative Abundance Distance)';
+      reason = 'For datasets without a rooted phylogenetic tree (such as fungal ITS or metazoan COI), Bray-Curtis quantifies compositional differences based on proportional read abundances between samples.';
+      cmd = 'qiime diversity beta-group-significance \\\n  --i-distance-matrix core-metrics-results/bray_curtis_distance_matrix.qza \\\n  --m-metadata-file sample-metadata.tsv \\\n  --m-metadata-column treatment \\\n  --p-pairwise \\\n  --o-visualization bray-curtis-significance.qzv';
+    } else {
+      recommendation = '📦 Recommended Metric: Jaccard Distance (Qualitative Species Overlap)';
+      reason = 'Jaccard distance computes the fraction of non-shared biological features (1 - Jaccard similarity), providing a pure membership comparison without assuming phylogenetic relatedness.';
+      cmd = 'qiime diversity beta-group-significance \\\n  --i-distance-matrix core-metrics-results/jaccard_distance_matrix.qza \\\n  --m-metadata-file sample-metadata.tsv \\\n  --m-metadata-column treatment \\\n  --p-pairwise \\\n  --o-visualization jaccard-significance.qzv';
+    }
+  }
+
+  recElem.innerHTML = recommendation;
+  reasonElem.innerHTML = `<strong>Ecological & Statistical Rationale:</strong> ${reason}`;
+  cmdElem.innerText = cmd;
+}
+
+function resetBetaTree() {
+  betaTreeState.q1 = 'yes';
+  betaTreeState.q2 = 'abundance';
+
+  document.querySelectorAll('#sec-decide-beta .dt-option-btn').forEach(b => b.classList.remove('selected'));
+  const btn1 = document.getElementById('dt_beta_q1_yes'); if (btn1) btn1.classList.add('selected');
+  const btn2 = document.getElementById('dt_beta_q2_abundance'); if (btn2) btn2.classList.add('selected');
+
+  updateBetaTreeDecision();
+  toast('Beta Diversity Decision Tree reset to default parameters');
+}
+
+function copyDynamicText(elemId) {
+  const elem = document.getElementById(elemId);
+  if (!elem) return;
+  navigator.clipboard.writeText(elem.innerText).then(() => {
+    toast('📋 Command copied to clipboard!');
+  }).catch(() => {
+    toast('⚠️ Failed to copy to clipboard');
+  });
+}
+
+
 // Initializations
 window.addEventListener('DOMContentLoaded', () => {
   if (localStorage.getItem('qiimeTheme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
@@ -5754,6 +6417,11 @@ window.addEventListener('DOMContentLoaded', () => {
   updateCardCounts();
   loadProgress();
   setupScrollSpy();
+
+  // Initialize interactive decision trees
+  updateDenoiseTreeDecision();
+  updateTaxaTreeDecision();
+  updateBetaTreeDecision();
 
   // Check mobile width for menu button
   if (window.innerWidth <= 1100) {
