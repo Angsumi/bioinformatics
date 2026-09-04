@@ -1496,40 +1496,12 @@ input:focus, select:focus, textarea:focus {
   <!-- Main Content Area -->
   <div id="content">
 
-        <!-- Minimalist Pipeline Roadmap -->
-    <div class="flow-timeline" role="navigation" aria-label="Pipeline overview">
-      <a class="flow-step" onclick="goTo('sec-import')" title="Jump to FASTQ Import">📥 1. Ingestion</a>
-      <span class="flow-arrow">➔</span>
-      <a class="flow-step" onclick="goTo('sec-cutadapt')" title="Jump to Primer Trimming">✂️ 2. Cutadapt</a>
-      <span class="flow-arrow">➔</span>
-      <a class="flow-step" onclick="goTo('sec-dada2')" title="Jump to DADA2 ASVs">🧬 3. DADA2 ASVs</a>
-      <span class="flow-arrow">➔</span>
-      <a class="flow-step" onclick="goTo('sec-features')" title="Jump to Feature Table">📊 4. Feature Table</a>
-      <span class="flow-arrow">➔</span>
-      <a class="flow-step" onclick="goTo('sec-taxa')" title="Jump to Taxonomy & Tree">🏷️ 5. Taxonomy</a>
-      <span class="flow-arrow">➔</span>
-      <a class="flow-step" onclick="goTo('sec-alpha')" title="Jump to Diversity Analysis">🌐 6. Diversity</a>
-      <span class="flow-arrow">➔</span>
-      <a class="flow-step" onclick="goTo('sec-diff')" title="Jump to Differential Abundance">📈 7. ANCOM-BC</a>
-      <span class="flow-arrow">➔</span>
-      <a class="flow-step" onclick="goTo('sec-export')" title="Jump to Data Export">📤 8. Export</a>
-    </div>
-
-            <!-- Collapsible Master Study Parameter Hub -->
+    <!-- Collapsible Master Study Parameter Hub -->
     <div class="global-param-card" id="globalParamCard">
       <div class="global-param-header" onclick="toggleGlobalParamDrawer()">
         <div class="global-param-title-wrap">
           <span class="global-param-title">🎛️ Master Study Parameter Hub</span>
           <span class="live-badge">AUTO-SYNCS 15+ PIPELINE STAGES</span>
-        </div>
-        <div class="global-param-summary-pills">
-          <span class="param-pill" id="pill_region">Region: 16S V4</span>
-          <span class="param-pill" id="pill_org">Target: 16S Bacteria</span>
-          <span class="param-pill" id="pill_platform">Platform: Illumina Paired</span>
-          <span class="param-pill" id="pill_meta">Col: treatment</span>
-          <span class="param-pill" id="pill_depth">Depth: 10,000</span>
-          <span class="param-pill" id="pill_threads">Threads: 8</span>
-          <span class="param-pill" id="pill_primer">515F / 806R</span>
         </div>
         <button class="global-param-toggle-btn" type="button">
           <span id="paramToggleText">⚙️ Edit Variables</span>
