@@ -1515,14 +1515,16 @@ input:focus, select:focus, textarea:focus {
       <a class="flow-step" onclick="goTo('sec-export')" title="Jump to Data Export">📤 8. Export</a>
     </div>
 
-    <!-- Collapsible Global Project Parameter Customizer -->
+        <!-- Collapsible Master Study Parameter Hub -->
     <div class="global-param-card" id="globalParamCard">
       <div class="global-param-header" onclick="toggleGlobalParamDrawer()">
         <div class="global-param-title-wrap">
-          <span class="global-param-title">🎛️ Active Study Parameters</span>
-          <span class="live-badge">AUTO-SYNCS 11 COMMANDS</span>
+          <span class="global-param-title">🎛️ Master Study Parameter Hub</span>
+          <span class="live-badge">AUTO-SYNCS 15+ PIPELINE STAGES</span>
         </div>
         <div class="global-param-summary-pills">
+          <span class="param-pill" id="pill_org">Target: 16S Bacteria</span>
+          <span class="param-pill" id="pill_platform">Platform: Illumina Paired</span>
           <span class="param-pill" id="pill_meta">Col: treatment</span>
           <span class="param-pill" id="pill_depth">Depth: 10,000</span>
           <span class="param-pill" id="pill_threads">Threads: 8</span>
@@ -1535,40 +1537,170 @@ input:focus, select:focus, textarea:focus {
       </div>
 
       <div class="global-param-body">
-        <p>
-          Configure your biological experimental variables once below. Every command across this laboratory will automatically update in real-time, eliminating boilerplate editing errors.
-        </p>
-
-        <div class="param-grid">
-          <label>Primary Metadata Column
-            <input type="text" id="glob_meta_col" value="treatment" placeholder="treatment, genotype, group" oninput="applyGlobalParams()">
-            <span class="help-text">Used in PERMANOVA, ANCOM-BC, barplots</span>
-          </label>
-          <label>Metadata File Name
-            <input type="text" id="glob_meta_file" value="sample-metadata.tsv" placeholder="sample-metadata.tsv" oninput="applyGlobalParams()">
-            <span class="help-text">Path to your metadata TSV file</span>
-          </label>
-          <label>Target Sampling Depth
-            <input type="number" id="glob_rare_depth" value="10000" placeholder="10000" oninput="applyGlobalParams()">
-            <span class="help-text">Rarefaction depth for diversity metrics</span>
-          </label>
-          <label>CPU Threads (--p-n-threads)
-            <input type="number" id="glob_threads" value="8" min="1" max="128" oninput="applyGlobalParams()">
-            <span class="help-text">Parallel cores for DADA2, tree, classifier</span>
-          </label>
-          <label>Forward Primer (5'→3')
-            <input type="text" id="glob_f_primer" value="GTGYCAGCMGCCGCGGTAA" placeholder="515F" oninput="applyGlobalParams()">
-            <span class="help-text">For Cutadapt & classifier training</span>
-          </label>
-          <label>Reverse Primer (5'→3')
-            <input type="text" id="glob_r_primer" value="GGACTACNVGGGTWTCTAAT" placeholder="806R" oninput="applyGlobalParams()">
-            <span class="help-text">For Cutadapt & classifier training</span>
-          </label>
+        <!-- Quick Presets Bar -->
+        <div style="background:var(--panel-alt);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+          <div style="display:flex;align-items:center;gap:6px">
+            <span style="font-size:12px;font-weight:700;color:var(--text)">⚡ 1-Click Study Presets:</span>
+          </div>
+          <div style="display:flex;gap:6px;flex-wrap:wrap">
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:4px 9px" onclick="loadGlobalPreset('16s_v4')">🔬 16S V4 (515F-806R)</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:4px 9px" onclick="loadGlobalPreset('16s_v3v4')">🔬 16S V3-V4 (341F-805R)</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:4px 9px" onclick="loadGlobalPreset('its_fungi')">🍄 Fungal ITS (UNITE)</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:4px 9px" onclick="loadGlobalPreset('16s_pacbio')">🧬 PacBio/ONT Full 16S</button>
+          </div>
         </div>
 
-        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
-          <button class="nav-btn" onclick="resetGlobalParams()">↺ Reset Defaults</button>
-          <button class="nav-btn primary" onclick="applyGlobalParams(); toggleGlobalParamDrawer();">⚡ Apply & Close</button>
+        <!-- 4 Categorized Columns -->
+        <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px">
+          
+          <!-- Category 1: Target Organism & Taxonomy -->
+          <div style="background:var(--panel-alt);border:1px solid var(--border);border-radius:12px;padding:14px">
+            <div style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--primary);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+              <span>🧬 Target Biology & Reference</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <label>Target Organism / Marker Gene
+                <select id="glob_target_org" onchange="applyGlobalParams()">
+                  <option value="16S">Bacteria / Archaea (16S rRNA)</option>
+                  <option value="ITS">Fungi (ITS1 / ITS2)</option>
+                  <option value="18S">Eukaryotes (18S rRNA)</option>
+                  <option value="Shotgun">Shotgun Metagenome</option>
+                </select>
+                <span class="help-text">Sets default databases, primers & classifier</span>
+              </label>
+              <label>Taxonomy Classifier Artifact
+                <select id="glob_classifier" onchange="applyGlobalParams()">
+                  <option value="silva-138-99-515-806-nb-classifier.qza">SILVA 138 (515F-806R V4 Naive Bayes)</option>
+                  <option value="silva-138-99-nb-classifier.qza">SILVA 138 (Full-Length 16S Naive Bayes)</option>
+                  <option value="greengenes2-2022.10.backbone.v4.nb.qza">Greengenes2 (2022.10 V4)</option>
+                  <option value="unite-ver8-99-classifier.qza">UNITE Developer (v8 99% Fungi ITS)</option>
+                </select>
+                <span class="help-text">Used in classify-sklearn</span>
+              </label>
+              <label>Forward Primer (5'→3')
+                <input type="text" id="glob_f_primer" value="GTGYCAGCMGCCGCGGTAA" placeholder="515F" oninput="applyGlobalParams()">
+                <span class="help-text">Cutadapt & primer trimming</span>
+              </label>
+              <label>Reverse Primer (5'→3')
+                <input type="text" id="glob_r_primer" value="GGACTACNVGGGTWTCTAAT" placeholder="806R" oninput="applyGlobalParams()">
+                <span class="help-text">Cutadapt & primer trimming</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Category 2: Platform & Sequencing Format -->
+          <div style="background:var(--panel-alt);border:1px solid var(--border);border-radius:12px;padding:14px">
+            <div style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--primary);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+              <span>🖥️ Platform & Data Format</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <label>Sequencing Platform / Machine
+                <select id="glob_seq_platform" onchange="applyGlobalParams()">
+                  <option value="illumina_miseq">Illumina MiSeq (2×250 / 2×300)</option>
+                  <option value="illumina_novaseq">Illumina NovaSeq / NextSeq (2×150)</option>
+                  <option value="pacbio_hifi">PacBio HiFi (Circular Consensus)</option>
+                  <option value="nanopore">Oxford Nanopore (ONT)</option>
+                  <option value="iontorrent">Ion Torrent / PGM</option>
+                </select>
+                <span class="help-text">Adapts import format & quality expectations</span>
+              </label>
+              <label>Read Layout
+                <select id="glob_read_layout" onchange="applyGlobalParams()">
+                  <option value="paired">Paired-End (Forward + Reverse)</option>
+                  <option value="single">Single-End Reads</option>
+                </select>
+                <span class="help-text">Switches between denoise-paired & denoise-single</span>
+              </label>
+              <label>Quality Offset Encoding
+                <select id="glob_phred_offset" onchange="applyGlobalParams()">
+                  <option value="Phred33">Phred+33 (Modern Illumina / PacBio / ONT)</option>
+                  <option value="Phred64">Phred+64 (Legacy Illumina 1.3-1.7)</option>
+                </select>
+                <span class="help-text">Import manifest format type</span>
+              </label>
+              <label>Manifest File Name
+                <input type="text" id="glob_manifest_file" value="manifest.tsv" placeholder="manifest.tsv" oninput="applyGlobalParams()">
+                <span class="help-text">Mapping file for FASTQ ingestion</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Category 3: DADA2 & Quality Truncations -->
+          <div style="background:var(--panel-alt);border:1px solid var(--border);border-radius:12px;padding:14px">
+            <div style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--primary);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+              <span>✂️ DADA2 QC & Truncations</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+              <label>Truncate Forward (F)
+                <input type="number" id="glob_trunc_f" value="240" min="0" max="1600" oninput="applyGlobalParams()">
+                <span class="help-text">--p-trunc-len-f</span>
+              </label>
+              <label>Truncate Reverse (R)
+                <input type="number" id="glob_trunc_r" value="200" min="0" max="1600" oninput="applyGlobalParams()">
+                <span class="help-text">--p-trunc-len-r</span>
+              </label>
+              <label>Trim Left Forward
+                <input type="number" id="glob_trim_f" value="0" min="0" max="100" oninput="applyGlobalParams()">
+                <span class="help-text">--p-trim-left-f</span>
+              </label>
+              <label>Trim Left Reverse
+                <input type="number" id="glob_trim_r" value="0" min="0" max="100" oninput="applyGlobalParams()">
+                <span class="help-text">--p-trim-left-r</span>
+              </label>
+            </div>
+            <div style="margin-top:10px;display:flex;flex-direction:column;gap:10px">
+              <label>CPU Threads (--p-n-threads)
+                <input type="number" id="glob_threads" value="8" min="1" max="128" oninput="applyGlobalParams()">
+                <span class="help-text">Parallel cores for DADA2, tree & classifier</span>
+              </label>
+              <label>Cutadapt Max Error Rate
+                <input type="number" id="glob_err_rate" value="0.1" step="0.05" min="0" max="0.5" oninput="applyGlobalParams()">
+                <span class="help-text">--p-error-rate (default: 0.1 = 10%)</span>
+              </label>
+            </div>
+          </div>
+
+          <!-- Category 4: Study Design & Statistics -->
+          <div style="background:var(--panel-alt);border:1px solid var(--border);border-radius:12px;padding:14px">
+            <div style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--primary);margin-bottom:10px;display:flex;align-items:center;gap:6px">
+              <span>📊 Study Design & Statistics</span>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:10px">
+              <label>Metadata File Name
+                <input type="text" id="glob_meta_file" value="sample-metadata.tsv" placeholder="sample-metadata.tsv" oninput="applyGlobalParams()">
+                <span class="help-text">Path to TSV metadata</span>
+              </label>
+              <label>Primary Grouping Column
+                <input type="text" id="glob_meta_col" value="treatment" placeholder="treatment, genotype, cohort" oninput="applyGlobalParams()">
+                <span class="help-text">PERMANOVA, ANCOM-BC, barplots</span>
+              </label>
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <label>Time / Covariate
+                  <input type="text" id="glob_time_col" value="timepoint" placeholder="timepoint, day" oninput="applyGlobalParams()">
+                  <span class="help-text">ANCOM-BC2 & ML</span>
+                </label>
+                <label>Control / Baseline
+                  <input type="text" id="glob_control_group" value="Control" placeholder="Control, WT" oninput="applyGlobalParams()">
+                  <span class="help-text">Reference level</span>
+                </label>
+              </div>
+              <label>Target Sampling Depth
+                <input type="number" id="glob_rare_depth" value="10000" placeholder="10000" oninput="applyGlobalParams()">
+                <span class="help-text">Rarefaction depth for diversity</span>
+              </label>
+            </div>
+          </div>
+
+        </div>
+
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-top:16px;flex-wrap:wrap;gap:10px;border-top:1px solid var(--border);padding-top:14px">
+          <div style="font-size:12px;color:var(--text-muted)">
+            <span>💡 <em>Changes propagate in real-time across all 15+ tool and command cards.</em></span>
+          </div>
+          <div style="display:flex;gap:8px">
+            <button class="nav-btn" type="button" onclick="resetGlobalParams()">↺ Reset Defaults</button>
+            <button class="nav-btn primary" type="button" onclick="applyGlobalParams(); toggleGlobalParamDrawer();">⚡ Apply & Close</button>
+          </div>
         </div>
       </div>
     </div>
@@ -5073,49 +5205,100 @@ function resetLongParams() {
 
 // Global project parameters sync
 function applyGlobalParams() {
-  const metaCol = document.getElementById('glob_meta_col')?.value.trim();
-  const metaFile = document.getElementById('glob_meta_file')?.value.trim();
-  const depth = document.getElementById('glob_rare_depth')?.value;
-  const threads = document.getElementById('glob_threads')?.value;
-  const fPrimer = document.getElementById('glob_f_primer')?.value.trim();
-  const rPrimer = document.getElementById('glob_r_primer')?.value.trim();
+  const targetOrg = document.getElementById('glob_target_org')?.value || '16S';
+  const classifier = document.getElementById('glob_classifier')?.value || 'silva-138-99-515-806-nb-classifier.qza';
+  const platform = document.getElementById('glob_seq_platform')?.value || 'illumina_miseq';
+  const layout = document.getElementById('glob_read_layout')?.value || 'paired';
+  const phred = document.getElementById('glob_phred_offset')?.value || 'Phred33';
+  const manifestFile = document.getElementById('glob_manifest_file')?.value.trim() || 'manifest.tsv';
 
-  // Update pills in header
-  if (metaCol) {
-    const pill = document.getElementById('pill_meta'); if (pill) pill.innerText = `Col: ${metaCol}`;
-    const pCol = document.getElementById('perm_col'); if (pCol) pCol.value = metaCol;
-    const fCol = document.getElementById('filt_meta_col'); if (fCol) fCol.value = metaCol;
-    const aForm = document.getElementById('ancom_formula'); if (aForm) aForm.value = metaCol;
-    const a2Form = document.getElementById('ancom2_formula'); if (a2Form) a2Form.value = `${metaCol} + timepoint`;
-    const a2Ref = document.getElementById('ancom2_ref'); if (a2Ref) a2Ref.value = `${metaCol}::Control`;
+  const truncF = document.getElementById('glob_trunc_f')?.value || '240';
+  const truncR = document.getElementById('glob_trunc_r')?.value || '200';
+  const trimF = document.getElementById('glob_trim_f')?.value || '0';
+  const trimR = document.getElementById('glob_trim_r')?.value || '0';
+  const errRate = document.getElementById('glob_err_rate')?.value || '0.1';
+
+  const metaCol = document.getElementById('glob_meta_col')?.value.trim() || 'treatment';
+  const timeCol = document.getElementById('glob_time_col')?.value.trim() || 'timepoint';
+  const controlGroup = document.getElementById('glob_control_group')?.value.trim() || 'Control';
+  const metaFile = document.getElementById('glob_meta_file')?.value.trim() || 'sample-metadata.tsv';
+  const depth = document.getElementById('glob_rare_depth')?.value || '10000';
+  const threads = document.getElementById('glob_threads')?.value || '8';
+  const fPrimer = document.getElementById('glob_f_primer')?.value.trim() || 'GTGYCAGCMGCCGCGGTAA';
+  const rPrimer = document.getElementById('glob_r_primer')?.value.trim() || 'GGACTACNVGGGTWTCTAAT';
+
+  // 1. Update summary pills in header
+  const pOrg = document.getElementById('pill_org'); if (pOrg) pOrg.innerText = `Target: ${targetOrg}`;
+  const pPlat = document.getElementById('pill_platform'); if (pPlat) pPlat.innerText = `Platform: ${layout === 'paired' ? 'Paired-End' : 'Single-End'}`;
+  const pMeta = document.getElementById('pill_meta'); if (pMeta) pMeta.innerText = `Col: ${metaCol}`;
+  const pDepth = document.getElementById('pill_depth'); if (pDepth) pDepth.innerText = `Depth: ${parseInt(depth).toLocaleString()}`;
+  const pThreads = document.getElementById('pill_threads'); if (pThreads) pThreads.innerText = `Threads: ${threads}`;
+  const pPrimer = document.getElementById('pill_primer'); if (pPrimer) pPrimer.innerText = `${fPrimer.slice(0, 5)}.../${rPrimer.slice(0, 5)}...`;
+
+  // 2. Propagate to Import section
+  const isPaired = layout === 'paired';
+  const impType = document.getElementById('imp_type_select');
+  if (impType) {
+    impType.value = isPaired ? 'SampleData[PairedEndSequencesWithQuality]' : 'SampleData[SequencesWithQuality]';
+  }
+  const impFmt = document.getElementById('imp_fmt_select');
+  if (impFmt) {
+    impFmt.value = isPaired 
+      ? (phred === 'Phred64' ? 'PairedEndFastqManifestPhred64V2' : 'PairedEndFastqManifestPhred33V2')
+      : (phred === 'Phred64' ? 'SingleEndFastqManifestPhred64V2' : 'SingleEndFastqManifestPhred33V2');
+  }
+  const impInPath = document.getElementById('imp_in_path'); if (impInPath) impInPath.value = manifestFile;
+
+  // 3. Propagate to Cutadapt section
+  const cF = document.getElementById('cut_f_primer'); if (cF) cF.value = fPrimer;
+  const cR = document.getElementById('cut_r_primer'); if (cR) cR.value = rPrimer;
+  const cErr = document.getElementById('cut_err_rate'); if (cErr) cErr.value = errRate;
+
+  // 4. Propagate to DADA2 section & Calculator
+  const dTF = document.getElementById('dad_trunc_f'); if (dTF) dTF.value = truncF;
+  const dTR = document.getElementById('dad_trunc_r'); if (dTR) dTR.value = truncR;
+  const dLF = document.getElementById('dad_trim_f'); if (dLF) dLF.value = trimF;
+  const dLR = document.getElementById('dad_trim_r'); if (dLR) dLR.value = trimR;
+  const dThreads = document.getElementById('dad_threads'); if (dThreads) dThreads.value = threads;
+
+  const cTF = document.getElementById('calc_f_trunc'); if (cTF) cTF.value = truncF;
+  const cTR = document.getElementById('calc_r_trunc'); if (cTR) cTR.value = truncR;
+  const cLF = document.getElementById('calc_f_trim'); if (cLF) cLF.value = trimF;
+  const cLR = document.getElementById('calc_r_trim'); if (cLR) cLR.value = trimR;
+
+  // 5. Propagate to Filtering section
+  const fCol = document.getElementById('filt_meta_col'); if (fCol) fCol.value = metaCol;
+  const fVal = document.getElementById('filt_meta_val'); if (fVal) fVal.value = controlGroup;
+
+  // 6. Propagate to Taxonomy section
+  const tClass = document.getElementById('tax_class_select'); if (tClass) tClass.value = classifier;
+  const tThreads = document.getElementById('tax_threads'); if (tThreads) tThreads.value = threads;
+
+  // 7. Propagate to Diversity & Rarefaction
+  const cDepth = document.getElementById('core_depth'); if (cDepth) cDepth.value = depth;
+  const cMeta = document.getElementById('core_meta_file'); if (cMeta) cMeta.value = metaFile;
+  const rMedian = document.getElementById('rare_median'); if (rMedian) rMedian.value = Math.round(depth * 1.25);
+
+  // 8. Propagate to PERMANOVA section
+  const pCol = document.getElementById('perm_col'); if (pCol) pCol.value = metaCol;
+
+  // 9. Propagate to ANCOM-BC sections
+  const aForm = document.getElementById('ancom_formula'); if (aForm) aForm.value = metaCol;
+  const aMeta = document.getElementById('ancom_meta'); if (aMeta) aMeta.value = metaFile;
+  const a2Form = document.getElementById('ancom2_formula'); if (a2Form) a2Form.value = `${metaCol} + ${timeCol}`;
+  const a2Ref = document.getElementById('ancom2_ref'); if (a2Ref) a2Ref.value = `${metaCol}::${controlGroup}`;
+
+  // 10. Propagate to ITS section
+  const itsTaxa = document.getElementById('its_taxa');
+  if (itsTaxa) {
+    if (targetOrg === 'ITS') itsTaxa.value = 'F';
+    else if (targetOrg === '18S') itsTaxa.value = 'A';
   }
 
-  if (metaFile) {
-    const cMeta = document.getElementById('core_meta_file'); if (cMeta) cMeta.value = metaFile;
-    const aMeta = document.getElementById('ancom_meta'); if (aMeta) aMeta.value = metaFile;
-  }
+  // 11. Propagate to Longitudinal section
+  const lState = document.getElementById('long_state'); if (lState) lState.value = timeCol;
 
-  if (depth) {
-    const pill = document.getElementById('pill_depth'); if (pill) pill.innerText = `Depth: ${parseInt(depth).toLocaleString()}`;
-    const cDepth = document.getElementById('core_depth'); if (cDepth) cDepth.value = depth;
-    const rMedian = document.getElementById('rare_median'); if (rMedian) rMedian.value = Math.round(depth * 1.25);
-  }
-
-  if (threads) {
-    const pill = document.getElementById('pill_threads'); if (pill) pill.innerText = `Threads: ${threads}`;
-    const dThreads = document.getElementById('dad_threads'); if (dThreads) dThreads.value = threads;
-    const tThreads = document.getElementById('tax_threads'); if (tThreads) tThreads.value = threads;
-  }
-
-  if (fPrimer) {
-    const cF = document.getElementById('cut_f_primer'); if (cF) cF.value = fPrimer;
-  }
-
-  if (rPrimer) {
-    const cR = document.getElementById('cut_r_primer'); if (cR) cR.value = rPrimer;
-  }
-
-  // Update all commands
+  // Update all commands across the page
   updateImportCmd();
   updateCutadaptCmd();
   updateDada2Cmd();
@@ -5127,9 +5310,86 @@ function applyGlobalParams() {
   updateAncombc2Cmd();
   updateItsCmd();
   updateLongitudinalCmd();
+  calcDADA2();
+  calcRarefaction();
 
-  toast('⚡ All commands synchronized with project parameters!');
+  toast('⚡ All 15+ pipeline stages synchronized with your study parameters!');
 }
+
+function loadGlobalPreset(preset) {
+  if (preset === '16s_v4') {
+    document.getElementById('glob_target_org').value = '16S';
+    document.getElementById('glob_classifier').value = 'silva-138-99-515-806-nb-classifier.qza';
+    document.getElementById('glob_seq_platform').value = 'illumina_miseq';
+    document.getElementById('glob_read_layout').value = 'paired';
+    document.getElementById('glob_phred_offset').value = 'Phred33';
+    document.getElementById('glob_f_primer').value = 'GTGYCAGCMGCCGCGGTAA';
+    document.getElementById('glob_r_primer').value = 'GGACTACNVGGGTWTCTAAT';
+    document.getElementById('glob_trunc_f').value = '240';
+    document.getElementById('glob_trunc_r').value = '200';
+    document.getElementById('glob_trim_f').value = '0';
+    document.getElementById('glob_trim_r').value = '0';
+    document.getElementById('glob_rare_depth').value = '10000';
+    document.getElementById('glob_threads').value = '8';
+    if (document.getElementById('calc_amp')) document.getElementById('calc_amp').value = 253;
+  } else if (preset === '16s_v3v4') {
+    document.getElementById('glob_target_org').value = '16S';
+    document.getElementById('glob_classifier').value = 'silva-138-99-nb-classifier.qza';
+    document.getElementById('glob_seq_platform').value = 'illumina_miseq';
+    document.getElementById('glob_read_layout').value = 'paired';
+    document.getElementById('glob_phred_offset').value = 'Phred33';
+    document.getElementById('glob_f_primer').value = 'CCTACGGGNGGCWGCAG';
+    document.getElementById('glob_r_primer').value = 'GACTACHVGGGTATCTAATCC';
+    document.getElementById('glob_trunc_f').value = '280';
+    document.getElementById('glob_trunc_r').value = '240';
+    document.getElementById('glob_trim_f').value = '0';
+    document.getElementById('glob_trim_r').value = '0';
+    document.getElementById('glob_rare_depth').value = '15000';
+    document.getElementById('glob_threads').value = '8';
+    if (document.getElementById('calc_amp')) document.getElementById('calc_amp').value = 460;
+  } else if (preset === 'its_fungi') {
+    document.getElementById('glob_target_org').value = 'ITS';
+    document.getElementById('glob_classifier').value = 'unite-ver8-99-classifier.qza';
+    document.getElementById('glob_seq_platform').value = 'illumina_miseq';
+    document.getElementById('glob_read_layout').value = 'paired';
+    document.getElementById('glob_phred_offset').value = 'Phred33';
+    document.getElementById('glob_f_primer').value = 'CTTGGTCATTTAGAGGAAGTAA';
+    document.getElementById('glob_r_primer').value = 'GCTGCGTTCTTCATCGATGC';
+    document.getElementById('glob_trunc_f').value = '0';
+    document.getElementById('glob_trunc_r').value = '0';
+    document.getElementById('glob_trim_f').value = '0';
+    document.getElementById('glob_trim_r').value = '0';
+    document.getElementById('glob_rare_depth').value = '8000';
+    document.getElementById('glob_threads').value = '8';
+  } else if (preset === '16s_pacbio') {
+    document.getElementById('glob_target_org').value = '16S';
+    document.getElementById('glob_classifier').value = 'silva-138-99-nb-classifier.qza';
+    document.getElementById('glob_seq_platform').value = 'pacbio_hifi';
+    document.getElementById('glob_read_layout').value = 'single';
+    document.getElementById('glob_phred_offset').value = 'Phred33';
+    document.getElementById('glob_f_primer').value = 'AGAGTTTGATCMTGGCTCAG';
+    document.getElementById('glob_r_primer').value = 'TACGGYTACCTTGTTACGACTT';
+    document.getElementById('glob_trunc_f').value = '1400';
+    document.getElementById('glob_trunc_r').value = '0';
+    document.getElementById('glob_trim_f').value = '0';
+    document.getElementById('glob_trim_r').value = '0';
+    document.getElementById('glob_rare_depth').value = '10000';
+    document.getElementById('glob_threads').value = '16';
+  }
+  applyGlobalParams();
+  toast(`Loaded preset: ${preset.toUpperCase()}`);
+}
+
+function resetGlobalParams() {
+  loadGlobalPreset('16s_v4');
+  const col = document.getElementById('glob_meta_col'); if (col) col.value = 'treatment';
+  const file = document.getElementById('glob_meta_file'); if (file) file.value = 'sample-metadata.tsv';
+  const timeCol = document.getElementById('glob_time_col'); if (timeCol) timeCol.value = 'timepoint';
+  const control = document.getElementById('glob_control_group'); if (control) control.value = 'Control';
+  applyGlobalParams();
+  toast('Parameters reset to defaults');
+}
+
 
 // Initializations
 window.addEventListener('DOMContentLoaded', () => {
