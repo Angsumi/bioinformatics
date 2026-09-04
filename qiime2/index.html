@@ -1515,7 +1515,7 @@ input:focus, select:focus, textarea:focus {
       <a class="flow-step" onclick="goTo('sec-export')" title="Jump to Data Export">📤 8. Export</a>
     </div>
 
-        <!-- Collapsible Master Study Parameter Hub -->
+            <!-- Collapsible Master Study Parameter Hub -->
     <div class="global-param-card" id="globalParamCard">
       <div class="global-param-header" onclick="toggleGlobalParamDrawer()">
         <div class="global-param-title-wrap">
@@ -1523,6 +1523,7 @@ input:focus, select:focus, textarea:focus {
           <span class="live-badge">AUTO-SYNCS 15+ PIPELINE STAGES</span>
         </div>
         <div class="global-param-summary-pills">
+          <span class="param-pill" id="pill_region">Region: 16S V4</span>
           <span class="param-pill" id="pill_org">Target: 16S Bacteria</span>
           <span class="param-pill" id="pill_platform">Platform: Illumina Paired</span>
           <span class="param-pill" id="pill_meta">Col: treatment</span>
@@ -1537,16 +1538,26 @@ input:focus, select:focus, textarea:focus {
       </div>
 
       <div class="global-param-body">
-        <!-- Quick Presets Bar -->
-        <div style="background:var(--panel-alt);border:1px solid var(--border);border-radius:10px;padding:10px 14px;margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
-          <div style="display:flex;align-items:center;gap:6px">
-            <span style="font-size:12px;font-weight:700;color:var(--text)">⚡ 1-Click Study Presets:</span>
+        <!-- Quick 1-Click Marker & Region Selection Bar -->
+        <div style="background:var(--panel-alt);border:1px solid var(--border);border-radius:12px;padding:12px 16px;margin-bottom:18px">
+          <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:8px;margin-bottom:8px">
+            <div style="display:flex;align-items:center;gap:6px">
+              <span style="font-size:12.5px;font-weight:700;color:var(--text)">🎯 Quick Hypervariable Region & Marker Selector:</span>
+            </div>
+            <span style="font-size:11px;color:var(--text-muted)">Auto-configures Primers, Amplicon Lengths, DADA2 Truncations & Classifiers</span>
           </div>
           <div style="display:flex;gap:6px;flex-wrap:wrap">
-            <button class="nav-btn" type="button" style="font-size:11.5px;padding:4px 9px" onclick="loadGlobalPreset('16s_v4')">🔬 16S V4 (515F-806R)</button>
-            <button class="nav-btn" type="button" style="font-size:11.5px;padding:4px 9px" onclick="loadGlobalPreset('16s_v3v4')">🔬 16S V3-V4 (341F-805R)</button>
-            <button class="nav-btn" type="button" style="font-size:11.5px;padding:4px 9px" onclick="loadGlobalPreset('its_fungi')">🍄 Fungal ITS (UNITE)</button>
-            <button class="nav-btn" type="button" style="font-size:11.5px;padding:4px 9px" onclick="loadGlobalPreset('16s_pacbio')">🧬 PacBio/ONT Full 16S</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:5px 10px" onclick="loadRegionPreset('16s_v4')">🔬 16S V4 (515F-806R)</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:5px 10px" onclick="loadRegionPreset('16s_v3v4')">🔬 16S V3-V4 (341F-805R)</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:5px 10px" onclick="loadRegionPreset('16s_v1v2')">🔬 16S V1-V2 (27F-338R)</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:5px 10px" onclick="loadRegionPreset('16s_v3')">🔬 16S V3 (341F-518R)</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:5px 10px" onclick="loadRegionPreset('16s_v4v5')">🔬 16S V4-V5 (515F-926R)</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:5px 10px" onclick="loadRegionPreset('16s_full')">🧬 16S Full-Length (27F-1492R)</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:5px 10px" onclick="loadRegionPreset('18s_v4')">🧫 18S V4 (Stoeck Euk)</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:5px 10px" onclick="loadRegionPreset('18s_v9')">🧫 18S V9 (EMP Euk)</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:5px 10px" onclick="loadRegionPreset('its1')">🍄 Fungal ITS1 (ITS1F-ITS2)</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:5px 10px" onclick="loadRegionPreset('its2')">🍄 Fungal ITS2 (fITS7-ITS4)</button>
+            <button class="nav-btn" type="button" style="font-size:11.5px;padding:5px 10px" onclick="loadRegionPreset('coi_animal')">🐾 COI Metazoa (mlCOIintF)</button>
           </div>
         </div>
 
@@ -1556,35 +1567,79 @@ input:focus, select:focus, textarea:focus {
           <!-- Category 1: Target Organism & Taxonomy -->
           <div style="background:var(--panel-alt);border:1px solid var(--border);border-radius:12px;padding:14px">
             <div style="font-size:11.5px;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;color:var(--primary);margin-bottom:10px;display:flex;align-items:center;gap:6px">
-              <span>🧬 Target Biology & Reference</span>
+              <span>🧬 Target Biology & Hypervariable Region</span>
             </div>
             <div style="display:flex;flex-direction:column;gap:10px">
-              <label>Target Organism / Marker Gene
-                <select id="glob_target_org" onchange="applyGlobalParams()">
-                  <option value="16S">Bacteria / Archaea (16S rRNA)</option>
-                  <option value="ITS">Fungi (ITS1 / ITS2)</option>
-                  <option value="18S">Eukaryotes (18S rRNA)</option>
-                  <option value="Shotgun">Shotgun Metagenome</option>
+              <label>Target Marker Gene & Hypervariable Region
+                <select id="glob_region_preset" onchange="onRegionDropdownChange()">
+                  <optgroup label="16S rRNA (Bacteria & Archaea)">
+                    <option value="16s_v4" selected>16S V4 (515F - 806R) · ~253 bp</option>
+                    <option value="16s_v3v4">16S V3-V4 (341F - 805R) · ~460 bp</option>
+                    <option value="16s_v1v2">16S V1-V2 (27F - 338R) · ~330 bp</option>
+                    <option value="16s_v1v3">16S V1-V3 (27F - 534R) · ~490 bp</option>
+                    <option value="16s_v3">16S V3 (341F - 518R) · ~195 bp</option>
+                    <option value="16s_v4v5">16S V4-V5 (515F - 926R Parada) · ~390 bp</option>
+                    <option value="16s_full">16S Full-Length (27F - 1492R) · ~1465 bp</option>
+                  </optgroup>
+                  <optgroup label="18S rRNA (Eukaryotes & Protists)">
+                    <option value="18s_v4">18S V4 (TAReuk454FWD1 - TAReukREV3) · ~380 bp</option>
+                    <option value="18s_v9">18S V9 (1391f - EukB) · ~150 bp</option>
+                    <option value="18s_full">18S Full-Length (EukA - EukB) · ~1800 bp</option>
+                  </optgroup>
+                  <optgroup label="ITS (Fungi)">
+                    <option value="its1">Fungal ITS1 (ITS1F - ITS2) · Variable bp</option>
+                    <option value="its2">Fungal ITS2 (fITS7 / ITS3 - ITS4) · Variable bp</option>
+                    <option value="its_full">Full ITS (ITS1F - ITS4) · ~700 bp</option>
+                  </optgroup>
+                  <optgroup label="Other Metabarcode Markers">
+                    <option value="coi_animal">COI Animal/Metazoan (mlCOIintF - jgHCO2198) · ~313 bp</option>
+                    <option value="rbcl_plant">Plant Chloroplast rbcL (rbcLa-F - rbcLa-R) · ~550 bp</option>
+                    <option value="custom">Custom / User-Defined Region</option>
+                  </optgroup>
                 </select>
-                <span class="help-text">Sets default databases, primers & classifier</span>
+                <span class="help-text">Select region to auto-populate primers & parameters</span>
               </label>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <label>Target Organism Group
+                  <select id="glob_target_org" onchange="applyGlobalParams()">
+                    <option value="16S">Bacteria / Archaea (16S)</option>
+                    <option value="18S">Eukaryotes / Protists (18S)</option>
+                    <option value="ITS">Fungi (ITS)</option>
+                    <option value="COI">Animals / Metazoa (COI)</option>
+                    <option value="Plants">Plants (rbcL/matK)</option>
+                    <option value="Shotgun">Shotgun Metagenomics</option>
+                  </select>
+                </label>
+                <label>Expected Amplicon (bp)
+                  <input type="number" id="glob_amp_len" value="253" placeholder="253" oninput="applyGlobalParams()">
+                </label>
+              </div>
+
               <label>Taxonomy Classifier Artifact
                 <select id="glob_classifier" onchange="applyGlobalParams()">
                   <option value="silva-138-99-515-806-nb-classifier.qza">SILVA 138 (515F-806R V4 Naive Bayes)</option>
+                  <option value="silva-138-99-341-805-nb-classifier.qza">SILVA 138 (341F-805R V3-V4 Naive Bayes)</option>
                   <option value="silva-138-99-nb-classifier.qza">SILVA 138 (Full-Length 16S Naive Bayes)</option>
                   <option value="greengenes2-2022.10.backbone.v4.nb.qza">Greengenes2 (2022.10 V4)</option>
+                  <option value="greengenes2-2022.10.backbone.full-length.nb.qza">Greengenes2 (Full-Length 16S)</option>
                   <option value="unite-ver8-99-classifier.qza">UNITE Developer (v8 99% Fungi ITS)</option>
+                  <option value="pr2-v5-18s-nb-classifier.qza">PR2 (v5.0 18S Eukaryote Classifier)</option>
+                  <option value="bold-coi-classifier.qza">BOLD (COI Metazoan Classifier)</option>
                 </select>
                 <span class="help-text">Used in classify-sklearn</span>
               </label>
-              <label>Forward Primer (5'→3')
-                <input type="text" id="glob_f_primer" value="GTGYCAGCMGCCGCGGTAA" placeholder="515F" oninput="applyGlobalParams()">
-                <span class="help-text">Cutadapt & primer trimming</span>
-              </label>
-              <label>Reverse Primer (5'→3')
-                <input type="text" id="glob_r_primer" value="GGACTACNVGGGTWTCTAAT" placeholder="806R" oninput="applyGlobalParams()">
-                <span class="help-text">Cutadapt & primer trimming</span>
-              </label>
+
+              <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+                <label>Forward Primer (5'→3')
+                  <input type="text" id="glob_f_primer" value="GTGYCAGCMGCCGCGGTAA" placeholder="515F" oninput="applyGlobalParams()">
+                  <span class="help-text">Cutadapt trimming</span>
+                </label>
+                <label>Reverse Primer (5'→3')
+                  <input type="text" id="glob_r_primer" value="GGACTACNVGGGTWTCTAAT" placeholder="806R" oninput="applyGlobalParams()">
+                  <span class="help-text">Cutadapt trimming</span>
+                </label>
+              </div>
             </div>
           </div>
 
@@ -1632,11 +1687,11 @@ input:focus, select:focus, textarea:focus {
             </div>
             <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
               <label>Truncate Forward (F)
-                <input type="number" id="glob_trunc_f" value="240" min="0" max="1600" oninput="applyGlobalParams()">
+                <input type="number" id="glob_trunc_f" value="240" min="0" max="1800" oninput="applyGlobalParams()">
                 <span class="help-text">--p-trunc-len-f</span>
               </label>
               <label>Truncate Reverse (R)
-                <input type="number" id="glob_trunc_r" value="200" min="0" max="1600" oninput="applyGlobalParams()">
+                <input type="number" id="glob_trunc_r" value="200" min="0" max="1800" oninput="applyGlobalParams()">
                 <span class="help-text">--p-trunc-len-r</span>
               </label>
               <label>Trim Left Forward
@@ -1754,10 +1809,16 @@ input:focus, select:focus, textarea:focus {
       </div>
       <div class="hint">Ensure your forward and reverse reads will successfully merge after quality truncation before running DADA2. (A minimum of 20bp overlap is strongly recommended).</div>
       <div class="interactive-box">
-        <div style="margin-bottom:12px">
-          <span style="font-size:13px;font-weight:600;color:var(--text-muted);margin-right:8px">Presets:</span>
-          <button onclick="loadPreset('v4')" style="font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;border:1px solid var(--border);background:var(--panel-alt);color:var(--text)">V4 (515F-806R) 2×250</button>
-          <button onclick="loadPreset('v3v4')" style="font-size:12px;padding:4px 10px;border-radius:6px;cursor:pointer;border:1px solid var(--border);background:var(--panel-alt);color:var(--text);margin-left:6px">V3-V4 (341F-805R) 2×300</button>
+        <div style="margin-bottom:14px;display:flex;align-items:center;gap:6px;flex-wrap:wrap">
+          <span style="font-size:12.5px;font-weight:700;color:var(--text-muted);margin-right:4px">Presets:</span>
+          <button class="nav-btn" type="button" style="font-size:11.5px;padding:3px 8px" onclick="loadPreset('v4')">16S V4 (515F-806R)</button>
+          <button class="nav-btn" type="button" style="font-size:11.5px;padding:3px 8px" onclick="loadPreset('v3v4')">16S V3-V4 (341F-805R)</button>
+          <button class="nav-btn" type="button" style="font-size:11.5px;padding:3px 8px" onclick="loadPreset('v1v2')">16S V1-V2 (27F-338R)</button>
+          <button class="nav-btn" type="button" style="font-size:11.5px;padding:3px 8px" onclick="loadPreset('v3')">16S V3 (341F-518R)</button>
+          <button class="nav-btn" type="button" style="font-size:11.5px;padding:3px 8px" onclick="loadPreset('v4v5')">16S V4-V5 (515F-926R)</button>
+          <button class="nav-btn" type="button" style="font-size:11.5px;padding:3px 8px" onclick="loadPreset('18s_v4')">18S V4 (Stoeck)</button>
+          <button class="nav-btn" type="button" style="font-size:11.5px;padding:3px 8px" onclick="loadPreset('18s_v9')">18S V9 (EMP)</button>
+          <button class="nav-btn" type="button" style="font-size:11.5px;padding:3px 8px" onclick="loadPreset('coi')">COI Metazoa</button>
         </div>
         <div class="grid-cols-4">
           <label>Target Amplicon Length (bp)
@@ -3064,10 +3125,13 @@ qiime metadata tabulate \
             <label>Pre-trained Classifier (--i-classifier)
               <select id="tax_class_select" onchange="updateClassifierCmd()">
                 <option value="silva-138-99-515-806-nb-classifier.qza">SILVA 138 (515F-806R V4 16S)</option>
+                <option value="silva-138-99-341-805-nb-classifier.qza">SILVA 138 (341F-805R V3-V4 16S)</option>
                 <option value="silva-138-99-nb-classifier.qza">SILVA 138 Full-Length 16S</option>
-                <option value="gg2-2022.10-nb-classifier.qza">Greengenes2 2022.10 (16S)</option>
-                <option value="unite-ver9-dynamic-all-2023.qza">UNITE ver9 Dynamic (Fungi ITS)</option>
-                <option value="silva-138-99-18S-nb-classifier.qza">SILVA 138 18S Eukaryote</option>
+                <option value="greengenes2-2022.10.backbone.v4.nb.qza">Greengenes2 2022.10 V4 (16S)</option>
+                <option value="greengenes2-2022.10.backbone.full-length.nb.qza">Greengenes2 Full-Length (16S)</option>
+                <option value="unite-ver8-99-classifier.qza">UNITE ver8 99% (Fungi ITS)</option>
+                <option value="pr2-v5-18s-nb-classifier.qza">PR2 ver5.0 (18S Eukaryote/Protist)</option>
+                <option value="bold-coi-classifier.qza">BOLD (COI Metazoan eDNA)</option>
                 <option value="custom">-- Custom Classifier File (Type below) --</option>
               </select>
               <input type="text" id="tax_class_custom" class="param-custom-input" placeholder="my-custom-classifier.qza" style="display:none" oninput="updateClassifierCmd()">
@@ -5203,9 +5267,342 @@ function resetLongParams() {
   toast('Longitudinal parameters reset');
 }
 
+// Biological Region Definitions Database
+const REGION_PRESETS = {
+  '16s_v4': {
+    name: '16S V4 (515F-806R)',
+    org: '16S',
+    amp: 253,
+    f_primer: 'GTGYCAGCMGCCGCGGTAA',
+    r_primer: 'GGACTACNVGGGTWTCTAAT',
+    classifier: 'silva-138-99-515-806-nb-classifier.qza',
+    platform: 'illumina_miseq',
+    layout: 'paired',
+    phred: 'Phred33',
+    trunc_f: 240,
+    trunc_r: 200,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 10000,
+    threads: 8,
+    err_rate: 0.1
+  },
+  '16s_v3v4': {
+    name: '16S V3-V4 (341F-805R)',
+    org: '16S',
+    amp: 460,
+    f_primer: 'CCTACGGGNGGCWGCAG',
+    r_primer: 'GACTACHVGGGTATCTAATCC',
+    classifier: 'silva-138-99-341-805-nb-classifier.qza',
+    platform: 'illumina_miseq',
+    layout: 'paired',
+    phred: 'Phred33',
+    trunc_f: 280,
+    trunc_r: 240,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 15000,
+    threads: 8,
+    err_rate: 0.1
+  },
+  '16s_v1v2': {
+    name: '16S V1-V2 (27F-338R)',
+    org: '16S',
+    amp: 330,
+    f_primer: 'AGAGTTTGATCMTGGCTCAG',
+    r_primer: 'TGCTGCCTCCCGTAGGAGT',
+    classifier: 'silva-138-99-nb-classifier.qza',
+    platform: 'illumina_miseq',
+    layout: 'paired',
+    phred: 'Phred33',
+    trunc_f: 240,
+    trunc_r: 200,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 10000,
+    threads: 8,
+    err_rate: 0.1
+  },
+  '16s_v1v3': {
+    name: '16S V1-V3 (27F-534R)',
+    org: '16S',
+    amp: 490,
+    f_primer: 'AGAGTTTGATCMTGGCTCAG',
+    r_primer: 'ATTACCGCGGCTGCTGG',
+    classifier: 'silva-138-99-nb-classifier.qza',
+    platform: 'illumina_miseq',
+    layout: 'paired',
+    phred: 'Phred33',
+    trunc_f: 280,
+    trunc_r: 250,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 12000,
+    threads: 8,
+    err_rate: 0.1
+  },
+  '16s_v3': {
+    name: '16S V3 (341F-518R)',
+    org: '16S',
+    amp: 195,
+    f_primer: 'CCTACGGGAGGCAGCAG',
+    r_primer: 'ATTACCGCGGCTGCTGG',
+    classifier: 'silva-138-99-nb-classifier.qza',
+    platform: 'illumina_miseq',
+    layout: 'paired',
+    phred: 'Phred33',
+    trunc_f: 150,
+    trunc_r: 140,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 10000,
+    threads: 8,
+    err_rate: 0.1
+  },
+  '16s_v4v5': {
+    name: '16S V4-V5 (515F-926R)',
+    org: '16S',
+    amp: 390,
+    f_primer: 'GTGYCAGCMGCCGCGGTAA',
+    r_primer: 'CCGYCAATTYMTTTRAGTTT',
+    classifier: 'silva-138-99-nb-classifier.qza',
+    platform: 'illumina_miseq',
+    layout: 'paired',
+    phred: 'Phred33',
+    trunc_f: 260,
+    trunc_r: 220,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 12000,
+    threads: 8,
+    err_rate: 0.1
+  },
+  '16s_full': {
+    name: '16S Full-Length (27F-1492R)',
+    org: '16S',
+    amp: 1465,
+    f_primer: 'AGAGTTTGATCMTGGCTCAG',
+    r_primer: 'TACGGYTACCTTGTTACGACTT',
+    classifier: 'silva-138-99-nb-classifier.qza',
+    platform: 'pacbio_hifi',
+    layout: 'single',
+    phred: 'Phred33',
+    trunc_f: 1400,
+    trunc_r: 0,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 10000,
+    threads: 16,
+    err_rate: 0.1
+  },
+  '18s_v4': {
+    name: '18S V4 (Stoeck Eukaryote)',
+    org: '18S',
+    amp: 380,
+    f_primer: 'CCAGCASCYGCGGTAATTCC',
+    r_primer: 'ACTTTCGTTCTTGATYRA',
+    classifier: 'pr2-v5-18s-nb-classifier.qza',
+    platform: 'illumina_miseq',
+    layout: 'paired',
+    phred: 'Phred33',
+    trunc_f: 230,
+    trunc_r: 210,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 10000,
+    threads: 8,
+    err_rate: 0.1
+  },
+  '18s_v9': {
+    name: '18S V9 (EMP Eukaryote)',
+    org: '18S',
+    amp: 150,
+    f_primer: 'GTACACACCGCCCGTC',
+    r_primer: 'TGATCCTTCTGCAGGTTCACCTAC',
+    classifier: 'pr2-v5-18s-nb-classifier.qza',
+    platform: 'illumina_miseq',
+    layout: 'paired',
+    phred: 'Phred33',
+    trunc_f: 140,
+    trunc_r: 120,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 10000,
+    threads: 8,
+    err_rate: 0.1
+  },
+  '18s_full': {
+    name: '18S Full-Length (EukA-EukB)',
+    org: '18S',
+    amp: 1800,
+    f_primer: 'AYCTGGTTGATCCTGCCAG',
+    r_primer: 'CYGCAGGTTCACCTACGG',
+    classifier: 'pr2-v5-18s-nb-classifier.qza',
+    platform: 'pacbio_hifi',
+    layout: 'single',
+    phred: 'Phred33',
+    trunc_f: 1700,
+    trunc_r: 0,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 10000,
+    threads: 16,
+    err_rate: 0.1
+  },
+  'its1': {
+    name: 'Fungal ITS1 (ITS1F-ITS2)',
+    org: 'ITS',
+    amp: 300,
+    f_primer: 'CTTGGTCATTTAGAGGAAGTAA',
+    r_primer: 'GCTGCGTTCTTCATCGATGC',
+    classifier: 'unite-ver8-99-classifier.qza',
+    platform: 'illumina_miseq',
+    layout: 'paired',
+    phred: 'Phred33',
+    trunc_f: 0,
+    trunc_r: 0,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 8000,
+    threads: 8,
+    err_rate: 0.1
+  },
+  'its2': {
+    name: 'Fungal ITS2 (fITS7-ITS4)',
+    org: 'ITS',
+    amp: 320,
+    f_primer: 'GTGARTCATCGAATCTTTG',
+    r_primer: 'TCCTCCGCTTATTGATATGC',
+    classifier: 'unite-ver8-99-classifier.qza',
+    platform: 'illumina_miseq',
+    layout: 'paired',
+    phred: 'Phred33',
+    trunc_f: 0,
+    trunc_r: 0,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 8000,
+    threads: 8,
+    err_rate: 0.1
+  },
+  'its_full': {
+    name: 'Full ITS (ITS1F-ITS4)',
+    org: 'ITS',
+    amp: 700,
+    f_primer: 'CTTGGTCATTTAGAGGAAGTAA',
+    r_primer: 'TCCTCCGCTTATTGATATGC',
+    classifier: 'unite-ver8-99-classifier.qza',
+    platform: 'pacbio_hifi',
+    layout: 'single',
+    phred: 'Phred33',
+    trunc_f: 650,
+    trunc_r: 0,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 8000,
+    threads: 16,
+    err_rate: 0.1
+  },
+  'coi_animal': {
+    name: 'COI Metazoan (mlCOIintF-jgHCO2198)',
+    org: 'COI',
+    amp: 313,
+    f_primer: 'GGWACWGGWTGAACWGTWTAYCCYCC',
+    r_primer: 'TAIACYTCIGGRTGICCRAARAAYCA',
+    classifier: 'bold-coi-classifier.qza',
+    platform: 'illumina_miseq',
+    layout: 'paired',
+    phred: 'Phred33',
+    trunc_f: 220,
+    trunc_r: 180,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 10000,
+    threads: 8,
+    err_rate: 0.1
+  },
+  'rbcl_plant': {
+    name: 'Plant rbcL (rbcLa-F-rbcLa-R)',
+    org: 'Plants',
+    amp: 550,
+    f_primer: 'ATGTCACCACAAACAGAGACTAAAGC',
+    r_primer: 'GTAAAATCAAGTCCACCRCG',
+    classifier: 'silva-138-99-nb-classifier.qza',
+    platform: 'illumina_miseq',
+    layout: 'paired',
+    phred: 'Phred33',
+    trunc_f: 280,
+    trunc_r: 250,
+    trim_f: 0,
+    trim_r: 0,
+    depth: 10000,
+    threads: 8,
+    err_rate: 0.1
+  }
+};
+
+function onRegionDropdownChange() {
+  const reg = document.getElementById('glob_region_preset')?.value;
+  if (reg && reg !== 'custom') {
+    loadRegionPreset(reg);
+  }
+}
+
+function loadRegionPreset(presetKey) {
+  const data = REGION_PRESETS[presetKey];
+  if (!data) return;
+
+  const regSel = document.getElementById('glob_region_preset'); if (regSel) regSel.value = presetKey;
+  const orgSel = document.getElementById('glob_target_org'); if (orgSel) orgSel.value = data.org;
+  const ampIn = document.getElementById('glob_amp_len'); if (ampIn) ampIn.value = data.amp;
+  const fPrim = document.getElementById('glob_f_primer'); if (fPrim) fPrim.value = data.f_primer;
+  const rPrim = document.getElementById('glob_r_primer'); if (rPrim) rPrim.value = data.r_primer;
+  const classSel = document.getElementById('glob_classifier'); if (classSel) classSel.value = data.classifier;
+  const platSel = document.getElementById('glob_seq_platform'); if (platSel) platSel.value = data.platform;
+  const laySel = document.getElementById('glob_read_layout'); if (laySel) laySel.value = data.layout;
+  const phredSel = document.getElementById('glob_phred_offset'); if (phredSel) phredSel.value = data.phred;
+  
+  const tf = document.getElementById('glob_trunc_f'); if (tf) tf.value = data.trunc_f;
+  const tr = document.getElementById('glob_trunc_r'); if (tr) tr.value = data.trunc_r;
+  const lf = document.getElementById('glob_trim_f'); if (lf) lf.value = data.trim_f;
+  const lr = document.getElementById('glob_trim_r'); if (lr) lr.value = data.trim_r;
+  const depthIn = document.getElementById('glob_rare_depth'); if (depthIn) depthIn.value = data.depth;
+  const thIn = document.getElementById('glob_threads'); if (thIn) thIn.value = data.threads;
+  const errIn = document.getElementById('glob_err_rate'); if (errIn) errIn.value = data.err_rate;
+
+  // Sync with DADA2 calculator amplicon length
+  const calcAmp = document.getElementById('calc_amp'); if (calcAmp) calcAmp.value = data.amp;
+
+  applyGlobalParams();
+  toast(`🎯 Configured region: ${data.name}`);
+}
+
+function loadGlobalPreset(preset) {
+  if (preset === '16s_v4') loadRegionPreset('16s_v4');
+  else if (preset === '16s_v3v4') loadRegionPreset('16s_v3v4');
+  else if (preset === 'its_fungi') loadRegionPreset('its1');
+  else if (preset === '16s_pacbio') loadRegionPreset('16s_full');
+}
+
+function loadPreset(preset) {
+  if (preset === 'v4') loadRegionPreset('16s_v4');
+  else if (preset === 'v3v4') loadRegionPreset('16s_v3v4');
+  else if (preset === 'v1v2') loadRegionPreset('16s_v1v2');
+  else if (preset === 'v3') loadRegionPreset('16s_v3');
+  else if (preset === 'v4v5') loadRegionPreset('16s_v4v5');
+  else if (preset === '18s_v4') loadRegionPreset('18s_v4');
+  else if (preset === '18s_v9') loadRegionPreset('18s_v9');
+  else if (preset === 'its1') loadRegionPreset('its1');
+  else if (preset === 'its2') loadRegionPreset('its2');
+  else if (preset === 'coi') loadRegionPreset('coi_animal');
+  calcDADA2();
+}
+
 // Global project parameters sync
 function applyGlobalParams() {
+  const regPreset = document.getElementById('glob_region_preset')?.value || '16s_v4';
   const targetOrg = document.getElementById('glob_target_org')?.value || '16S';
+  const ampLen = parseInt(document.getElementById('glob_amp_len')?.value) || 253;
   const classifier = document.getElementById('glob_classifier')?.value || 'silva-138-99-515-806-nb-classifier.qza';
   const platform = document.getElementById('glob_seq_platform')?.value || 'illumina_miseq';
   const layout = document.getElementById('glob_read_layout')?.value || 'paired';
@@ -5228,6 +5625,7 @@ function applyGlobalParams() {
   const rPrimer = document.getElementById('glob_r_primer')?.value.trim() || 'GGACTACNVGGGTWTCTAAT';
 
   // 1. Update summary pills in header
+  const pReg = document.getElementById('pill_region'); if (pReg) pReg.innerText = `Region: ${targetOrg} ${ampLen}bp`;
   const pOrg = document.getElementById('pill_org'); if (pOrg) pOrg.innerText = `Target: ${targetOrg}`;
   const pPlat = document.getElementById('pill_platform'); if (pPlat) pPlat.innerText = `Platform: ${layout === 'paired' ? 'Paired-End' : 'Single-End'}`;
   const pMeta = document.getElementById('pill_meta'); if (pMeta) pMeta.innerText = `Col: ${metaCol}`;
@@ -5261,6 +5659,7 @@ function applyGlobalParams() {
   const dLR = document.getElementById('dad_trim_r'); if (dLR) dLR.value = trimR;
   const dThreads = document.getElementById('dad_threads'); if (dThreads) dThreads.value = threads;
 
+  const cAmp = document.getElementById('calc_amp'); if (cAmp) cAmp.value = ampLen;
   const cTF = document.getElementById('calc_f_trunc'); if (cTF) cTF.value = truncF;
   const cTR = document.getElementById('calc_r_trunc'); if (cTR) cTR.value = truncR;
   const cLF = document.getElementById('calc_f_trim'); if (cLF) cLF.value = trimF;
@@ -5293,6 +5692,7 @@ function applyGlobalParams() {
   if (itsTaxa) {
     if (targetOrg === 'ITS') itsTaxa.value = 'F';
     else if (targetOrg === '18S') itsTaxa.value = 'A';
+    else itsTaxa.value = 'F';
   }
 
   // 11. Propagate to Longitudinal section
@@ -5316,72 +5716,8 @@ function applyGlobalParams() {
   toast('⚡ All 15+ pipeline stages synchronized with your study parameters!');
 }
 
-function loadGlobalPreset(preset) {
-  if (preset === '16s_v4') {
-    document.getElementById('glob_target_org').value = '16S';
-    document.getElementById('glob_classifier').value = 'silva-138-99-515-806-nb-classifier.qza';
-    document.getElementById('glob_seq_platform').value = 'illumina_miseq';
-    document.getElementById('glob_read_layout').value = 'paired';
-    document.getElementById('glob_phred_offset').value = 'Phred33';
-    document.getElementById('glob_f_primer').value = 'GTGYCAGCMGCCGCGGTAA';
-    document.getElementById('glob_r_primer').value = 'GGACTACNVGGGTWTCTAAT';
-    document.getElementById('glob_trunc_f').value = '240';
-    document.getElementById('glob_trunc_r').value = '200';
-    document.getElementById('glob_trim_f').value = '0';
-    document.getElementById('glob_trim_r').value = '0';
-    document.getElementById('glob_rare_depth').value = '10000';
-    document.getElementById('glob_threads').value = '8';
-    if (document.getElementById('calc_amp')) document.getElementById('calc_amp').value = 253;
-  } else if (preset === '16s_v3v4') {
-    document.getElementById('glob_target_org').value = '16S';
-    document.getElementById('glob_classifier').value = 'silva-138-99-nb-classifier.qza';
-    document.getElementById('glob_seq_platform').value = 'illumina_miseq';
-    document.getElementById('glob_read_layout').value = 'paired';
-    document.getElementById('glob_phred_offset').value = 'Phred33';
-    document.getElementById('glob_f_primer').value = 'CCTACGGGNGGCWGCAG';
-    document.getElementById('glob_r_primer').value = 'GACTACHVGGGTATCTAATCC';
-    document.getElementById('glob_trunc_f').value = '280';
-    document.getElementById('glob_trunc_r').value = '240';
-    document.getElementById('glob_trim_f').value = '0';
-    document.getElementById('glob_trim_r').value = '0';
-    document.getElementById('glob_rare_depth').value = '15000';
-    document.getElementById('glob_threads').value = '8';
-    if (document.getElementById('calc_amp')) document.getElementById('calc_amp').value = 460;
-  } else if (preset === 'its_fungi') {
-    document.getElementById('glob_target_org').value = 'ITS';
-    document.getElementById('glob_classifier').value = 'unite-ver8-99-classifier.qza';
-    document.getElementById('glob_seq_platform').value = 'illumina_miseq';
-    document.getElementById('glob_read_layout').value = 'paired';
-    document.getElementById('glob_phred_offset').value = 'Phred33';
-    document.getElementById('glob_f_primer').value = 'CTTGGTCATTTAGAGGAAGTAA';
-    document.getElementById('glob_r_primer').value = 'GCTGCGTTCTTCATCGATGC';
-    document.getElementById('glob_trunc_f').value = '0';
-    document.getElementById('glob_trunc_r').value = '0';
-    document.getElementById('glob_trim_f').value = '0';
-    document.getElementById('glob_trim_r').value = '0';
-    document.getElementById('glob_rare_depth').value = '8000';
-    document.getElementById('glob_threads').value = '8';
-  } else if (preset === '16s_pacbio') {
-    document.getElementById('glob_target_org').value = '16S';
-    document.getElementById('glob_classifier').value = 'silva-138-99-nb-classifier.qza';
-    document.getElementById('glob_seq_platform').value = 'pacbio_hifi';
-    document.getElementById('glob_read_layout').value = 'single';
-    document.getElementById('glob_phred_offset').value = 'Phred33';
-    document.getElementById('glob_f_primer').value = 'AGAGTTTGATCMTGGCTCAG';
-    document.getElementById('glob_r_primer').value = 'TACGGYTACCTTGTTACGACTT';
-    document.getElementById('glob_trunc_f').value = '1400';
-    document.getElementById('glob_trunc_r').value = '0';
-    document.getElementById('glob_trim_f').value = '0';
-    document.getElementById('glob_trim_r').value = '0';
-    document.getElementById('glob_rare_depth').value = '10000';
-    document.getElementById('glob_threads').value = '16';
-  }
-  applyGlobalParams();
-  toast(`Loaded preset: ${preset.toUpperCase()}`);
-}
-
 function resetGlobalParams() {
-  loadGlobalPreset('16s_v4');
+  loadRegionPreset('16s_v4');
   const col = document.getElementById('glob_meta_col'); if (col) col.value = 'treatment';
   const file = document.getElementById('glob_meta_file'); if (file) file.value = 'sample-metadata.tsv';
   const timeCol = document.getElementById('glob_time_col'); if (timeCol) timeCol.value = 'timepoint';
