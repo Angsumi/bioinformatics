@@ -441,6 +441,7 @@
     <div class="filter-bar">
       <button class="filter-btn active" onclick="filterCategory('all', this)">All Modules</button>
       <button class="filter-btn" onclick="filterCategory('genomics', this)">Genomics</button>
+      <button class="filter-btn" onclick="filterCategory('metagenomics', this)">Metagenomics</button>
       <button class="filter-btn" onclick="filterCategory('transcriptomics', this)">Transcriptomics</button>
       <button class="filter-btn" onclick="filterCategory('proteomics', this)">Proteomics</button>
       <button class="filter-btn" onclick="filterCategory('alignment', this)">Alignment & Mapping</button>
@@ -451,13 +452,13 @@
     <div class="grid">
 
       <!-- 1. QIIME 2 (ACTIVE) -->
-      <div class="card featured" data-category="genomics">
+      <div class="card featured" data-category="genomics metagenomics">
         <div>
           <div class="card-header">
             <div class="card-icon" style="background:rgba(56, 189, 248, 0.15);border-color:rgba(56, 189, 248, 0.4);">🌿</div>
             <span class="badge-live"><span class="pulse-dot"></span> Live Now</span>
           </div>
-          <span class="category-tag">Genomics & Microbiome</span>
+          <span class="category-tag">Genomics & Metagenomics</span>
           <h3>QIIME 2 Master Interactive Lab</h3>
           <p>Complete 20-stage interactive workbench for 16S, 18S, and ITS amplicon sequencing. Includes live parameter sync, DADA2 overlap calculator, rarefaction depth advisor, manifest generator, and metadata builder.</p>
           <ul class="features-list">
@@ -608,13 +609,13 @@
       </div>
 
       <!-- 8. Metagenomics Assembly & Binning (COMING SOON) -->
-      <div class="card" data-category="genomics">
+      <div class="card" data-category="metagenomics genomics">
         <div>
           <div class="card-header">
             <div class="card-icon">🦠</div>
             <span class="badge-soon">Coming Soon</span>
           </div>
-          <span class="category-tag">Genomics • Shotgun Metagenomics</span>
+          <span class="category-tag">Metagenomics • Shotgun Assembly</span>
           <h3>Shotgun Assembly & MAG Binning</h3>
           <p>Reconstruct Metagenome-Assembled Genomes (MAGs) from complex environmental samples using MEGAHIT, SPAdes, MetaBAT2, CheckM quality assessment, and GTDB-Tk phylogenomic taxonomy.</p>
           <ul class="features-list">
@@ -644,6 +645,28 @@
             <li>pLDDT & PAE Interpretation</li>
             <li>Protein-Protein Interfaces</li>
             <li>PyMOL / ChimeraX Scripts</li>
+          </ul>
+        </div>
+        <div class="card-footer">
+          <button class="card-btn disabled" disabled>In Development</button>
+        </div>
+      </div>
+
+      <!-- 10. Metagenomics Profiling Kraken2 & Bracken (COMING SOON) -->
+      <div class="card" data-category="metagenomics">
+        <div>
+          <div class="card-header">
+            <div class="card-icon">🧪</div>
+            <span class="badge-soon">Coming Soon</span>
+          </div>
+          <span class="category-tag">Metagenomics • Taxonomic Profiling</span>
+          <h3>Kraken 2 & Bracken Profiler</h3>
+          <p>Ultra-fast k-mer classification and abundance re-estimation for whole-genome shotgun metagenomics. Build custom databases and estimate true species-level relative abundances.</p>
+          <ul class="features-list">
+            <li>Exact k-mer Taxonomic Labeling</li>
+            <li>Bracken Bayesian Re-estimation</li>
+            <li>Custom Database Generation</li>
+            <li>Krona / Pavian Visualizations</li>
           </ul>
         </div>
         <div class="card-footer">
