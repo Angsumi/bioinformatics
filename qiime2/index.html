@@ -1397,10 +1397,14 @@ input:focus, select:focus, textarea:focus {
           <div class="progress-fill" id="progressFill"></div>
         </div>
       </div>
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding:0 2px">
+        <span style="font-size:11px;font-weight:700;color:var(--text-muted);letter-spacing:0.05em;text-transform:uppercase">Sections</span>
+        <button id="toggleAllNavBtn" onclick="toggleAllNavGroups()" style="background:transparent;border:none;color:var(--primary);font-size:11.5px;font-weight:600;cursor:pointer;padding:0">Expand All</button>
+      </div>
     </div>
 
     <!-- Accordion 0: Interactive Tools -->
-    <div class="nav-accordion-group open" id="nav-group-tools">
+    <div class="nav-accordion-group" id="nav-group-tools">
       <button class="nav-group-trigger" onclick="toggleAccordionGroup(this)">
         <span>⚡ Interactive Lab Tools</span>
         <span class="nav-group-chevron">▶</span>
@@ -1414,7 +1418,7 @@ input:focus, select:focus, textarea:focus {
     </div>
 
     <!-- Accordion 1: Phase 1 -->
-    <div class="nav-accordion-group open" id="nav-group-p1">
+    <div class="nav-accordion-group" id="nav-group-p1">
       <button class="nav-group-trigger" onclick="toggleAccordionGroup(this)">
         <span>🔬 Phase 1: Setup & Import</span>
         <span class="nav-group-chevron">▶</span>
@@ -1428,7 +1432,7 @@ input:focus, select:focus, textarea:focus {
     </div>
 
     <!-- Accordion 2: Phase 2 -->
-    <div class="nav-accordion-group open" id="nav-group-p2">
+    <div class="nav-accordion-group" id="nav-group-p2">
       <button class="nav-group-trigger" onclick="toggleAccordionGroup(this)">
         <span>🧬 Phase 2: Denoising & QC</span>
         <span class="nav-group-chevron">▶</span>
@@ -1442,7 +1446,7 @@ input:focus, select:focus, textarea:focus {
     </div>
 
     <!-- Accordion 3: Phase 3 -->
-    <div class="nav-accordion-group open" id="nav-group-p3">
+    <div class="nav-accordion-group" id="nav-group-p3">
       <button class="nav-group-trigger" onclick="toggleAccordionGroup(this)">
         <span>🏷️ Phase 3: Taxonomy & Tree</span>
         <span class="nav-group-chevron">▶</span>
@@ -1457,7 +1461,7 @@ input:focus, select:focus, textarea:focus {
     </div>
 
     <!-- Accordion 4: Phase 4 -->
-    <div class="nav-accordion-group open" id="nav-group-p4">
+    <div class="nav-accordion-group" id="nav-group-p4">
       <button class="nav-group-trigger" onclick="toggleAccordionGroup(this)">
         <span>🌐 Phase 4: Diversity & Stats</span>
         <span class="nav-group-chevron">▶</span>
@@ -4123,6 +4127,14 @@ function goTo(id) {
   const el = document.getElementById(id);
   if (el) {
     el.scrollIntoView({behavior: 'smooth'});
+    const item = document.querySelector(`.nav-item[data-sec="${id}"]`);
+    if (item) {
+      const group = item.closest('.nav-accordion-group');
+      if (group && !group.classList.contains('open')) {
+        group.classList.add('open');
+        updateToggleAllNavBtn();
+      }
+    }
     // If mobile menu open, close it
     const sidebar = document.getElementById('sidebar');
     if (sidebar && sidebar.classList.contains('mobile-open')) {
@@ -4134,6 +4146,25 @@ function goTo(id) {
 function toggleAccordionGroup(btn) {
   const group = btn.closest('.nav-accordion-group');
   if (group) group.classList.toggle('open');
+  updateToggleAllNavBtn();
+}
+
+function toggleAllNavGroups() {
+  const groups = document.querySelectorAll('.nav-accordion-group');
+  const anyClosed = Array.from(groups).some(g => !g.classList.contains('open'));
+  groups.forEach(g => {
+    if (anyClosed) g.classList.add('open');
+    else g.classList.remove('open');
+  });
+  updateToggleAllNavBtn();
+}
+
+function updateToggleAllNavBtn() {
+  const groups = document.querySelectorAll('.nav-accordion-group');
+  const btn = document.getElementById('toggleAllNavBtn');
+  if (!btn) return;
+  const anyClosed = Array.from(groups).some(g => !g.classList.contains('open'));
+  btn.innerText = anyClosed ? 'Expand All' : 'Collapse All';
 }
 
 function toggleMobileMenu() {
@@ -4650,10 +4681,6 @@ function setupScrollSpy() {
       navItems.forEach(item => {
         if (item.getAttribute('data-sec') === currentId) {
           item.classList.add('active');
-          const group = item.closest('.nav-accordion-group');
-          if (group && !group.classList.contains('open')) {
-            group.classList.add('open');
-          }
         } else {
           item.classList.remove('active');
         }
