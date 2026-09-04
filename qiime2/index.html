@@ -9,339 +9,891 @@
   --bg: #f8fafc;
   --panel: #ffffff;
   --panel-alt: #f1f5f9;
+  --panel-hover: #f8fafc;
   --text: #0f172a;
   --text-muted: #64748b;
+  --text-dim: #94a3b8;
   --border: #e2e8f0;
-  --primary: #2563eb;
-  --primary-hover: #1d4ed8;
-  --primary-light: #dbeafe;
-  --primary-dark: #1e3a8a;
-  --accent: #0d9488;
-  --accent-light: #ccfbf1;
-  --warning-bg: #fef3c7;
-  --warning-border: #fde68a;
+  --border-subtle: #f1f5f9;
+  --border-focus: #0284c7;
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-light: #f0f9ff;
+  --primary-dark: #075985;
+  --primary-glow: rgba(2, 132, 199, 0.12);
+  --accent: #0f766e;
+  --accent-light: #f0fdfa;
+  --warning-bg: #fffbeb;
+  --warning-border: #fef3c7;
   --warning-text: #92400e;
-  --success-bg: #dcfce7;
+  --success-bg: #f0fdf4;
   --success-border: #bbf7d0;
   --success-text: #166534;
-  --code-bg: #0f172a;
-  --code-text: #e2e8f0;
-  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+  --danger-text: #991b1b;
+  --code-bg: #0d1117;
+  --code-header: #161b22;
+  --code-text: #e6edf3;
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --card-shadow-hover: 0 10px 24px -4px rgba(15, 23, 42, 0.07), 0 4px 8px -2px rgba(15, 23, 42, 0.03);
+  --header-bg: rgba(255, 255, 255, 0.88);
+  --header-border: rgba(226, 232, 240, 0.8);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
 }
 
 [data-theme="dark"] {
-  --bg: #0b0f19;
-  --panel: #111827;
-  --panel-alt: #1f2937;
-  --text: #f3f4f6;
-  --text-muted: #9ca3af;
-  --border: #374151;
-  --primary: #3b82f6;
-  --primary-hover: #60a5fa;
-  --primary-light: #1e3a8a;
-  --primary-dark: #93c5fd;
+  --bg: #090d16;
+  --panel: #0f172a;
+  --panel-alt: #161f30;
+  --panel-hover: #1b263b;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --border: #1e293b;
+  --border-subtle: #141c2e;
+  --border-focus: #38bdf8;
+  --primary: #38bdf8;
+  --primary-hover: #7dd3fc;
+  --primary-light: #082f49;
+  --primary-dark: #bae6fd;
+  --primary-glow: rgba(56, 189, 248, 0.15);
   --accent: #14b8a6;
-  --accent-light: #134e4a;
-  --warning-bg: #451a03;
-  --warning-border: #78350f;
+  --accent-light: #042f2e;
+  --warning-bg: #422006;
+  --warning-border: #713f12;
   --warning-text: #fde68a;
-  --success-bg: #064e3b;
-  --success-border: #065f46;
-  --success-text: #a7f3d0;
-  --code-bg: #030712;
-  --code-text: #f9fafb;
-  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.5);
+  --success-bg: #052e16;
+  --success-border: #14532d;
+  --success-text: #86efac;
+  --danger-bg: #450a0a;
+  --danger-border: #7f1d1d;
+  --danger-text: #fca5a5;
+  --code-bg: #05080f;
+  --code-header: #0d121f;
+  --code-text: #f1f5f9;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --card-shadow-hover: 0 14px 28px -4px rgba(0, 0, 0, 0.6);
+  --header-bg: rgba(9, 13, 22, 0.88);
+  --header-border: rgba(30, 41, 59, 0.8);
 }
 
-* { box-sizing: border-box; }
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
 body {
   margin: 0;
   background: var(--bg);
   color: var(--text);
-  font: 15px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-  transition: background 0.2s ease, color 0.2s ease;
+  font: 14.5px/1.65 var(--font-sans);
+  letter-spacing: -0.011em;
+  transition: background 0.25s ease, color 0.25s ease;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
 }
 
+/* Custom Subtle Scrollbars */
+::-webkit-scrollbar {
+  width: 7px;
+  height: 7px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 8px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-dim);
+}
+
+/* SLEEK FROSTED HEADER */
 header {
-  background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0369a1 100%);
-  color: white;
-  padding: 30px 4vw 24px;
   position: sticky;
   top: 0;
-  z-index: 50;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.15);
-}
-.header-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-h1 {
-  margin: 0 0 6px;
-  font-size: clamp(24px, 3.5vw, 36px);
-  font-weight: 800;
-  letter-spacing: -0.02em;
-}
-header p {
-  margin: 0;
-  color: #bfdbfe;
-  font-size: 14px;
-  max-width: 850px;
-}
-.theme-btn {
-  background: rgba(255,255,255,0.15);
-  color: white;
-  border: 1px solid rgba(255,255,255,0.25);
-  padding: 7px 14px;
-  border-radius: 8px;
-  font-weight: 600;
-  cursor: pointer;
-  backdrop-filter: blur(8px);
-}
-.theme-btn:hover {
-  background: rgba(255,255,255,0.25);
+  z-index: 80;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  transition: all 0.2s ease;
 }
 
-.toolbar {
+.header-inner {
+  max-width: 1680px;
+  margin: 0 auto;
+  padding: 10px 24px;
   display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  margin-top: 18px;
   align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
 }
-input, button, textarea, select { font: inherit; }
-input, select {
-  padding: 9px 13px;
-  border-radius: 9px;
-  border: 1px solid var(--border);
-  background: var(--panel);
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0284c7, #0f766e);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 13px;
+  letter-spacing: 0.04em;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+  text-decoration: none;
+}
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
   color: var(--text);
+  line-height: 1.2;
 }
-#search {
-  flex: 1;
-  min-width: 260px;
-  background: #ffffff;
-  color: #0f172a;
-  border: 1px solid #cbd5e1;
-  box-shadow: inset 0 1px 2px rgba(0,0,0,0.06);
+
+.brand-text p {
+  margin: 2px 0 0;
+  font-size: 11.5px;
+  color: var(--text-muted);
+  font-weight: 400;
 }
-button {
-  border: 0;
-  border-radius: 9px;
-  padding: 9px 14px;
-  cursor: pointer;
+
+/* SEGMENTED VIEW MODE SWITCHER */
+.view-modes {
+  display: flex;
   background: var(--panel-alt);
-  color: var(--text);
+  padding: 3px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  gap: 2px;
+}
+
+.view-mode-btn {
+  background: transparent;
+  border: none;
+  border-radius: 7px;
+  padding: 6px 13px;
+  font-size: 12.5px;
   font-weight: 600;
+  color: var(--text-muted);
+  cursor: pointer;
   transition: all 0.15s ease;
   display: inline-flex;
   align-items: center;
   gap: 6px;
 }
-button:hover { filter: brightness(0.95); transform: translateY(-1px); }
-button.primary {
-  background: #38bdf8;
-  color: #0f172a;
-}
-button.primary:hover {
-  background: #7dd3fc;
+
+.view-mode-btn:hover {
+  color: var(--text);
+  background: rgba(0, 0, 0, 0.03);
 }
 
-.filters-bar {
-  display: flex;
-  gap: 6px;
-  overflow-x: auto;
-  padding-bottom: 4px;
-  margin-top: 12px;
+[data-theme="dark"] .view-mode-btn:hover {
+  background: rgba(255, 255, 255, 0.04);
 }
-.filter-pill {
-  font-size: 12px;
-  padding: 5px 12px;
-  border-radius: 20px;
-  background: rgba(255,255,255,0.12);
-  color: #e2e8f0;
-  border: 1px solid rgba(255,255,255,0.2);
-  cursor: pointer;
-  white-space: nowrap;
-}
-.filter-pill.active, .filter-pill:hover {
-  background: #ffffff;
-  color: #0f172a;
+
+.view-mode-btn.active {
+  background: var(--panel);
+  color: var(--primary);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
   font-weight: 700;
 }
 
-main {
-  display: grid;
-  grid-template-columns: 280px 1fr;
-  gap: 24px;
-  max-width: 1560px;
-  margin: auto;
-  padding: 24px 3vw;
+/* HEADER CONTROLS */
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
 }
 
+.search-box-wrapper {
+  position: relative;
+  width: 240px;
+  transition: width 0.2s ease;
+}
+
+.search-box-wrapper:focus-within {
+  width: 300px;
+}
+
+.search-box-wrapper input {
+  width: 100%;
+  padding: 7px 32px 7px 30px;
+  font-size: 12.5px;
+  border-radius: 9px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.search-box-wrapper input:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.search-icon {
+  position: absolute;
+  left: 9px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-dim);
+  font-size: 13px;
+  pointer-events: none;
+}
+
+.kbd-hint {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-dim);
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  padding: 2px 5px;
+  border-radius: 5px;
+  pointer-events: none;
+}
+
+.nav-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 11px;
+  border-radius: 9px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transition: all 0.15s ease;
+}
+
+.nav-btn:hover {
+  background: var(--panel-alt);
+  border-color: var(--border-focus);
+  transform: translateY(-1px);
+}
+
+.nav-btn.primary {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.nav-btn.primary:hover {
+  background: var(--primary-hover);
+  box-shadow: 0 2px 8px var(--primary-glow);
+}
+
+.nav-btn.btn-icon-only {
+  padding: 7px 10px;
+}
+
+/* SUB-HEADER / CATEGORY PILLS */
+.sub-header {
+  border-top: 1px solid var(--border-subtle);
+  background: var(--panel);
+  padding: 6px 24px;
+}
+
+.filters-bar {
+  max-width: 1680px;
+  margin: 0 auto;
+  display: flex;
+  gap: 5px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  padding: 2px 0;
+  align-items: center;
+}
+
+.filters-bar::-webkit-scrollbar {
+  display: none;
+}
+
+.filter-pill {
+  font-size: 12px;
+  padding: 4px 11px;
+  border-radius: 20px;
+  background: transparent;
+  color: var(--text-muted);
+  border: 1px solid transparent;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: all 0.15s ease;
+  font-weight: 500;
+}
+
+.filter-pill:hover {
+  background: var(--panel-alt);
+  color: var(--text);
+}
+
+.filter-pill.active {
+  background: var(--primary-light);
+  color: var(--primary);
+  border-color: rgba(2, 132, 199, 0.25);
+  font-weight: 700;
+}
+
+[data-theme="dark"] .filter-pill.active {
+  border-color: rgba(56, 189, 248, 0.3);
+}
+
+/* LAYOUT */
+main {
+  display: grid;
+  grid-template-columns: 290px 1fr;
+  gap: 28px;
+  max-width: 1680px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+/* ACCORDION SIDEBAR */
 nav {
   position: sticky;
-  top: 175px;
+  top: 96px;
   align-self: start;
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 14px;
+  border-radius: 16px;
   padding: 14px;
-  max-height: calc(100vh - 195px);
+  max-height: calc(100vh - 116px);
   overflow-y: auto;
   box-shadow: var(--card-shadow);
-}
-nav .nav-group-title {
-  font-size: 11px;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--text-muted);
-  font-weight: 800;
-  margin: 14px 0 6px 8px;
-}
-nav .nav-group-title:first-child { margin-top: 2px; }
-nav button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  margin: 2px 0;
-  padding: 6px 10px;
-  font-size: 13px;
-  background: transparent;
-  color: var(--text);
-  border-radius: 7px;
-  font-weight: 500;
-}
-nav button:hover {
-  background: var(--primary-light);
-  color: var(--primary-dark);
+  transition: box-shadow 0.2s;
 }
 
+.sidebar-header {
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 10px;
+}
+
+.progress-widget {
+  background: var(--panel-alt);
+  border-radius: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--border);
+}
+
+.progress-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  color: var(--text-muted);
+  margin-bottom: 6px;
+}
+
+.progress-track {
+  background: var(--border);
+  border-radius: 6px;
+  height: 6px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  background: linear-gradient(90deg, var(--primary), var(--accent));
+  height: 100%;
+  width: 0%;
+  border-radius: 6px;
+  transition: width 0.35s ease;
+}
+
+.nav-accordion-group {
+  margin-top: 10px;
+  border: 1px solid var(--border-subtle);
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--panel);
+}
+
+.nav-group-trigger {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 9px 12px;
+  background: var(--panel-alt);
+  border: none;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--text);
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s;
+}
+
+.nav-group-trigger:hover {
+  background: var(--border);
+}
+
+.nav-group-chevron {
+  font-size: 10px;
+  transition: transform 0.2s ease;
+  color: var(--text-muted);
+}
+
+.nav-accordion-group.open .nav-group-chevron {
+  transform: rotate(90deg);
+}
+
+.nav-group-content {
+  display: none;
+  padding: 4px 6px;
+}
+
+.nav-accordion-group.open .nav-group-content {
+  display: block;
+}
+
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px;
+  border-radius: 7px;
+  margin: 2px 0;
+  transition: background 0.15s;
+}
+
+.nav-item:hover {
+  background: var(--panel-alt);
+}
+
+.nav-item.active {
+  background: var(--primary-light);
+}
+
+.nav-item input[type="checkbox"] {
+  width: 14px;
+  height: 14px;
+  accent-color: var(--primary);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.nav-item button {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 500;
+  cursor: pointer;
+  text-align: left;
+  padding: 2px 0;
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.nav-item.active button {
+  color: var(--primary);
+  font-weight: 700;
+}
+
+/* MINIMALIST WORKFLOW STEPPER (FLOW BANNER) */
+.flow-timeline {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 12px 16px;
+  margin-bottom: 20px;
+  box-shadow: var(--card-shadow);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.flow-timeline::-webkit-scrollbar {
+  display: none;
+}
+
+.flow-step {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 12.5px;
+  font-weight: 600;
+  color: var(--text-muted);
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  user-select: none;
+  text-decoration: none;
+}
+
+.flow-step:hover {
+  background: var(--panel);
+  color: var(--primary);
+  border-color: var(--primary);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+}
+
+.flow-arrow {
+  color: var(--text-dim);
+  font-size: 11px;
+  user-select: none;
+  flex-shrink: 0;
+}
+
+/* COLLAPSIBLE GLOBAL PARAMETERS CARD */
+.global-param-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  margin-bottom: 24px;
+  box-shadow: var(--card-shadow);
+  overflow: hidden;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.global-param-card:hover {
+  border-color: rgba(2, 132, 199, 0.3);
+}
+
+.global-param-header {
+  padding: 12px 18px;
+  background: linear-gradient(to right, var(--panel), var(--panel-alt));
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  user-select: none;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.global-param-title-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.global-param-title {
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.live-badge {
+  font-size: 10.5px;
+  font-weight: 700;
+  color: var(--success-text);
+  background: var(--success-bg);
+  border: 1px solid var(--success-border);
+  padding: 2px 7px;
+  border-radius: 6px;
+  letter-spacing: 0.03em;
+}
+
+.global-param-summary-pills {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.param-pill {
+  font-size: 11px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-family: var(--font-mono);
+}
+
+.global-param-toggle-btn {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 8px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.global-param-body {
+  display: none;
+  padding: 16px 20px 20px;
+  border-top: 1px solid var(--border);
+  background: var(--panel);
+}
+
+.global-param-card.open .global-param-body {
+  display: block;
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.global-param-body p {
+  font-size: 12.5px;
+  color: var(--text-muted);
+  margin: 0 0 14px 0;
+  line-height: 1.5;
+}
+
+/* SECTION & CARDS */
 section {
-  scroll-margin-top: 175px;
+  scroll-margin-top: 100px;
   margin-bottom: 36px;
 }
+
 h2 {
-  font-size: 22px;
-  font-weight: 800;
-  margin: 0 0 8px;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 6px;
   display: flex;
   align-items: center;
   gap: 8px;
   color: var(--text);
+  letter-spacing: -0.02em;
 }
+
 h3 {
-  font-size: 16px;
-  margin: 18px 0 8px;
+  font-size: 15px;
+  margin: 16px 0 8px;
   color: var(--text);
 }
+
 .hint {
   color: var(--text-muted);
   margin-bottom: 16px;
-  font-size: 14px;
+  font-size: 13.5px;
 }
 
-.flow-banner {
-  background: linear-gradient(90deg, #1e3a8a, #0369a1, #0d9488);
-  color: white;
-  padding: 14px 18px;
-  border-radius: 12px;
-  font-weight: 600;
-  font-size: 13px;
-  margin-bottom: 24px;
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  gap: 8px;
-  box-shadow: var(--card-shadow);
-}
-.flow-step {
-  background: rgba(255,255,255,0.2);
-  padding: 5px 11px;
-  border-radius: 6px;
-  white-space: nowrap;
-  cursor: pointer;
-  color: white;
-  text-decoration: none;
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  transition: all 0.2s ease;
-  user-select: none;
-}
-.flow-step:hover {
-  background: rgba(255,255,255,0.4);
-  transform: translateY(-1px);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.15);
-}
-.flow-arrow { color: #93c5fd; font-weight: 900; }
-
+/* DEV-GRADE TERMINAL CARDS */
 .card {
   background: var(--panel);
   border: 1px solid var(--border);
-  border-radius: 12px;
-  margin: 14px 0;
+  border-radius: 14px;
+  margin: 16px 0;
   overflow: hidden;
   box-shadow: var(--card-shadow);
   transition: border-color 0.2s ease, box-shadow 0.2s ease;
 }
+
 .card:hover {
-  border-color: #93c5fd;
+  border-color: rgba(2, 132, 199, 0.35);
+  box-shadow: var(--card-shadow-hover);
 }
+
 .cardhead {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 11px 16px;
-  font-weight: 700;
-  font-size: 14px;
+  padding: 10px 16px;
+  font-weight: 600;
+  font-size: 13.5px;
   background: var(--panel-alt);
   border-bottom: 1px solid var(--border);
+  position: relative;
 }
+
+.cardhead::before {
+  content: "";
+  display: inline-block;
+  width: 32px;
+  height: 10px;
+  background: radial-gradient(circle at 5px 5px, #ef4444 4px, transparent 4px),
+              radial-gradient(circle at 16px 5px, #f59e0b 4px, transparent 4px),
+              radial-gradient(circle at 27px 5px, #10b981 4px, transparent 4px);
+  margin-right: 10px;
+  opacity: 0.7;
+}
+
+.card-title-group {
+  display: flex;
+  align-items: center;
+  flex: 1;
+  gap: 8px;
+}
+
 .card-badge {
   font-size: 11px;
-  padding: 2px 8px;
-  border-radius: 20px;
+  padding: 2px 7px;
+  border-radius: 6px;
   font-weight: 600;
-  margin-left: 8px;
   background: var(--primary-light);
   color: var(--primary-dark);
 }
-.card-badge.type-visual { background: #fef08a; color: #854d0e; }
+
+.card-badge.type-visual { background: #fef9c3; color: #854d0e; }
 .card-badge.type-data { background: #dcfce7; color: #166534; }
 
 pre {
   margin: 0;
-  padding: 14px 16px;
+  padding: 14px 18px;
   white-space: pre-wrap;
   word-break: break-word;
   overflow-x: auto;
   background: var(--code-bg);
   color: var(--code-text);
-  font: 13px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font: 12.5px/1.6 var(--font-mono);
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
 }
+
 .card-desc {
-  padding: 12px 16px;
-  font-size: 13.5px;
+  padding: 12px 18px;
+  font-size: 13px;
   color: var(--text-muted);
   background: var(--panel);
   border-top: 1px solid var(--border);
+  line-height: 1.55;
 }
+
 .actions {
-  padding: 10px 16px;
+  padding: 9px 16px;
   display: flex;
   gap: 8px;
   flex-wrap: wrap;
   background: var(--panel);
   border-top: 1px solid var(--border);
 }
-.actions button {
-  font-size: 12.5px;
-  padding: 6px 11px;
+
+.actions button, .cardhead button.copy, .cardhead button {
+  font-size: 12px;
+  padding: 5px 11px;
+  border-radius: 7px;
+  background: var(--panel-alt);
+  color: var(--text);
+  border: 1px solid var(--border);
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
+.actions button:hover, .cardhead button.copy:hover, .cardhead button:hover {
+  background: var(--primary-light);
+  color: var(--primary-dark);
+  border-color: var(--border-focus);
+}
+
+/* PARAMETER GRIDS */
+.card-params {
+  background: var(--panel-alt);
+  border-bottom: 1px solid var(--border);
+  padding: 12px 18px;
+  font-size: 12.5px;
+}
+
+.card-param-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+.card-param-title {
+  font-weight: 700;
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--primary);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.card-param-reset {
+  font-size: 11px;
+  color: var(--text-muted);
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 0;
+  text-decoration: underline;
+}
+
+.card-param-reset:hover {
+  color: var(--primary);
+}
+
+.param-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 12px 16px;
+}
+
+label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.help-text {
+  font-size: 11px;
+  color: var(--text-muted);
+  font-weight: 400;
+}
+
+input, select, textarea {
+  font-family: inherit;
+  padding: 8px 11px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-size: 12.5px;
+  outline: none;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--border-focus);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+/* INTERACTIVE LAB BOXES */
 .interactive-box {
   background: var(--panel);
   border: 1px solid var(--border);
@@ -353,306 +905,155 @@ pre {
 
 .grid-cols-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 14px; }
 .grid-cols-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 12px; }
-.grid-cols-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 10px; }
+.grid-cols-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 12px; }
 
-label {
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--text);
-}
-.help-text {
-  font-size: 11.5px;
-  color: var(--text-muted);
-  font-weight: 400;
-}
-
+/* STATUS ALERTS */
 .status-alert {
   padding: 12px 16px;
   border-radius: 10px;
-  font-size: 13.5px;
+  font-size: 13px;
   margin-top: 12px;
+  line-height: 1.5;
 }
+
 .status-alert.warning {
   background: var(--warning-bg);
   border: 1px solid var(--warning-border);
   color: var(--warning-text);
 }
+
 .status-alert.success {
   background: var(--success-bg);
   border: 1px solid var(--success-border);
   color: var(--success-text);
 }
+
 .status-alert.info {
   background: var(--primary-light);
   border: 1px solid #bfdbfe;
   color: var(--primary-dark);
 }
 
-.tab-nav {
-  display: flex;
-  gap: 4px;
-  border-bottom: 2px solid var(--border);
-  margin-bottom: 16px;
-}
-.tab-btn {
-  background: transparent;
-  border-radius: 8px 8px 0 0;
-  border: none;
-  padding: 8px 16px;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-.tab-btn.active {
-  color: var(--primary);
-  border-bottom: 2px solid var(--primary);
-  margin-bottom: -2px;
-  background: var(--panel-alt);
+.status-alert.danger {
+  background: var(--danger-bg);
+  border: 1px solid var(--danger-border);
+  color: var(--danger-text);
 }
 
+/* TABLES */
 .concept-table {
   width: 100%;
   border-collapse: collapse;
   margin: 12px 0;
-  font-size: 13.5px;
+  font-size: 13px;
 }
+
 .concept-table th, .concept-table td {
   border: 1px solid var(--border);
-  padding: 10px 12px;
+  padding: 9px 12px;
   text-align: left;
 }
+
 .concept-table th {
   background: var(--panel-alt);
   font-weight: 700;
 }
 
-.dada2-calc-preview {
-  padding: 16px;
-  border-radius: 10px;
-  background: var(--panel-alt);
-  margin-top: 14px;
-  border: 1px solid var(--border);
-}
-
-.modal {
-  position: fixed;
-  inset: 0;
-  background: rgba(15, 23, 42, 0.75);
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  z-index: 100;
-  backdrop-filter: blur(4px);
-}
-.modal.open { display: flex; }
-.modal-box {
-  background: var(--panel);
-  border-radius: 16px;
-  max-width: 650px;
-  width: 100%;
-  padding: 24px;
-  box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.3);
-  border: 1px solid var(--border);
-  max-height: 90vh;
-  overflow-y: auto;
-}
-.modal-box textarea {
-  width: 100%;
-  min-height: 130px;
-  padding: 12px;
-  border: 1px solid var(--border);
-  border-radius: 10px;
-  margin-top: 10px;
-  background: var(--panel-alt);
-  color: var(--text);
-}
-
-#toast {
-  position: fixed;
-  bottom: 24px;
-  right: 24px;
-  background: #0f172a;
-  color: white;
-  padding: 12px 18px;
-  border-radius: 10px;
-  display: none;
-  z-index: 200;
-  box-shadow: 0 10px 15px -3px rgba(0,0,0,0.3);
-  font-weight: 600;
-  font-size: 14px;
-}
-
-.hidden { display: none !important; }
-
-/* Tooltip */
-.tip { position:relative; cursor:help; border-bottom:1px dotted var(--text-muted); }
-.tip::after { content:attr(data-tip); position:absolute; bottom:120%; left:50%; transform:translateX(-50%); background:#0f172a; color:white; padding:6px 10px; border-radius:6px; font-size:11.5px; max-width:300px; white-space:normal; opacity:0; pointer-events:none; transition:opacity 0.2s; z-index:99; font-weight:400; }
-.tip:hover::after { opacity:1; }
-
-/* Accordion / Expandable Explanation */
-.accordion { max-height:0; overflow:hidden; transition:max-height 0.35s ease; }
-.accordion.open { max-height:800px; }
-.accordion-toggle { cursor:pointer; user-select:none; padding:10px 16px; font-size:13px; font-weight:600; color:var(--primary); border-top:1px solid var(--border); background:var(--panel); }
-.accordion-toggle:hover { background:var(--panel-alt); }
-
-/* Progress Tracker */
-.progress-check { display:flex; align-items:center; gap:6px; }
-.progress-check input[type=checkbox] { accent-color:#2563eb; width:15px; height:15px; cursor:pointer; flex-shrink:0; }
-
-/* Run-time & Memory Badges */
-.badge-time { font-size:10px; background:#e0e7ff; color:#3730a3; padding:2px 7px; border-radius:10px; font-weight:600; margin-left:6px; }
-.badge-mem { font-size:10px; background:#fef3c7; color:#92400e; padding:2px 7px; border-radius:10px; font-weight:600; margin-left:4px; }
-
-/* Decision Tree */
-.decision-tree { padding:16px; }
-.dt-node { background:var(--panel-alt); border:1px solid var(--border); border-radius:10px; padding:12px 16px; margin:8px 0; transition:all 0.2s; }
-.dt-node:hover { border-color:#3b82f6; }
-.dt-node strong { display:block; margin-bottom:4px; }
-.dt-node div { font-size:13px; color:var(--text-muted); padding:2px 0; }
-.dt-arrow { text-align:center; color:var(--text-muted); font-size:20px; }
-
-/* Command Diff Side-by-Side */
-.diff-container { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:14px; }
-.diff-label { font-size:12px; font-weight:700; text-transform:uppercase; letter-spacing:0.05em; color:var(--text-muted); margin-bottom:6px; }
-
-/* Interactive Parameter Customizer Box */
-.card-params {
-  background: var(--panel-alt);
-  border-bottom: 1px solid var(--border);
-  padding: 12px 16px;
-  font-size: 13px;
-}
-.card-param-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-.card-param-title {
-  font-weight: 700;
-  font-size: 11.5px;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--primary);
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.card-param-reset {
-  font-size: 11px;
-  color: var(--text-muted);
-  cursor: pointer;
-  text-decoration: underline;
-  background: none;
-  border: none;
-  padding: 0;
-}
-.card-param-reset:hover {
-  color: var(--primary);
-}
-.param-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: 10px 14px;
-}
-.param-grid label {
-  font-size: 11.5px;
-  font-weight: 600;
-  color: var(--text-muted);
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-}
-.param-grid input, .param-grid select {
-  padding: 6px 10px;
+/* RUN-TIME & MEMORY BADGES */
+.badge-time {
+  font-size: 10.5px;
+  background: #e0e7ff;
+  color: #3730a3;
+  padding: 2px 7px;
   border-radius: 6px;
-  border: 1px solid var(--border);
-  background: var(--panel);
-  color: var(--text);
-  font-size: 12.5px;
-  font-family: inherit;
-  width: 100%;
-  box-sizing: border-box;
-  transition: border-color 0.2s, box-shadow 0.2s;
-}
-.param-grid input:focus, .param-grid select:focus {
-  outline: none;
-  border-color: #2563eb;
-  box-shadow: 0 0 0 2px rgba(37,99,235,0.18);
-}
-.param-custom-input {
-  margin-top: 5px;
-}
-.live-badge {
-  font-size: 10px;
-  background: #dcfce7;
-  color: #166534;
-  padding: 2px 6px;
-  border-radius: 4px;
-  font-weight: 700;
-  letter-spacing: 0.03em;
+  font-weight: 600;
   margin-left: 6px;
-  display: inline-block;
-}
-[data-theme="dark"] .live-badge {
-  background: rgba(34, 197, 94, 0.2);
-  color: #4ade80;
 }
 
-/* Explain Button & Hover Card */
+.badge-mem {
+  font-size: 10.5px;
+  background: #fef3c7;
+  color: #92400e;
+  padding: 2px 7px;
+  border-radius: 6px;
+  font-weight: 600;
+  margin-left: 4px;
+}
+
+/* DECISION TREES */
+.decision-tree { padding: 16px; }
+.dt-node {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 12px 16px;
+  margin: 8px 0;
+  transition: all 0.2s;
+}
+.dt-node:hover {
+  border-color: var(--primary);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+}
+.dt-node strong { display: block; margin-bottom: 4px; color: var(--text); }
+.dt-node div { font-size: 12.5px; color: var(--text-muted); padding: 2px 0; }
+.dt-arrow { text-align: center; color: var(--text-dim); font-size: 18px; margin: 4px 0; }
+
+.diff-container { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; padding: 14px; }
+.diff-label { font-size: 11.5px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--text-muted); margin-bottom: 6px; }
+
+/* EXPLAIN BUTTON & HOVER CARD */
 .explain-btn-wrapper {
   position: relative;
   display: inline-block;
 }
+
 .explain-card-btn {
   display: inline-flex;
   align-items: center;
-  gap: 6px;
-  background: var(--panel-alt);
+  gap: 5px;
+  background: var(--panel);
   border: 1px solid var(--border);
   color: var(--primary);
-  font-size: 12.5px;
+  font-size: 12px;
   font-weight: 600;
-  padding: 6px 14px;
+  padding: 5px 12px;
   border-radius: 8px;
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all 0.15s ease;
   user-select: none;
 }
-.explain-card-btn:hover, .explain-card-btn:focus {
-  background: var(--primary);
-  color: white;
-  border-color: var(--primary);
-  box-shadow: 0 4px 12px rgba(37,99,235,0.25);
+
+.explain-card-btn:hover {
+  background: var(--primary-light);
+  border-color: var(--border-focus);
   transform: translateY(-1px);
 }
+
 .explain-hover-card {
   position: absolute;
   top: calc(100% + 10px);
   right: 0;
-  width: 600px;
+  width: 580px;
   max-width: 88vw;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 14px;
-  box-shadow: 0 16px 36px rgba(0,0,0,0.22);
+  box-shadow: 0 16px 36px rgba(0,0,0,0.18);
   padding: 18px 20px;
-  z-index: 200;
+  z-index: 150;
   opacity: 0;
   visibility: hidden;
-  transform: translateY(-8px);
-  transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.25s;
+  transform: translateY(-6px);
+  transition: opacity 0.2s cubic-bezier(0.16, 1, 0.3, 1), transform 0.2s cubic-bezier(0.16, 1, 0.3, 1), visibility 0.2s;
   pointer-events: none;
-  font-size: 13px;
+  font-size: 12.5px;
   line-height: 1.55;
   color: var(--text);
-  max-height: 540px;
+  max-height: 520px;
   overflow-y: auto;
   text-align: left;
 }
+
 .explain-btn-wrapper:hover .explain-hover-card,
 .explain-hover-card.is-open {
   opacity: 1;
@@ -660,263 +1061,514 @@ label {
   transform: translateY(0);
   pointer-events: auto;
 }
+
 .hover-card-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   border-bottom: 1px solid var(--border);
-  padding-bottom: 10px;
+  padding-bottom: 8px;
   margin-bottom: 12px;
 }
+
 .hover-card-header strong {
-  font-size: 14px;
+  font-size: 13.5px;
   color: var(--primary);
   display: flex;
   align-items: center;
   gap: 6px;
 }
+
 .hover-card-close {
   cursor: pointer;
-  font-size: 14px;
+  font-size: 13px;
   color: var(--text-muted);
   padding: 2px 6px;
   border-radius: 4px;
-  transition: background 0.15s;
 }
+
 .hover-card-close:hover {
   background: var(--panel-alt);
   color: var(--text);
 }
-.hover-section {
-  margin-bottom: 14px;
-}
-.hover-section:last-child {
-  margin-bottom: 0;
-}
+
+.hover-section { margin-bottom: 12px; }
+.hover-section:last-child { margin-bottom: 0; }
 .hover-sec-title {
   font-weight: 700;
-  font-size: 12px;
+  font-size: 11.5px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: var(--primary);
-  margin-bottom: 6px;
+  margin-bottom: 4px;
+}
+.hover-section p { margin: 4px 0 6px 0; color: var(--text-muted); font-size: 12px; }
+.hover-list, .hover-steps { padding-left: 18px; margin: 4px 0; color: var(--text-muted); font-size: 12px; }
+.hover-list li, .hover-steps li { margin-bottom: 5px; }
+
+/* MODAL & BACKDROP */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(15, 23, 42, 0.6);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  display: none;
+  z-index: 190;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.modal-overlay.show {
+  display: block;
+  opacity: 1;
+}
+
+.modal {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.96);
+  width: 90%;
+  max-width: 680px;
+  max-height: 88vh;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
+  display: none;
+  flex-direction: column;
+  z-index: 200;
+  padding: 22px 24px;
+  overflow-y: auto;
+  opacity: 0;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal.show {
+  display: flex;
+  opacity: 1;
+  transform: translate(-50%, -50%) scale(1);
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid var(--border);
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 16px;
+  color: var(--text);
+}
+
+.modal-close {
+  background: transparent;
+  border: none;
+  font-size: 16px;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 6px;
+}
+
+.modal-close:hover {
+  background: var(--panel-alt);
+  color: var(--text);
+}
+
+.modal-notes textarea {
+  width: 100%;
+  min-height: 100px;
+  margin-top: 8px;
+}
+
+/* TOAST */
+#toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 10px 18px;
+  border-radius: 10px;
+  display: none;
+  z-index: 300;
+  box-shadow: 0 10px 20px -3px rgba(0,0,0,0.3);
+  font-weight: 600;
+  font-size: 13px;
+  border: 1px solid rgba(255,255,255,0.1);
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+}
+
+[data-theme="dark"] #toast {
+  background: #1e293b;
+  border-color: #334155;
+}
+
+#toast.show {
   display: flex;
   align-items: center;
-  gap: 5px;
+  gap: 8px;
+  transform: translateY(0);
 }
-.hover-section p {
-  margin: 4px 0 8px 0;
-  color: var(--text-muted);
-  font-size: 12.5px;
-}
-.hover-list {
-  padding-left: 18px;
-  margin: 6px 0;
-  color: var(--text-muted);
-  font-size: 12.5px;
-}
-.hover-list li {
-  margin-bottom: 6px;
-}
-.hover-list strong {
+
+/* FLOATING BACK TO TOP BUTTON */
+#backToTopBtn {
+  position: fixed;
+  bottom: 24px;
+  left: 24px;
+  background: var(--panel);
+  border: 1px solid var(--border);
   color: var(--text);
+  box-shadow: var(--card-shadow);
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.2s ease;
+  z-index: 70;
 }
-.hover-steps {
-  padding-left: 18px;
-  margin: 6px 0;
-  color: var(--text-muted);
-  font-size: 12.5px;
+
+#backToTopBtn.visible {
+  opacity: 1;
+  visibility: visible;
 }
-.hover-steps li {
-  margin-bottom: 8px;
+
+#backToTopBtn:hover {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+  transform: translateY(-2px);
 }
-.hover-steps strong {
-  color: var(--text);
-}
-@media(max-width: 768px) {
-  .explain-hover-card {
+
+/* RESPONSIVENESS */
+@media (max-width: 1100px) {
+  main {
+    grid-template-columns: 1fr;
+  }
+  nav {
+    display: none;
     position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    width: 92vw;
-    max-height: 82vh;
-    right: auto;
+    top: 70px;
+    left: 16px;
+    right: 16px;
+    z-index: 100;
+    max-height: 80vh;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.3);
   }
-  .explain-btn-wrapper:hover .explain-hover-card {
-    transform: translate(-50%, -50%);
+  nav.mobile-open {
+    display: block;
   }
 }
 
-/* Print Styles */
+@media (max-width: 768px) {
+  .header-inner {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .view-modes {
+    overflow-x: auto;
+  }
+  .search-box-wrapper {
+    width: 100%;
+  }
+  .search-box-wrapper:focus-within {
+    width: 100%;
+  }
+  .diff-container {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* PRINT */
 @media print {
-  header, nav, .actions, .toolbar, .filters-bar, .theme-btn, #toast, .modal, .interactive-box button, .accordion-toggle { display:none !important; }
-  body { font-size:11px; background:white; color:black; }
-  .card { break-inside:avoid; box-shadow:none; border:1px solid #ccc; }
-  pre { font-size:10px; background:#f3f4f6 !important; color:#111 !important; }
-  main { display:block; padding:0; }
-  section { page-break-inside:avoid; }
-}
-
-@media(max-width: 768px) { .diff-container { grid-template-columns:1fr; } }
-
-@media(max-width: 950px) {
-  main { grid-template-columns: 1fr; }
-  nav { position: relative; top: 0; max-height: none; }
-  header { position: relative; }
+  header, nav, .actions, .sub-header, .global-param-card, #toast, .modal, .flow-timeline, #backToTopBtn {
+    display: none !important;
+  }
+  body {
+    background: white;
+    color: black;
+    font-size: 11pt;
+  }
+  main {
+    display: block;
+    padding: 0;
+  }
+  .card {
+    break-inside: avoid;
+    box-shadow: none;
+    border: 1px solid #ccc;
+  }
+  pre {
+    background: #f8fafc !important;
+    color: #0f172a !important;
+  }
 }
 </style>
 </head>
 <body>
 
 <header>
-  <div class="header-top">
-    <div>
-      <h1>QIIME 2 Master Learning Lab & Interactive Workflow Guide</h1>
-      <p>A comprehensive, interactive reference for end-to-end 16S/18S/ITS marker-gene and shotgun microbiome analysis using QIIME 2.</p>
+  <div class="header-inner">
+    <div class="brand-wrapper">
+      <a href="https://angsumi.online/bioinformatics/" class="brand-badge" title="Bioinformatics Hub">
+        <span>🧬 QIIME 2</span>
+      </a>
+      <div class="brand-text">
+        <h1>QIIME 2 Master Learning Lab</h1>
+        <p>Interactive End-to-End Microbiome Amplicon & Shotgun Workflow</p>
+      </div>
     </div>
-    <div style="display:flex;gap:8px">
-      <button class="theme-btn" onclick="toggleTheme()">🌓 Dark/Light</button>
-      <button class="theme-btn" onclick="toggleEdit()">✎ Edit Mode</button>
+
+    <!-- Segmented View Mode Switcher -->
+    <div class="view-modes" role="tablist">
+      <button class="view-mode-btn active" onclick="setViewMode('all', this)">
+        <span>🌐 All Views</span>
+      </button>
+      <button class="view-mode-btn" onclick="setViewMode('pipeline', this)">
+        <span>📖 Pipeline Guide</span>
+      </button>
+      <button class="view-mode-btn" onclick="setViewMode('tools', this)">
+        <span>⚡ Lab Tools</span>
+      </button>
+      <button class="view-mode-btn" onclick="setViewMode('trees', this)">
+        <span>🔀 Decision Trees</span>
+      </button>
+    </div>
+
+    <div class="header-controls">
+      <div class="search-box-wrapper">
+        <span class="search-icon">🔍</span>
+        <input id="search" placeholder="Search pipeline, DADA2, UniFrac…" oninput="filterCards()">
+        <span class="kbd-hint">⌘K</span>
+      </div>
+
+      <button class="nav-btn" onclick="toggleGlobalParamDrawer()" id="btn-param-toggle" title="Toggle study parameter synchronizer">
+        <span>🎛️ Parameters</span>
+      </button>
+
+      <button class="nav-btn primary" onclick="exportScript()" title="Export entire pipeline as bash script">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        <span>Export .sh</span>
+      </button>
+
+      <button class="nav-btn btn-icon-only" onclick="downloadNotes()" title="Export Notes">📝</button>
+      <button class="nav-btn btn-icon-only" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌓</button>
+      <button class="nav-btn btn-icon-only" onclick="toggleMobileMenu()" id="btn-mobile-menu" style="display:none" title="Toggle Navigation Menu">☰</button>
     </div>
   </div>
 
-  <div class="toolbar">
-    <input id="search" placeholder="🔍 Search commands, DADA2, taxonomy, PERMANOVA, ANCOM-BC, UniFrac…" oninput="filterCards()">
-    <button class="primary" onclick="exportScript()"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg> Export Pipeline Script</button>
-    <button onclick="downloadNotes()">Export Notes</button>
-    <button onclick="resetNotes()">Reset Notes</button>
-    <button onclick="window.print()">🖨 Print Cheatsheet</button>
-    <span style="font-size:11px;color:#94a3b8;margin-left:8px">Ctrl+K: search · J/K: jump sections · Esc: close</span>
-  </div>
-
-  <div class="filters-bar">
-    <button class="filter-pill active" onclick="setFilter('all', this)">All Sections (<span id="count-all">0</span>)</button>
-    <button class="filter-pill" onclick="setFilter('setup', this)">1. Setup & Ingestion</button>
-    <button class="filter-pill" onclick="setFilter('dada2', this)">2. Cutadapt & DADA2</button>
-    <button class="filter-pill" onclick="setFilter('features', this)">3. Feature Table</button>
-    <button class="filter-pill" onclick="setFilter('taxonomy', this)">4. Phylogeny & Taxonomy</button>
-    <button class="filter-pill" onclick="setFilter('diversity', this)">5. Alpha & Beta Diversity</button>
-    <button class="filter-pill" onclick="setFilter('stats', this)">6. Statistics & Differential Abundance</button>
-    <button class="filter-pill" onclick="setFilter('shotgun', this)">7. Shotgun & Functional</button>
-    <button class="filter-pill" onclick="setFilter('export', this)">8. Export & Integration</button>
+  <div class="sub-header">
+    <div class="filters-bar">
+      <button class="filter-pill active" onclick="setFilter('all', this)">All Sections (<span id="count-all">22</span>)</button>
+      <button class="filter-pill" onclick="setFilter('setup', this)">1. Setup & Ingestion</button>
+      <button class="filter-pill" onclick="setFilter('dada2', this)">2. Cutadapt & DADA2</button>
+      <button class="filter-pill" onclick="setFilter('features', this)">3. Feature Table</button>
+      <button class="filter-pill" onclick="setFilter('taxonomy', this)">4. Phylogeny & Taxonomy</button>
+      <button class="filter-pill" onclick="setFilter('diversity', this)">5. Alpha & Beta Diversity</button>
+      <button class="filter-pill" onclick="setFilter('stats', this)">6. Statistics & ANCOM-BC</button>
+      <button class="filter-pill" onclick="setFilter('shotgun', this)">7. Shotgun & ITS</button>
+      <button class="filter-pill" onclick="setFilter('export', this)">8. Export & References</button>
+    </div>
   </div>
 </header>
 
 <main>
   <!-- Sidebar Navigation -->
-  <nav id="sidebar" role="navigation" aria-label="Learning path">
-    <div id="progressBar"></div>
+    <nav id="sidebar" role="navigation" aria-label="Learning path">
+    <div class="sidebar-header">
+      <div class="progress-widget" id="progressBar">
+        <div class="progress-label-row">
+          <span>PROGRESS</span>
+          <span id="progressText">0 / 22 completed</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFill"></div>
+        </div>
+      </div>
+    </div>
 
-    <div class="nav-group-title">Interactive Tools</div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="calc"><button onclick="goTo('sec-calc')">🧮 DADA2 Calculator</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="rarefaction"><button onclick="goTo('sec-rarefaction')">📊 Rarefaction Advisor</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="manifest"><button onclick="goTo('sec-manifest')">📦 Manifest Generator</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="metadata"><button onclick="goTo('sec-metadata')">🧾 Metadata Builder</button></div>
+    <!-- Accordion 0: Interactive Tools -->
+    <div class="nav-accordion-group open" id="nav-group-tools">
+      <button class="nav-group-trigger" onclick="toggleAccordionGroup(this)">
+        <span>⚡ Interactive Lab Tools</span>
+        <span class="nav-group-chevron">▶</span>
+      </button>
+      <div class="nav-group-content">
+        <div class="nav-item" data-sec="sec-calc"><input type="checkbox" onchange="saveProgress(this)" data-step="calc"><button onclick="goTo('sec-calc')">🧮 DADA2 Calculator</button></div>
+        <div class="nav-item" data-sec="sec-rarefaction"><input type="checkbox" onchange="saveProgress(this)" data-step="rarefaction"><button onclick="goTo('sec-rarefaction')">📊 Rarefaction Advisor</button></div>
+        <div class="nav-item" data-sec="sec-manifest"><input type="checkbox" onchange="saveProgress(this)" data-step="manifest"><button onclick="goTo('sec-manifest')">📦 Manifest Generator</button></div>
+        <div class="nav-item" data-sec="sec-metadata"><input type="checkbox" onchange="saveProgress(this)" data-step="metadata"><button onclick="goTo('sec-metadata')">🧾 Metadata Builder</button></div>
+      </div>
+    </div>
 
-    <div class="nav-group-title">Phase 1: Setup & Import</div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="arch"><button onclick="goTo('sec-arch')">0. Architecture & Types</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="install"><button onclick="goTo('sec-install')">1. Environment Setup</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="import"><button onclick="goTo('sec-import')">2. Data Ingestion</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="cutadapt"><button onclick="goTo('sec-cutadapt')">3. Primer Trimming</button></div>
+    <!-- Accordion 1: Phase 1 -->
+    <div class="nav-accordion-group open" id="nav-group-p1">
+      <button class="nav-group-trigger" onclick="toggleAccordionGroup(this)">
+        <span>🔬 Phase 1: Setup & Import</span>
+        <span class="nav-group-chevron">▶</span>
+      </button>
+      <div class="nav-group-content">
+        <div class="nav-item" data-sec="sec-arch"><input type="checkbox" onchange="saveProgress(this)" data-step="arch"><button onclick="goTo('sec-arch')">0. Architecture & Types</button></div>
+        <div class="nav-item" data-sec="sec-install"><input type="checkbox" onchange="saveProgress(this)" data-step="install"><button onclick="goTo('sec-install')">1. Environment Setup</button></div>
+        <div class="nav-item" data-sec="sec-import"><input type="checkbox" onchange="saveProgress(this)" data-step="import"><button onclick="goTo('sec-import')">2. Data Ingestion</button></div>
+        <div class="nav-item" data-sec="sec-cutadapt"><input type="checkbox" onchange="saveProgress(this)" data-step="cutadapt"><button onclick="goTo('sec-cutadapt')">3. Primer Trimming</button></div>
+      </div>
+    </div>
 
-    <div class="nav-group-title">Phase 2: Denoising & QC</div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="qc"><button onclick="goTo('sec-qc')">4. Read Quality</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="dada2"><button onclick="goTo('sec-dada2')">5. DADA2 (ASVs)</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="deblur"><button onclick="goTo('sec-deblur')">6. Deblur & VSEARCH</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="decide-denoise"><button onclick="goTo('sec-decide-denoise')">🔀 Which Denoiser?</button></div>
+    <!-- Accordion 2: Phase 2 -->
+    <div class="nav-accordion-group open" id="nav-group-p2">
+      <button class="nav-group-trigger" onclick="toggleAccordionGroup(this)">
+        <span>🧬 Phase 2: Denoising & QC</span>
+        <span class="nav-group-chevron">▶</span>
+      </button>
+      <div class="nav-group-content">
+        <div class="nav-item" data-sec="sec-qc"><input type="checkbox" onchange="saveProgress(this)" data-step="qc"><button onclick="goTo('sec-qc')">4. Read Quality</button></div>
+        <div class="nav-item" data-sec="sec-dada2"><input type="checkbox" onchange="saveProgress(this)" data-step="dada2"><button onclick="goTo('sec-dada2')">5. DADA2 (ASVs)</button></div>
+        <div class="nav-item" data-sec="sec-deblur"><input type="checkbox" onchange="saveProgress(this)" data-step="deblur"><button onclick="goTo('sec-deblur')">6. Deblur & VSEARCH</button></div>
+        <div class="nav-item" data-sec="sec-decide-denoise"><input type="checkbox" onchange="saveProgress(this)" data-step="decide-denoise"><button onclick="goTo('sec-decide-denoise')">🔀 Which Denoiser?</button></div>
+      </div>
+    </div>
 
-    <div class="nav-group-title">Phase 3: Annotations</div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="features"><button onclick="goTo('sec-features')">7. Feature Table</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="tree"><button onclick="goTo('sec-tree')">8. Phylogenetic Tree</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="taxa"><button onclick="goTo('sec-taxa')">9. Taxonomy</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="train"><button onclick="goTo('sec-train')">9b. Train Classifier</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="decide-taxa"><button onclick="goTo('sec-decide-taxa')">🔀 Which Classifier?</button></div>
+    <!-- Accordion 3: Phase 3 -->
+    <div class="nav-accordion-group open" id="nav-group-p3">
+      <button class="nav-group-trigger" onclick="toggleAccordionGroup(this)">
+        <span>🏷️ Phase 3: Taxonomy & Tree</span>
+        <span class="nav-group-chevron">▶</span>
+      </button>
+      <div class="nav-group-content">
+        <div class="nav-item" data-sec="sec-features"><input type="checkbox" onchange="saveProgress(this)" data-step="features"><button onclick="goTo('sec-features')">7. Feature Table</button></div>
+        <div class="nav-item" data-sec="sec-tree"><input type="checkbox" onchange="saveProgress(this)" data-step="tree"><button onclick="goTo('sec-tree')">8. Phylogenetic Tree</button></div>
+        <div class="nav-item" data-sec="sec-taxa"><input type="checkbox" onchange="saveProgress(this)" data-step="taxa"><button onclick="goTo('sec-taxa')">9. Taxonomy</button></div>
+        <div class="nav-item" data-sec="sec-train"><input type="checkbox" onchange="saveProgress(this)" data-step="train"><button onclick="goTo('sec-train')">9b. Train Classifier</button></div>
+        <div class="nav-item" data-sec="sec-decide-taxa"><input type="checkbox" onchange="saveProgress(this)" data-step="decide-taxa"><button onclick="goTo('sec-decide-taxa')">🔀 Which Classifier?</button></div>
+      </div>
+    </div>
 
-    <div class="nav-group-title">Phase 4: Diversity & Stats</div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="alpha"><button onclick="goTo('sec-alpha')">10. Alpha Diversity</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="beta"><button onclick="goTo('sec-beta')">11. Beta & Emperor</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="stats"><button onclick="goTo('sec-stats')">12. Hypothesis Testing</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="decide-beta"><button onclick="goTo('sec-decide-beta')">🔀 Which Metric?</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="diff"><button onclick="goTo('sec-diff')">13. ANCOM-BC</button></div>
+    <!-- Accordion 4: Phase 4 -->
+    <div class="nav-accordion-group open" id="nav-group-p4">
+      <button class="nav-group-trigger" onclick="toggleAccordionGroup(this)">
+        <span>🌐 Phase 4: Diversity & Stats</span>
+        <span class="nav-group-chevron">▶</span>
+      </button>
+      <div class="nav-group-content">
+        <div class="nav-item" data-sec="sec-alpha"><input type="checkbox" onchange="saveProgress(this)" data-step="alpha"><button onclick="goTo('sec-alpha')">10. Alpha Diversity</button></div>
+        <div class="nav-item" data-sec="sec-beta"><input type="checkbox" onchange="saveProgress(this)" data-step="beta"><button onclick="goTo('sec-beta')">11. Beta & Emperor</button></div>
+        <div class="nav-item" data-sec="sec-stats"><input type="checkbox" onchange="saveProgress(this)" data-step="stats"><button onclick="goTo('sec-stats')">12. Hypothesis Testing</button></div>
+        <div class="nav-item" data-sec="sec-decide-beta"><input type="checkbox" onchange="saveProgress(this)" data-step="decide-beta"><button onclick="goTo('sec-decide-beta')">🔀 Which Beta Metric?</button></div>
+        <div class="nav-item" data-sec="sec-diff"><input type="checkbox" onchange="saveProgress(this)" data-step="diff"><button onclick="goTo('sec-diff')">13. ANCOM-BC</button></div>
+      </div>
+    </div>
 
-    <div class="nav-group-title">Phase 5: Specialized</div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="its"><button onclick="goTo('sec-its')">14. ITS/18S Fungal</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="longitudinal"><button onclick="goTo('sec-long')">15. Longitudinal & ML</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="shotgun"><button onclick="goTo('sec-shotgun')">16. Shotgun & PICRUSt2</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="export"><button onclick="goTo('sec-export')">17. Export & API</button></div>
-
-    <div class="nav-group-title">Reference</div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="trouble"><button onclick="goTo('sec-trouble')">18. Troubleshooting</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="resources"><button onclick="goTo('sec-resources')">📚 Resources & Papers</button></div>
-    <div class="progress-check"><input type="checkbox" onchange="saveProgress(this)" data-step="cheatsheet"><button onclick="goTo('sec-cheat')">📋 Cheatsheet</button></div>
+    <!-- Accordion 5: Phase 5 & Reference -->
+    <div class="nav-accordion-group" id="nav-group-p5">
+      <button class="nav-group-trigger" onclick="toggleAccordionGroup(this)">
+        <span>🧪 Phase 5: Specialized & Ref</span>
+        <span class="nav-group-chevron">▶</span>
+      </button>
+      <div class="nav-group-content">
+        <div class="nav-item" data-sec="sec-its"><input type="checkbox" onchange="saveProgress(this)" data-step="its"><button onclick="goTo('sec-its')">14. ITS/18S Fungi</button></div>
+        <div class="nav-item" data-sec="sec-long"><input type="checkbox" onchange="saveProgress(this)" data-step="longitudinal"><button onclick="goTo('sec-long')">15. Longitudinal & ML</button></div>
+        <div class="nav-item" data-sec="sec-shotgun"><input type="checkbox" onchange="saveProgress(this)" data-step="shotgun"><button onclick="goTo('sec-shotgun')">16. Shotgun & PICRUSt2</button></div>
+        <div class="nav-item" data-sec="sec-export"><input type="checkbox" onchange="saveProgress(this)" data-step="export"><button onclick="goTo('sec-export')">17. Export & API</button></div>
+        <div class="nav-item" data-sec="sec-trouble"><input type="checkbox" onchange="saveProgress(this)" data-step="trouble"><button onclick="goTo('sec-trouble')">18. Troubleshooting</button></div>
+        <div class="nav-item" data-sec="sec-resources"><input type="checkbox" onchange="saveProgress(this)" data-step="resources"><button onclick="goTo('sec-resources')">📚 Resources & Papers</button></div>
+        <div class="nav-item" data-sec="sec-cheat"><input type="checkbox" onchange="saveProgress(this)" data-step="cheatsheet"><button onclick="goTo('sec-cheat')">📋 Cheatsheet</button></div>
+      </div>
+    </div>
   </nav>
 
   <!-- Main Content Area -->
   <div id="content">
 
-    <div class="flow-banner" role="navigation" aria-label="Pipeline overview">
-      <span class="flow-step" onclick="goTo('sec-import')" title="Jump to FASTQ Import">📥 1. FASTQ Import</span>
+        <!-- Minimalist Pipeline Roadmap -->
+    <div class="flow-timeline" role="navigation" aria-label="Pipeline overview">
+      <a class="flow-step" onclick="goTo('sec-import')" title="Jump to FASTQ Import">📥 1. Ingestion</a>
       <span class="flow-arrow">➔</span>
-      <span class="flow-step" onclick="goTo('sec-cutadapt')" title="Jump to Primer Trimming">✂️ 2. Cutadapt (Primers)</span>
+      <a class="flow-step" onclick="goTo('sec-cutadapt')" title="Jump to Primer Trimming">✂️ 2. Cutadapt</a>
       <span class="flow-arrow">➔</span>
-      <span class="flow-step" onclick="goTo('sec-dada2')" title="Jump to DADA2 ASVs">🧬 3. DADA2 (Denoise & ASVs)</span>
+      <a class="flow-step" onclick="goTo('sec-dada2')" title="Jump to DADA2 ASVs">🧬 3. DADA2 ASVs</a>
       <span class="flow-arrow">➔</span>
-      <span class="flow-step" onclick="goTo('sec-features')" title="Jump to Feature Table">📊 4. Feature Table + Rep-Seqs</span>
+      <a class="flow-step" onclick="goTo('sec-features')" title="Jump to Feature Table">📊 4. Feature Table</a>
       <span class="flow-arrow">➔</span>
-      <span class="flow-step" onclick="goTo('sec-taxa')" title="Jump to Taxonomy & Tree">🏷️ 5. Taxonomy + Tree</span>
+      <a class="flow-step" onclick="goTo('sec-taxa')" title="Jump to Taxonomy & Tree">🏷️ 5. Taxonomy</a>
       <span class="flow-arrow">➔</span>
-      <span class="flow-step" onclick="goTo('sec-alpha')" title="Jump to Diversity Analysis">🌐 6. Alpha & Beta Diversity</span>
+      <a class="flow-step" onclick="goTo('sec-alpha')" title="Jump to Diversity Analysis">🌐 6. Diversity</a>
       <span class="flow-arrow">➔</span>
-      <span class="flow-step" onclick="goTo('sec-diff')" title="Jump to Differential Abundance">📈 7. ANCOM-BC / PERMANOVA</span>
+      <a class="flow-step" onclick="goTo('sec-diff')" title="Jump to Differential Abundance">📈 7. ANCOM-BC</a>
       <span class="flow-arrow">➔</span>
-      <span class="flow-step" onclick="goTo('sec-export')" title="Jump to Data Export">📤 8. Export / R & Python</span>
+      <a class="flow-step" onclick="goTo('sec-export')" title="Jump to Data Export">📤 8. Export</a>
     </div>
 
-    <!-- Global Analysis Parameters Configurator -->
-    <div class="interactive-box" style="margin-bottom: 24px; border: 2px solid var(--primary); background: linear-gradient(to bottom, var(--panel), var(--panel-alt)); box-shadow: 0 4px 12px rgba(37,99,235,0.08);">
-      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; flex-wrap: wrap; gap: 8px;">
-        <div>
-          <h3 style="margin: 0; display: flex; align-items: center; gap: 8px; font-size: 15px; color: var(--text);">
-            <span>🎛️ Global Project Parameter Customizer</span>
-            <span class="live-badge">AUTO-UPDATES ALL COMMANDS</span>
-          </h3>
-          <p style="font-size: 12.5px; color: var(--text-muted); margin: 4px 0 0 0;">
-            Never copy-paste generic code like <code>SampleData[SequencesWithQuality]</code>, <code>body-site</code>, or <code>1103</code>! Enter your actual study variables below, and every command across this laboratory will automatically update in real-time.
-          </p>
+    <!-- Collapsible Global Project Parameter Customizer -->
+    <div class="global-param-card" id="globalParamCard">
+      <div class="global-param-header" onclick="toggleGlobalParamDrawer()">
+        <div class="global-param-title-wrap">
+          <span class="global-param-title">🎛️ Active Study Parameters</span>
+          <span class="live-badge">AUTO-SYNCS 11 COMMANDS</span>
         </div>
-        <button class="primary" onclick="applyGlobalParams()" style="font-size: 12px; padding: 6px 14px;">⚡ Sync All Commands</button>
+        <div class="global-param-summary-pills">
+          <span class="param-pill" id="pill_meta">Col: treatment</span>
+          <span class="param-pill" id="pill_depth">Depth: 10,000</span>
+          <span class="param-pill" id="pill_threads">Threads: 8</span>
+          <span class="param-pill" id="pill_primer">515F / 806R</span>
+        </div>
+        <button class="global-param-toggle-btn" type="button">
+          <span id="paramToggleText">⚙️ Edit Variables</span>
+          <span id="paramToggleIcon">▾</span>
+        </button>
       </div>
 
-      <div class="param-grid">
-        <label>Primary Metadata Column
-          <input type="text" id="glob_meta_col" value="treatment" placeholder="e.g. treatment, genotype, group" oninput="applyGlobalParams()">
-          <span style="font-size:10.5px; color:var(--text-muted)">Used in PERMANOVA, ANCOM-BC, barplots</span>
-        </label>
-        <label>Metadata File Name
-          <input type="text" id="glob_meta_file" value="sample-metadata.tsv" placeholder="sample-metadata.tsv" oninput="applyGlobalParams()">
-          <span style="font-size:10.5px; color:var(--text-muted)">Path to your metadata TSV file</span>
-        </label>
-        <label>Target Sampling Depth
-          <input type="number" id="glob_rare_depth" value="10000" placeholder="10000" oninput="applyGlobalParams()">
-          <span style="font-size:10.5px; color:var(--text-muted)">Rarefaction depth for diversity metrics</span>
-        </label>
-        <label>CPU Threads (--p-n-threads)
-          <input type="number" id="glob_threads" value="8" min="1" max="128" oninput="applyGlobalParams()">
-          <span style="font-size:10.5px; color:var(--text-muted)">Parallel cores for DADA2, tree, classifier</span>
-        </label>
-        <label>Forward Primer (5'→3')
-          <input type="text" id="glob_f_primer" value="GTGYCAGCMGCCGCGGTAA" placeholder="515F" oninput="applyGlobalParams()">
-          <span style="font-size:10.5px; color:var(--text-muted)">For Cutadapt & classifier training</span>
-        </label>
-        <label>Reverse Primer (5'→3')
-          <input type="text" id="glob_r_primer" value="GGACTACNVGGGTWTCTAAT" placeholder="806R" oninput="applyGlobalParams()">
-          <span style="font-size:10.5px; color:var(--text-muted)">For Cutadapt & classifier training</span>
-        </label>
+      <div class="global-param-body">
+        <p>
+          Configure your biological experimental variables once below. Every command across this laboratory will automatically update in real-time, eliminating boilerplate editing errors.
+        </p>
+
+        <div class="param-grid">
+          <label>Primary Metadata Column
+            <input type="text" id="glob_meta_col" value="treatment" placeholder="treatment, genotype, group" oninput="applyGlobalParams()">
+            <span class="help-text">Used in PERMANOVA, ANCOM-BC, barplots</span>
+          </label>
+          <label>Metadata File Name
+            <input type="text" id="glob_meta_file" value="sample-metadata.tsv" placeholder="sample-metadata.tsv" oninput="applyGlobalParams()">
+            <span class="help-text">Path to your metadata TSV file</span>
+          </label>
+          <label>Target Sampling Depth
+            <input type="number" id="glob_rare_depth" value="10000" placeholder="10000" oninput="applyGlobalParams()">
+            <span class="help-text">Rarefaction depth for diversity metrics</span>
+          </label>
+          <label>CPU Threads (--p-n-threads)
+            <input type="number" id="glob_threads" value="8" min="1" max="128" oninput="applyGlobalParams()">
+            <span class="help-text">Parallel cores for DADA2, tree, classifier</span>
+          </label>
+          <label>Forward Primer (5'→3')
+            <input type="text" id="glob_f_primer" value="GTGYCAGCMGCCGCGGTAA" placeholder="515F" oninput="applyGlobalParams()">
+            <span class="help-text">For Cutadapt & classifier training</span>
+          </label>
+          <label>Reverse Primer (5'→3')
+            <input type="text" id="glob_r_primer" value="GGACTACNVGGGTWTCTAAT" placeholder="806R" oninput="applyGlobalParams()">
+            <span class="help-text">For Cutadapt & classifier training</span>
+          </label>
+        </div>
+
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:16px">
+          <button class="nav-btn" onclick="resetGlobalParams()">↺ Reset Defaults</button>
+          <button class="nav-btn primary" onclick="applyGlobalParams(); toggleGlobalParamDrawer();">⚡ Apply & Close</button>
+        </div>
       </div>
     </div>
 
-    <!-- Interactive DADA2 Overlap Calculator -->
     <section id="sec-calc" data-category="dada2">
       <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:6px">
         <h2 style="margin:0">🧮 Interactive DADA2 Truncation & Overlap Calculator</h2>
@@ -3185,8 +3837,11 @@ qiime diversity core-metrics-phylogenetic --i-phylogeny rooted-tree.qza --i-tabl
   </div>
 </section>
 
-  </div><!-- end content -->
+    </div><!-- end content -->
 </main>
+
+<!-- Floating Back to Top -->
+<button id="backToTopBtn" onclick="window.scrollTo({top:0,behavior:'smooth'})" title="Back to Top">↑</button>
 
 <!-- MODALS & TOASTS -->
 <div class="modal-overlay" id="modalOverlay" onclick="closeModal()"></div>
@@ -3196,15 +3851,14 @@ qiime diversity core-metrics-phylogenetic --i-phylogeny rooted-tree.qza --i-tabl
     <button class="modal-close" onclick="closeModal()">✕</button>
   </div>
   <div class="modal-content" id="modalContent"></div>
-  <div class="modal-notes">
-    <h4>📝 My Notes for this step</h4>
-    <textarea id="modalNoteArea" placeholder="Add your specific parameters, run times, or hypotheses here..."></textarea>
-    <button onclick="saveNote()" style="margin-top:10px;background:var(--primary);color:white;border:none;padding:6px 12px;border-radius:4px;cursor:pointer">Save Note</button>
+  <div class="modal-notes" style="margin-top:16px;border-top:1px solid var(--border);padding-top:14px">
+    <h4 style="margin:0 0 6px 0;font-size:13px;color:var(--text)">📝 My Notes for this step</h4>
+    <textarea id="modalNoteArea" placeholder="Add your specific study parameters, run times, or biological notes here..."></textarea>
+    <button class="nav-btn primary" onclick="saveNote()" style="margin-top:10px">Save Note</button>
   </div>
 </div>
-<div class="toast" id="toast"></div>
+<div id="toast"></div>
 
-<!-- JAVASCRIPT -->
 <script>
 // 1. Theme toggle
 function toggleTheme() {
@@ -3221,16 +3875,30 @@ function toggleTheme() {
 // 2. Toast notifications
 function toast(msg) {
   const t = document.getElementById('toast');
-  t.textContent = msg;
+  if (!t) return;
+  t.innerHTML = msg;
   t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 3000);
+  setTimeout(() => t.classList.remove('show'), 3200);
 }
 
-// 3. Copy to clipboard
-function copyCode(id) {
-  const text = document.getElementById(id).innerText;
+// 3. Copy to clipboard with visual feedback
+function copyCode(id, btn) {
+  const target = document.getElementById(id);
+  if (!target) return;
+  const text = target.innerText;
   navigator.clipboard.writeText(text).then(() => {
     toast('✅ Copied to clipboard!');
+    if (btn) {
+      const origText = btn.innerHTML;
+      btn.innerHTML = '✓ Copied!';
+      btn.style.borderColor = 'var(--accent)';
+      setTimeout(() => {
+        btn.innerHTML = origText;
+        btn.style.borderColor = '';
+      }, 2000);
+    }
+  }).catch(() => {
+    toast('Failed to copy');
   });
 }
 
@@ -3342,20 +4010,20 @@ function explain(id, title) {
   };
 
   let modalHtml = `<div style="margin-bottom:12px">
-    <div style="font-weight:700;font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">🎯 Biological Purpose & Need</div>
-    <div style="font-size:13px;line-height:1.5;color:var(--text);background:var(--panel-alt);padding:10px 12px;border-radius:8px;border:1px solid var(--border)">${expl.need}</div>
+    <div style="font-weight:700;font-size:11.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">🎯 Biological Purpose & Need</div>
+    <div style="font-size:13px;line-height:1.55;color:var(--text);background:var(--panel-alt);padding:10px 14px;border-radius:10px;border:1px solid var(--border)">${expl.need}</div>
   </div>
   <div style="margin-bottom:12px">
-    <div style="font-weight:700;font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">💻 Executable Terminal Command</div>
-    <pre style="margin:0;max-height:160px;overflow:auto;font-size:11.5px">${codeContent}</pre>
+    <div style="font-weight:700;font-size:11.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">💻 Executable Terminal Command</div>
+    <pre style="margin:0;max-height:160px;overflow:auto;font-size:12px;border-radius:8px">${codeContent}</pre>
   </div>
   <div style="margin-bottom:12px">
-    <div style="font-weight:700;font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">⚙️ Parameters & Flags Breakdown</div>
-    <div style="font-size:12px;line-height:1.6;color:var(--text);background:var(--panel-alt);padding:10px 12px;border-radius:8px;border:1px solid var(--border);white-space:pre-line">${expl.params}</div>
+    <div style="font-weight:700;font-size:11.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">⚙️ Parameters & Flags Breakdown</div>
+    <div style="font-size:12.5px;line-height:1.6;color:var(--text);background:var(--panel-alt);padding:10px 14px;border-radius:10px;border:1px solid var(--border);white-space:pre-line">${expl.params}</div>
   </div>
   <div style="margin-bottom:8px">
-    <div style="font-weight:700;font-size:12px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">💡 Pro Tips & Pitfalls</div>
-    <div style="font-size:12px;line-height:1.5;color:var(--text);background:var(--success-bg);border:1px solid var(--success-border);padding:8px 12px;border-radius:8px">${expl.tips}</div>
+    <div style="font-weight:700;font-size:11.5px;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px">💡 Pro Tips & Pitfalls</div>
+    <div style="font-size:12.5px;line-height:1.5;color:var(--text);background:var(--success-bg);border:1px solid var(--success-border);padding:8px 12px;border-radius:8px">${expl.tips}</div>
   </div>`;
 
   document.getElementById('modalContent').innerHTML = modalHtml;
@@ -3436,10 +4104,10 @@ function resetNotes() {
 
 // 7. Export script
 function exportScript() {
-  let script = "#!/bin/bash\n# QIIME 2 Exported Script\n\n";
+  let script = "#!/bin/bash\n# QIIME 2 Exported Pipeline Script\n# Generated from QIIME 2 Master Learning Lab\n\n";
   document.querySelectorAll('pre').forEach(pre => {
     if (pre.id && !pre.id.startsWith('manifest') && !pre.closest('.modal')) {
-      script += `# ${pre.id}\n${pre.innerText}\n\n`;
+      script += `# Stage: ${pre.id}\n${pre.innerText}\n\n`;
     }
   });
   const blob = new Blob([script], {type: 'text/x-sh'});
@@ -3447,22 +4115,42 @@ function exportScript() {
   a.href = URL.createObjectURL(blob);
   a.download = 'qiime2_pipeline.sh';
   a.click();
+  toast('⬇ qiime2_pipeline.sh exported');
 }
 
-// 8. Navigation
+// 8. Navigation & Accordions
 function goTo(id) {
-  document.getElementById(id).scrollIntoView({behavior: 'smooth'});
+  const el = document.getElementById(id);
+  if (el) {
+    el.scrollIntoView({behavior: 'smooth'});
+    // If mobile menu open, close it
+    const sidebar = document.getElementById('sidebar');
+    if (sidebar && sidebar.classList.contains('mobile-open')) {
+      sidebar.classList.remove('mobile-open');
+    }
+  }
+}
+
+function toggleAccordionGroup(btn) {
+  const group = btn.closest('.nav-accordion-group');
+  if (group) group.classList.toggle('open');
+}
+
+function toggleMobileMenu() {
+  const sidebar = document.getElementById('sidebar');
+  if (sidebar) sidebar.classList.toggle('mobile-open');
 }
 
 // 9. Card counting
 function updateCardCounts() {
   const total = document.querySelectorAll('.card').length;
-  // Further specialized counts could be implemented here
+  const countEl = document.getElementById('count-all');
+  if (countEl) countEl.innerText = document.querySelectorAll('section').length;
 }
 
 // 10. Search filtering
 function filterCards() {
-  const q = document.getElementById('search').value.toLowerCase();
+  const q = document.getElementById('search').value.toLowerCase().trim();
   document.querySelectorAll('.card').forEach(card => {
     const text = card.innerText.toLowerCase();
     const isMatch = text.includes(q);
@@ -3472,7 +4160,7 @@ function filterCards() {
 
 // 11. Category filtering
 function setFilter(cat, btn) {
-  document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+  document.querySelectorAll('.filter-pill').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
   
   document.querySelectorAll('section').forEach(sec => {
@@ -3484,85 +4172,129 @@ function setFilter(cat, btn) {
   });
 }
 
+// 11b. Segmented View Mode Switcher
+function setViewMode(mode, btn) {
+  document.querySelectorAll('.view-mode-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+
+  const toolSecIds = ['sec-calc', 'sec-rarefaction', 'sec-manifest', 'sec-metadata'];
+  const treeSecIds = ['sec-decide-denoise', 'sec-decide-taxa', 'sec-decide-beta', 'sec-cheat'];
+
+  document.querySelectorAll('section').forEach(sec => {
+    if (mode === 'all') {
+      sec.style.display = 'block';
+    } else if (mode === 'tools') {
+      sec.style.display = toolSecIds.includes(sec.id) ? 'block' : 'none';
+    } else if (mode === 'trees') {
+      sec.style.display = treeSecIds.includes(sec.id) ? 'block' : 'none';
+    } else if (mode === 'pipeline') {
+      sec.style.display = !toolSecIds.includes(sec.id) ? 'block' : 'none';
+    }
+  });
+
+  const firstVisible = Array.from(document.querySelectorAll('section')).find(s => s.style.display !== 'none');
+  if (firstVisible) firstVisible.scrollIntoView({ behavior: 'smooth' });
+}
+
+// 11c. Global Project Parameter Drawer Toggle
+function toggleGlobalParamDrawer() {
+  const card = document.getElementById('globalParamCard');
+  if (!card) return;
+  card.classList.toggle('open');
+  const isOpen = card.classList.contains('open');
+  const txt = document.getElementById('paramToggleText');
+  const icon = document.getElementById('paramToggleIcon');
+  if (txt) txt.textContent = isOpen ? 'Hide Variables' : '⚙️ Edit Variables';
+  if (icon) icon.textContent = isOpen ? '▴' : '▾';
+}
+
+function resetGlobalParams() {
+  const col = document.getElementById('glob_meta_col'); if (col) col.value = 'treatment';
+  const file = document.getElementById('glob_meta_file'); if (file) file.value = 'sample-metadata.tsv';
+  const depth = document.getElementById('glob_rare_depth'); if (depth) depth.value = '10000';
+  const threads = document.getElementById('glob_threads'); if (threads) threads.value = '8';
+  const fp = document.getElementById('glob_f_primer'); if (fp) fp.value = 'GTGYCAGCMGCCGCGGTAA';
+  const rp = document.getElementById('glob_r_primer'); if (rp) rp.value = 'GGACTACNVGGGTWTCTAAT';
+  applyGlobalParams();
+  toast('Parameters reset to defaults');
+}
+
 // 12. DADA2 Calculator
 function calcDADA2() {
   const amp = parseInt(document.getElementById('calc_amp')?.value) || 0;
-  const flen = parseInt(document.getElementById('calc_f_len')?.value) || 0;
-  const rlen = parseInt(document.getElementById('calc_r_len')?.value) || 0;
   const ftrunc = parseInt(document.getElementById('calc_f_trunc')?.value) || 0;
   const rtrunc = parseInt(document.getElementById('calc_r_trunc')?.value) || 0;
+  const ftrim = parseInt(document.getElementById('calc_f_trim')?.value) || 0;
+  const rtrim = parseInt(document.getElementById('calc_r_trim')?.value) || 0;
+  const minOv = parseInt(document.getElementById('calc_min_ov')?.value) || 20;
   
-  const el = document.getElementById('calc_result');
+  const el = document.getElementById('dada2CalcResult') || document.getElementById('calc_result');
   if (!el) return;
 
-  const totalLength = ftrunc + rtrunc;
-  const overlap = totalLength - amp;
+  const totalEffectiveLength = (ftrunc - ftrim) + (rtrunc - rtrim);
+  const overlap = totalEffectiveLength - amp;
   
-  if (overlap >= 20) {
-    el.innerHTML = `<span style="color:var(--success-text);font-weight:bold">✅ Good to go!</span> Overlap is ${overlap}bp. DADA2 requires at least 12-20bp overlap to merge successfully.`;
+  if (overlap >= minOv) {
+    el.innerHTML = `<span style="color:var(--success-text);font-weight:700">✅ High Quality Merge Expected:</span> Effective Overlap is <strong>${overlap} bp</strong> (Target: &ge; ${minOv} bp). Forward + reverse reads will easily merge!`;
     el.className = 'status-alert success';
-  } else if (overlap > 0) {
-    el.innerHTML = `<span style="color:#d97706;font-weight:bold">⚠️ Warning:</span> Overlap is only ${overlap}bp. Merging might drop many reads. Consider reducing truncation.`;
+  } else if (overlap >= 12) {
+    el.innerHTML = `<span style="color:#d97706;font-weight:700">⚠️ Borderline Overlap:</span> Overlap is <strong>${overlap} bp</strong>. DADA2 requires &ge; 12 bp, but &ge; 20 bp is recommended to prevent read loss.`;
     el.className = 'status-alert warning';
   } else {
-    el.innerHTML = `<span style="color:var(--danger);font-weight:bold">❌ Failed:</span> No overlap! Sequences will not merge (Overlap: ${overlap}bp). Increase truncation lengths.`;
+    el.innerHTML = `<span style="color:var(--danger-text);font-weight:700">❌ Failed Merge Warning:</span> Calculated overlap is <strong>${overlap} bp</strong> (&lt; 12 bp threshold). DADA2 will discard 80-100% of your sequences! Increase truncation lengths.`;
     el.className = 'status-alert danger';
   }
 }
 
 function loadPreset(preset) {
   if (preset === 'v4') {
-    document.getElementById('calc_amp').value = 253;
-    document.getElementById('calc_f_len').value = 250;
-    document.getElementById('calc_r_len').value = 250;
-    document.getElementById('calc_f_trunc').value = 240;
-    document.getElementById('calc_r_trunc').value = 160;
+    if (document.getElementById('calc_amp')) document.getElementById('calc_amp').value = 253;
+    if (document.getElementById('calc_f_len')) document.getElementById('calc_f_len').value = 250;
+    if (document.getElementById('calc_r_len')) document.getElementById('calc_r_len').value = 250;
+    if (document.getElementById('calc_f_trunc')) document.getElementById('calc_f_trunc').value = 240;
+    if (document.getElementById('calc_r_trunc')) document.getElementById('calc_r_trunc').value = 200;
   } else if (preset === 'v3v4') {
-    document.getElementById('calc_amp').value = 460;
-    document.getElementById('calc_f_len').value = 300;
-    document.getElementById('calc_r_len').value = 300;
-    document.getElementById('calc_f_trunc').value = 280;
-    document.getElementById('calc_r_trunc').value = 240;
+    if (document.getElementById('calc_amp')) document.getElementById('calc_amp').value = 460;
+    if (document.getElementById('calc_f_len')) document.getElementById('calc_f_len').value = 300;
+    if (document.getElementById('calc_r_len')) document.getElementById('calc_r_len').value = 300;
+    if (document.getElementById('calc_f_trunc')) document.getElementById('calc_f_trunc').value = 280;
+    if (document.getElementById('calc_r_trunc')) document.getElementById('calc_r_trunc').value = 240;
   }
   calcDADA2();
 }
 
 // 13. Rarefaction Depth Advisor
 function calcRarefaction() {
-  const minDepth = parseInt(document.getElementById('rare_min')?.value) || 0;
-  const medianDepth = parseInt(document.getElementById('rare_median')?.value) || 0;
-  const maxDepth = parseInt(document.getElementById('rare_max')?.value) || 0;
-  const nSamples = parseInt(document.getElementById('rare_n')?.value) || 0;
+  const minDepth = parseInt(document.getElementById('rare_min')?.value) || 2500;
+  const medianDepth = parseInt(document.getElementById('rare_median')?.value) || 12000;
+  const maxDepth = parseInt(document.getElementById('rare_max')?.value) || 45000;
+  const nSamples = parseInt(document.getElementById('rare_n')?.value) || 24;
   const maxLoss = parseInt(document.getElementById('rare_loss')?.value) || 10;
   
   const el = document.getElementById('rarefactionResult');
   if (!el) return;
 
-  // Recommend depth
   let recommended = Math.floor(medianDepth * 0.8);
   if (recommended < minDepth) recommended = minDepth;
   
-  // Estimate sample retention at different thresholds
   const thresholds = [
-    { depth: minDepth, label: 'Minimum (retain all samples)' },
-    { depth: Math.floor(medianDepth * 0.5), label: '50% of median' },
-    { depth: Math.floor(medianDepth * 0.8), label: '80% of median (recommended)' },
-    { depth: medianDepth, label: 'Median depth' },
+    { depth: minDepth, label: 'Minimum Depth (Retains 100% of samples, lower depth resolution)' },
+    { depth: Math.floor(medianDepth * 0.5), label: '50% of Median (Retains ~95-98% of samples)' },
+    { depth: Math.floor(medianDepth * 0.8), label: 'Recommended Cutoff (Retains ~90-95% of samples, high diversity power)' },
+    { depth: medianDepth, label: 'Median Depth (Discards ~50% of your samples - not recommended)' }
   ];
   
-  // Render result
-  let html = `<div style="font-weight:700;margin-bottom:8px">Recommended Sampling Depth: <span style="color:#2563eb;font-size:18px">${recommended.toLocaleString()}</span> reads</div>`;
-  html += `<p style="font-size:13px;color:var(--text-muted)">This retains approximately ${Math.round((1 - maxLoss/100) * 100)}% of your samples while maximizing sequencing depth for diversity estimation.</p>`;
-  html += `<table class="concept-table" style="margin-top:12px"><thead><tr><th>Depth Threshold</th><th>Description</th></tr></thead><tbody>`;
+  let html = `<div style="font-weight:700;margin-bottom:8px;font-size:14px">Recommended Sampling Depth: <span style="color:var(--primary);font-size:18px">${recommended.toLocaleString()}</span> reads</div>`;
+  html += `<p style="font-size:12.5px;color:var(--text-muted);margin:0 0 10px 0">Subsampling at <strong>${recommended.toLocaleString()} reads</strong> maximizes statistical power while dropping &le; ${maxLoss}% of biological samples.</p>`;
+  html += `<table class="concept-table"><thead><tr><th>Depth Threshold</th><th>Trade-Off Evaluation</th></tr></thead><tbody>`;
   thresholds.forEach(t => {
-    html += `<tr><td><strong>${t.depth.toLocaleString()}</strong></td><td>${t.label}</td></tr>`;
+    html += `<tr><td><strong>${t.depth.toLocaleString()} reads</strong></td><td>${t.label}</td></tr>`;
   });
   html += '</tbody></table>';
-  html += `<div class="status-alert info" style="margin-top:12px">💡 <strong>Tip:</strong> Always inspect your alpha rarefaction curves (qiime diversity alpha-rarefaction) to confirm that observed richness plateaus before your chosen depth.</div>`;
+  html += `<div class="status-alert info">💡 <strong>Verification Tip:</strong> Confirm that your alpha rarefaction plateau occurs prior to <strong>${recommended.toLocaleString()}</strong> in <code>alpha-rarefaction.qzv</code>.</div>`;
   el.innerHTML = html;
 }
 
-// 14. Manifest Generator
 // 14. Manifest Generator
 function toggleManifestType() {
   generateManifest();
@@ -3578,7 +4310,6 @@ function detectFastqFiles(input) {
     return;
   }
 
-  // Detect paired vs single
   const hasR1 = filenames.some(n => /[_.]R?1[_.]/.test(n));
   const hasR2 = filenames.some(n => /[_.]R?2[_.]/.test(n));
   const isPaired = hasR1 && hasR2;
@@ -3586,7 +4317,6 @@ function detectFastqFiles(input) {
   const manType = document.getElementById('man_type');
   if (manType) manType.value = isPaired ? 'paired' : 'single';
 
-  // Extract sample IDs
   const sampleMap = new Map();
   filenames.forEach(fn => {
     let clean = fn.replace(/\.(fastq|fq)(\.gz)?$/i, '');
@@ -3601,7 +4331,6 @@ function detectFastqFiles(input) {
   const sampleBox = document.getElementById('man_samples');
   if (sampleBox) sampleBox.value = sampleIds.join('\n');
 
-  // Detect extension pattern
   const first = filenames[0];
   const manExt = document.getElementById('man_ext');
   if (manExt) {
@@ -3614,11 +4343,11 @@ function detectFastqFiles(input) {
   const statusEl = document.getElementById('man_detect_status');
   if (statusEl) {
     statusEl.style.display = 'block';
-    statusEl.innerHTML = `✓ Analyzed <strong>${filenames.length} files</strong> from disk! Detected <strong>${sampleIds.length} unique samples</strong> (${isPaired ? 'Paired-End' : 'Single-End'}). Set your Base Directory path below to complete your manifest.`;
+    statusEl.innerHTML = `✓ Analyzed <strong>${filenames.length} files</strong> from disk! Detected <strong>${sampleIds.length} unique samples</strong> (${isPaired ? 'Paired-End' : 'Single-End'}).`;
   }
 
   generateManifest();
-  toast(`🎉 Detected ${sampleIds.length} samples from local files!`);
+  toast(`🎉 Detected ${sampleIds.length} samples!`);
 }
 
 function generateManifest() {
@@ -3703,9 +4432,7 @@ function getMetadataTSV() {
 
 function updateMetadataPreview() {
   const el = document.getElementById('metadataTsvPreview');
-  if (el) {
-    el.innerText = getMetadataTSV();
-  }
+  if (el) el.innerText = getMetadataTSV();
 }
 
 function renderMetadata() {
@@ -3713,7 +4440,7 @@ function renderMetadata() {
   if (!container) return;
 
   if (metadataRows.length === 0) {
-    container.innerHTML = '<p style="color:var(--text-muted);font-size:13px;font-style:italic;margin:8px 0">No samples added yet. Click "Load Example Dataset" or enter values above and click "＋ Add Sample".</p>';
+    container.innerHTML = '<p style="color:var(--text-muted);font-size:12.5px;font-style:italic;margin:8px 0">No samples added yet. Click "Load Example Dataset" or enter values above and click "＋ Add Sample".</p>';
     const warningsEl = document.getElementById('metadataWarnings');
     if (warningsEl) warningsEl.innerHTML = '';
     updateMetadataPreview();
@@ -3755,8 +4482,8 @@ function renderMetadata() {
       <td>${row.ph || '-'}</td>
       <td>${row.batch || '-'}</td>
       <td style="text-align:center;white-space:nowrap">
-        <button style="font-size:11px;padding:3px 8px;margin-right:4px" onclick="editMetadata(${i})">Edit</button>
-        <button style="font-size:11px;padding:3px 8px;color:#ef4444;border-color:rgba(239,68,68,0.3)" onclick="removeMetadata(${i})">Del</button>
+        <button class="nav-btn" style="font-size:11px;padding:2px 7px;margin-right:4px" onclick="editMetadata(${i})">Edit</button>
+        <button class="nav-btn" style="font-size:11px;padding:2px 7px;color:#ef4444;border-color:rgba(239,68,68,0.3)" onclick="removeMetadata(${i})">Del</button>
       </td>
     </tr>`;
   });
@@ -3764,7 +4491,6 @@ function renderMetadata() {
   html += `</tbody></table>`;
   container.innerHTML = html;
 
-  // Check for duplicate sample IDs
   const warningsEl = document.getElementById('metadataWarnings');
   if (warningsEl) {
     const ids = metadataRows.map(r => r.id);
@@ -3797,7 +4523,6 @@ function addMetadataRow() {
 
   metadataRows.push({ id, group, site, subject, time, ph, batch });
 
-  // Clear inputs
   if (idInput) idInput.value = '';
   document.getElementById('m_time').value = '';
   document.getElementById('m_ph').value = '';
@@ -3846,7 +4571,7 @@ function loadMetadataExample() {
 }
 
 function downloadMetadata() {
-  if (metadataRows.length === 0) return toast('⚠️ Metadata is empty! Add samples or load example first.');
+  if (metadataRows.length === 0) return toast('⚠️ Metadata is empty!');
   const text = getMetadataTSV();
   const blob = new Blob([text], { type: 'text/tab-separated-values' });
   const a = document.createElement('a');
@@ -3859,7 +4584,7 @@ function downloadMetadata() {
 function copyMetadataTSV() {
   const tsv = getMetadataTSV();
   navigator.clipboard.writeText(tsv).then(() => {
-    toast('📋 sample-metadata.tsv copied to clipboard');
+    toast('📋 sample-metadata.tsv copied');
   }).catch(() => {
     toast('Failed to copy metadata');
   });
@@ -3873,35 +4598,71 @@ function saveProgress(checkbox) {
   localStorage.setItem('qiimeProgress', JSON.stringify(progress));
   updateProgressBar();
 }
+
 function loadProgress() {
   const progress = JSON.parse(localStorage.getItem('qiimeProgress') || '{}');
-  document.querySelectorAll('.progress-check input[type=checkbox]').forEach(cb => {
+  document.querySelectorAll('.nav-item input[type=checkbox]').forEach(cb => {
     const step = cb.getAttribute('data-step');
     if (progress[step]) cb.checked = true;
   });
   updateProgressBar();
 }
+
 function updateProgressBar() {
-  const checks = document.querySelectorAll('.progress-check input[type=checkbox]');
+  const checks = document.querySelectorAll('.nav-item input[type=checkbox]');
   if (checks.length === 0) return;
   const total = checks.length;
-  const checked = document.querySelectorAll('.progress-check input[type=checkbox]:checked').length;
+  const checked = document.querySelectorAll('.nav-item input[type=checkbox]:checked').length;
   const pct = total > 0 ? Math.round((checked / total) * 100) : 0;
-  const bar = document.getElementById('progressBar');
-  if (bar) {
-    bar.innerHTML = `<div style="background:#e2e8f0;border-radius:6px;height:8px;margin:10px 0"><div style="background:linear-gradient(90deg,#2563eb,#0d9488);height:8px;border-radius:6px;width:${pct}%;transition:width 0.3s"></div></div><div style="font-size:11px;color:var(--text-muted)">${checked}/${total} steps completed (${pct}%)</div>`;
-  }
+  
+  const fill = document.getElementById('progressFill');
+  if (fill) fill.style.width = `${pct}%`;
+  
+  const txt = document.getElementById('progressText');
+  if (txt) txt.innerText = `${checked} / ${total} completed (${pct}%)`;
 }
 
-// 17. Accordion toggle
-function toggleAccordion(el) {
-  const acc = el.nextElementSibling;
-  acc.classList.toggle('open');
-  el.textContent = acc.classList.contains('open') ? '▼ Hide Explanation' : '▶ Detailed Explanation';
+// 17. Scroll Spy & Back to Top
+function setupScrollSpy() {
+  const sections = document.querySelectorAll('section');
+  const navItems = document.querySelectorAll('.nav-item');
+  const backToTopBtn = document.getElementById('backToTopBtn');
+
+  window.addEventListener('scroll', () => {
+    // Back to top visibility
+    if (window.scrollY > 350) {
+      backToTopBtn?.classList.add('visible');
+    } else {
+      backToTopBtn?.classList.remove('visible');
+    }
+
+    // Scroll spy
+    let currentId = '';
+    const scrollPos = window.scrollY + 140;
+
+    sections.forEach(sec => {
+      if (sec.offsetTop <= scrollPos) {
+        currentId = sec.id;
+      }
+    });
+
+    if (currentId) {
+      navItems.forEach(item => {
+        if (item.getAttribute('data-sec') === currentId) {
+          item.classList.add('active');
+          const group = item.closest('.nav-accordion-group');
+          if (group && !group.classList.contains('open')) {
+            group.classList.add('open');
+          }
+        } else {
+          item.classList.remove('active');
+        }
+      });
+    }
+  }, { passive: true });
 }
 
-// 18. Keyboard shortcuts & Navigation
-const allSections = Array.from(document.querySelectorAll('section'));
+// 18. Keyboard shortcuts
 document.addEventListener('keydown', e => {
   const isInput = ['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName) || document.activeElement.isContentEditable;
   
@@ -3913,14 +4674,14 @@ document.addEventListener('keydown', e => {
     return;
   }
   
-  // Escape: Close modals / blur active input
+  // Escape: Close modals
   if (e.key === 'Escape') {
     closeModal();
     if (document.activeElement) document.activeElement.blur();
     return;
   }
 
-  // J / K or Alt+Down / Alt+Up: Navigate through sections
+  // J / K for navigation
   if (!isInput) {
     if (e.key === 'j' || (e.altKey && e.key === 'ArrowDown')) {
       navigateSection(1);
@@ -3931,24 +4692,23 @@ document.addEventListener('keydown', e => {
 });
 
 function navigateSection(direction) {
-  const visibleSections = allSections.filter(s => s.offsetParent !== null);
-  if (!visibleSections.length) return;
+  const allSecs = Array.from(document.querySelectorAll('section')).filter(s => s.style.display !== 'none');
+  if (!allSecs.length) return;
   
-  const scrollPos = window.scrollY + 120;
+  const scrollPos = window.scrollY + 140;
   let currentIndex = 0;
-  for (let i = 0; i < visibleSections.length; i++) {
-    if (visibleSections[i].offsetTop <= scrollPos) currentIndex = i;
+  for (let i = 0; i < allSecs.length; i++) {
+    if (allSecs[i].offsetTop <= scrollPos) currentIndex = i;
   }
   
   let targetIndex = currentIndex + direction;
   if (targetIndex < 0) targetIndex = 0;
-  if (targetIndex >= visibleSections.length) targetIndex = visibleSections.length - 1;
+  if (targetIndex >= allSecs.length) targetIndex = allSecs.length - 1;
   
-  visibleSections[targetIndex].scrollIntoView({ behavior: 'smooth' });
+  allSecs[targetIndex].scrollIntoView({ behavior: 'smooth' });
 }
 
 // 18b. Live Interactive Parameter Customizer Functions
-
 function updateImportCmd() {
   const typeSel = document.getElementById('imp_type_select');
   const customType = document.getElementById('imp_type_custom');
@@ -4162,7 +4922,7 @@ function updatePermanovaCmd() {
   --m-metadata-file sample-metadata.tsv \\
   --m-metadata-column ${col} \\
   --o-visualization ${outVis}`;
-  if (pairwise) code += ` \\\n  ${pairwise}`;
+  if (pairwise) code += ` \\n  ${pairwise}`;
 
   const el = document.getElementById('s12c1');
   if (el) el.innerText = code;
@@ -4293,8 +5053,9 @@ function applyGlobalParams() {
   const fPrimer = document.getElementById('glob_f_primer')?.value.trim();
   const rPrimer = document.getElementById('glob_r_primer')?.value.trim();
 
-  // Propagate to card inputs
+  // Update pills in header
   if (metaCol) {
+    const pill = document.getElementById('pill_meta'); if (pill) pill.innerText = `Col: ${metaCol}`;
     const pCol = document.getElementById('perm_col'); if (pCol) pCol.value = metaCol;
     const fCol = document.getElementById('filt_meta_col'); if (fCol) fCol.value = metaCol;
     const aForm = document.getElementById('ancom_formula'); if (aForm) aForm.value = metaCol;
@@ -4308,11 +5069,13 @@ function applyGlobalParams() {
   }
 
   if (depth) {
+    const pill = document.getElementById('pill_depth'); if (pill) pill.innerText = `Depth: ${parseInt(depth).toLocaleString()}`;
     const cDepth = document.getElementById('core_depth'); if (cDepth) cDepth.value = depth;
     const rMedian = document.getElementById('rare_median'); if (rMedian) rMedian.value = Math.round(depth * 1.25);
   }
 
   if (threads) {
+    const pill = document.getElementById('pill_threads'); if (pill) pill.innerText = `Threads: ${threads}`;
     const dThreads = document.getElementById('dad_threads'); if (dThreads) dThreads.value = threads;
     const tThreads = document.getElementById('tax_threads'); if (tThreads) tThreads.value = threads;
   }
@@ -4338,10 +5101,10 @@ function applyGlobalParams() {
   updateItsCmd();
   updateLongitudinalCmd();
 
-  toast('⚡ All commands synchronized with your project parameters!');
+  toast('⚡ All commands synchronized with project parameters!');
 }
 
-// 19. Initializations
+// Initializations
 window.addEventListener('DOMContentLoaded', () => {
   if (localStorage.getItem('qiimeTheme') === 'dark') document.documentElement.setAttribute('data-theme', 'dark');
   calcDADA2();
@@ -4350,6 +5113,13 @@ window.addEventListener('DOMContentLoaded', () => {
   renderMetadata();
   updateCardCounts();
   loadProgress();
+  setupScrollSpy();
+
+  // Check mobile width for menu button
+  if (window.innerWidth <= 1100) {
+    const mb = document.getElementById('btn-mobile-menu');
+    if (mb) mb.style.display = 'inline-flex';
+  }
 
   // Initialize live command builders
   updateImportCmd();
