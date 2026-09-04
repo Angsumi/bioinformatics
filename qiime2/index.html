@@ -374,13 +374,13 @@ main {
 /* ACCORDION SIDEBAR */
 nav {
   position: sticky;
-  top: 96px;
+  top: 72px;
   align-self: start;
   background: var(--panel);
   border: 1px solid var(--border);
   border-radius: 16px;
   padding: 14px;
-  max-height: calc(100vh - 116px);
+  max-height: calc(100vh - 90px);
   overflow-y: auto;
   box-shadow: var(--card-shadow);
   transition: box-shadow 0.2s;
@@ -678,7 +678,7 @@ nav {
 
 /* SECTION & CARDS */
 section {
-  scroll-margin-top: 100px;
+  scroll-margin-top: 76px;
   margin-bottom: 36px;
 }
 
@@ -1366,20 +1366,6 @@ input:focus, select:focus, textarea:focus {
       <button class="nav-btn btn-icon-only" onclick="downloadNotes()" title="Export Notes">📝</button>
       <button class="nav-btn btn-icon-only" onclick="toggleTheme()" title="Toggle Dark/Light Mode">🌓</button>
       <button class="nav-btn btn-icon-only" onclick="toggleMobileMenu()" id="btn-mobile-menu" style="display:none" title="Toggle Navigation Menu">☰</button>
-    </div>
-  </div>
-
-  <div class="sub-header">
-    <div class="filters-bar">
-      <button class="filter-pill active" onclick="setFilter('all', this)">All Sections (<span id="count-all">22</span>)</button>
-      <button class="filter-pill" onclick="setFilter('setup', this)">1. Setup & Ingestion</button>
-      <button class="filter-pill" onclick="setFilter('dada2', this)">2. Cutadapt & DADA2</button>
-      <button class="filter-pill" onclick="setFilter('features', this)">3. Feature Table</button>
-      <button class="filter-pill" onclick="setFilter('taxonomy', this)">4. Phylogeny & Taxonomy</button>
-      <button class="filter-pill" onclick="setFilter('diversity', this)">5. Alpha & Beta Diversity</button>
-      <button class="filter-pill" onclick="setFilter('stats', this)">6. Statistics & ANCOM-BC</button>
-      <button class="filter-pill" onclick="setFilter('shotgun', this)">7. Shotgun & ITS</button>
-      <button class="filter-pill" onclick="setFilter('export', this)">8. Export & References</button>
     </div>
   </div>
 </header>
