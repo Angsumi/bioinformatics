@@ -1,5 +1,12 @@
 # 🧬 Bioinformatics & Multi-Omics Interactive Learning Hub
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](./LICENSE)
+[![CI Validation](https://img.shields.io/github/actions/workflow/status/Angsumi/bioinformatics/ci.yml?branch=main&style=flat-square&label=CI%20Validation)](https://github.com/Angsumi/bioinformatics/actions)
+[![Live Platform](https://img.shields.io/badge/Live%20Platform-angsumi.online%2Fbioinformatics-0284c7?style=flat-square&logo=google-chrome&logoColor=white)](https://angsumi.online/bioinformatics/)
+[![Interactive Labs](https://img.shields.io/badge/Interactive%20Labs-10%20Modules-purple?style=flat-square)](https://angsumi.online/bioinformatics/)
+[![GitHub Stars](https://img.shields.io/github/stars/Angsumi/bioinformatics?style=flat-square&color=amber)](https://github.com/Angsumi/bioinformatics/stargazers)
+[![GitHub Forks](https://img.shields.io/github/forks/Angsumi/bioinformatics?style=flat-square)](https://github.com/Angsumi/bioinformatics/network/members)
+
 A production-grade, interactive learning laboratory, visual simulator suite, and reproducible pipeline platform for **Genomics, Transcriptomics, Proteomics, Metagenomics, and Structural Biology**.
 
 🌐 **Live Hub**: [https://angsumi.online/bioinformatics/](https://angsumi.online/bioinformatics/)  
@@ -49,6 +56,15 @@ python3 -m http.server 8000
 # Open in your browser:
 # http://localhost:8000/
 ```
+
+---
+
+## 🤖 AI & OpenAI Codex Integration Roadmap
+
+To further accelerate scientific reproducibility, this project is architected for integration with **OpenAI Codex** and LLMs:
+1. **Natural Language Pipeline Synthesis**: Interactive input modal allowing researchers to specify biological criteria in plain English to automatically configure all multi-omics parameters, reference databases, and execution flags.
+2. **Real-Time CLI & Script Diagnostics**: Parsing tool error streams (e.g. out-of-memory allocations in GATK or BAM header format violations in SAMtools) to supply direct troubleshooting steps.
+3. **Automated Workflow Manager Export**: Automated compilation of customized multi-omics pipelines into scalable **Nextflow DSL2** and **Snakemake** modules for HPC cluster and cloud execution.
 
 ---
 
