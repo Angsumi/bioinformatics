@@ -1,0 +1,23 @@
+cff-version: 1.2.0
+message: "If you use this learning platform or code in your research or educational curriculum, please cite it as below."
+authors:
+  - family-names: "Das"
+    given-names: "Angsuman"
+    orcid: "https://orcid.org/0009-0002-8611-3965"
+title: "Bioinformatics & Multi-Omics Interactive Learning Hub: Reproducible Workflows for Genomics, Transcriptomics, Proteomics, Metagenomics, and Structural Biology"
+version: 1.0.0
+date-released: 2026-11-02
+url: "https://github.com/Angsumi/bioinformatics"
+keywords:
+  - bioinformatics
+  - genomics
+  - transcriptomics
+  - proteomics
+  - metagenomics
+  - structural-biology
+  - qiime2
+  - deseq2
+  - gatk
+  - alphafold
+  - open-source
+license: MIT

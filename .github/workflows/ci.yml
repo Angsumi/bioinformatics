@@ -1,0 +1,70 @@
+name: CI & HTML/JS Validation
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Validate HTML & Embedded JavaScript Syntax
+        run: |
+          node -e "
+          const fs = require('fs');
+          const path = require('path');
+
+          const files = [
+            'index.html',
+            'qiime2/index.html',
+            'samtools/index.html',
+            'hisat2/index.html',
+            'bowtie2/index.html',
+            'deseq2/index.html',
+            'proteomics/index.html',
+            'gatk/index.html',
+            'shotgun-mag/index.html',
+            'alphafold/index.html',
+            'kraken2/index.html'
+          ];
+
+          let failed = false;
+
+          files.forEach(f => {
+            if (!fs.existsSync(f)) {
+              console.error('File not found: ' + f);
+              failed = true;
+              return;
+            }
+            const content = fs.readFileSync(f, 'utf8');
+            const scripts = content.match(/<script>([\s\S]*?)<\/script>/g);
+            if (scripts) {
+              scripts.forEach((s, idx) => {
+                const code = s.replace(/<\/?script>/g, '');
+                try {
+                  new Function(code);
+                } catch(e) {
+                  console.error('Syntax error in ' + f + ' (script #' + idx + '):', e.message);
+                  failed = true;
+                }
+              });
+            }
+            console.log('✓ Validated: ' + f);
+          });
+
+          if (failed) {
+            process.exit(1);
+          } else {
+            console.log('All files passed validation successfully!');
+          }
+          "
