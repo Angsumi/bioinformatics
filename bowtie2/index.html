@@ -1,0 +1,831 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Bowtie & Bowtie 2 Short Read Alignment Lab | Bioinformatics Hub</title>
+<style>
+:root {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-alt: #f1f5f9;
+  --panel-hover: #f8fafc;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-focus: #0284c7;
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-light: #f0f9ff;
+  --primary-dark: #075985;
+  --primary-glow: rgba(2, 132, 199, 0.12);
+  --accent: #d97706;
+  --accent-light: #fffbeb;
+  --code-bg: #0d1117;
+  --code-header: #161b22;
+  --code-text: #e6edf3;
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --header-bg: rgba(255, 255, 255, 0.88);
+  --header-border: rgba(226, 232, 240, 0.8);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+[data-theme="dark"] {
+  --bg: #090d16;
+  --panel: #0f172a;
+  --panel-alt: #161f30;
+  --panel-hover: #1b263b;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --border: #1e293b;
+  --border-subtle: #141c2e;
+  --border-focus: #38bdf8;
+  --primary: #38bdf8;
+  --primary-hover: #7dd3fc;
+  --primary-light: #082f49;
+  --primary-dark: #bae6fd;
+  --primary-glow: rgba(56, 189, 248, 0.15);
+  --accent: #fbbf24;
+  --accent-light: #451a03;
+  --code-bg: #05080f;
+  --code-header: #0d121f;
+  --code-text: #f1f5f9;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --header-bg: rgba(9, 13, 22, 0.88);
+  --header-border: rgba(30, 41, 59, 0.8);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14.5px/1.65 var(--font-sans);
+  letter-spacing: -0.011em;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.header-inner {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand-wrapper { display: flex; align-items: center; gap: 12px; }
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0284c7, #d97706);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 13px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+.brand-text h1 { margin: 0; font-size: 16px; font-weight: 700; color: var(--text); }
+.brand-text p { margin: 1px 0 0; font-size: 11.5px; color: var(--text-muted); }
+
+.header-controls { display: flex; align-items: center; gap: 10px; }
+.nav-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.nav-btn:hover { background: var(--panel-alt); border-color: var(--border-focus); }
+.nav-btn.primary { background: var(--primary); color: white; border-color: var(--primary); }
+
+.layout {
+  display: flex;
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 24px;
+  gap: 28px;
+}
+
+aside.sidebar {
+  width: 290px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 75px;
+  max-height: calc(100vh - 95px);
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.nav-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  margin: 18px 0 8px 6px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 12.8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 7px;
+  transition: all 0.12s;
+  margin-bottom: 2px;
+}
+.nav-link:hover, .nav-link.active {
+  background: var(--panel-alt);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+main.content { flex: 1; min-width: 0; }
+
+.hero-box {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(217, 119, 6, 0.08));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+}
+.hero-box h2 { margin: 0 0 8px; font-size: 24px; font-weight: 800; }
+.hero-box p { margin: 0; color: var(--text-muted); font-size: 14.5px; max-width: 880px; }
+
+section.lab-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--card-shadow);
+  scroll-margin-top: 85px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.section-head h2 { margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.tag-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-glow);
+}
+
+.tool-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.calc-card {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.calc-card h4 { margin: 0 0 10px; font-size: 13.5px; font-weight: 700; }
+
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+.form-control {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-family: inherit;
+}
+
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 14px 0;
+}
+.code-header {
+  background: var(--code-header);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.code-lang { font-family: var(--font-mono); font-size: 11.5px; color: #94a3b8; }
+.copy-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+pre {
+  margin: 0;
+  padding: 14px;
+  color: var(--code-text);
+  font-family: var(--font-mono);
+  font-size: 12.8px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+.explain-btn {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  max-width: 650px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+
+.decision-box {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.decision-options { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.dec-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.dec-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.dec-result {
+  background: var(--panel);
+  border-left: 4px solid var(--primary);
+  padding: 12px 14px;
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+@media(max-width: 900px) {
+  .layout { flex-direction: column; }
+  aside.sidebar { width: 100%; position: static; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand-wrapper">
+      <a href="../" class="brand-badge">🧬 Hub</a>
+      <div class="brand-text">
+        <h1>Bowtie & Bowtie 2 Alignment Lab</h1>
+        <p>Burrows-Wheeler Transform, Seed Heuristics, ChIP-Seq/ATAC-Seq & Host Filtering</p>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button class="nav-btn" onclick="exportScript()">⬇ Export Bash Script</button>
+      <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">🌙 Theme</button>
+      <a href="../" class="nav-btn primary">← Back to Hub</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="nav-group-title">Interactive Simulators</div>
+    <a href="#sec-preset-calc" class="nav-link">🎯 Preset & Alignment Score</a>
+    <a href="#sec-host-filter" class="nav-link">🦠 Host Depletion Simulator</a>
+
+    <div class="nav-group-title">Pipeline Workflow</div>
+    <a href="#stage-0" class="nav-link">0. Burrows-Wheeler Indexing</a>
+    <a href="#stage-1" class="nav-link">1. Indexing Reference Genome</a>
+    <a href="#stage-2" class="nav-link">2. gDNA & Exome Alignment</a>
+    <a href="#stage-3" class="nav-link">3. ChIP-Seq / ATAC-Seq Mapping</a>
+    <a href="#stage-4" class="nav-link">4. End-to-End vs Local Trimming</a>
+    <a href="#stage-5" class="nav-link">5. Multi-mapping & Discordant</a>
+    <a href="#stage-6" class="nav-link">6. Metagenomic Host Depletion</a>
+    <a href="#stage-7" class="nav-link">7. Alignment Score Interpretation</a>
+    <a href="#stage-8" class="nav-link">8. MACS3 Peak Calling</a>
+
+    <div class="nav-group-title">Decision Guide</div>
+    <a href="#sec-decision" class="nav-link">🔀 Decision Architecture</a>
+  </aside>
+
+  <main class="content">
+    <div class="hero-box">
+      <h2>🎯 Ultrafast Short-Read Genomic Alignment</h2>
+      <p>Bowtie 2 combines the memory efficiency of the Ferragina-Manzini (FM) index with hardware-accelerated dynamic programming. It excels at aligning 50-1000 bp reads for gDNA, ChIP-seq, ATAC-seq, and metagenomic host decontamination.</p>
+    </div>
+
+    <!-- CALCULATOR 1: Preset & Alignment Score -->
+    <section class="lab-section" id="sec-preset-calc">
+      <div class="section-head">
+        <h2><span>🎯</span> Alignment Mode & Minimum Score Calculator</h2>
+        <span class="tag-badge">Interactive Tool</span>
+      </div>
+      <div class="tool-calc-grid">
+        <div class="calc-card">
+          <h4>Preset & Read Specifications</h4>
+          <div class="form-group">
+            <label>Alignment Mode:</label>
+            <select id="btMode" class="form-control" onchange="calcScoreThreshold()">
+              <option value="end-to-end">End-to-End (--end-to-end)</option>
+              <option value="local">Local Soft-Clipping (--local)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Sensitivity Preset:</label>
+            <select id="btPreset" class="form-control" onchange="calcScoreThreshold()">
+              <option value="very-fast">--very-fast</option>
+              <option value="fast">--fast</option>
+              <option value="sensitive" selected>--sensitive (Default)</option>
+              <option value="very-sensitive">--very-sensitive</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Read Length (L in bp):</label>
+            <input type="number" id="btReadLen" class="form-control" value="150" oninput="calcScoreThreshold()">
+          </div>
+        </div>
+
+        <div class="calc-card" style="display:flex;flex-direction:column;justify-content:center;">
+          <h4>Calculated Parameters</h4>
+          <div style="margin-bottom:12px;">
+            <div style="font-size:11.5px;color:var(--text-muted);">Minimum Valid Alignment Score:</div>
+            <div id="btMinScore" style="font-size:24px;font-weight:800;color:var(--primary);">-90.6</div>
+            <div id="btScoreFormula" style="font-size:11px;color:var(--text-dim);">-0.6 + -0.6 * 150</div>
+          </div>
+          <div style="background:var(--panel);border:1px solid var(--border);border-radius:6px;padding:8px;font-size:11.5px;color:var(--text-muted);">
+            Seed Length: <strong id="btSeedLen">22</strong> | Seed Mismatches: <strong id="btSeedMis">0</strong> | Interval: <strong id="btSeedInt">S,1,1.15</strong>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALCULATOR 2: Host Depletion Simulator -->
+    <section class="lab-section" id="sec-host-filter">
+      <div class="section-head">
+        <h2><span>🦠</span> Metagenomic Host Depletion Simulator</h2>
+        <span class="tag-badge">Interactive Filter</span>
+      </div>
+      <p style="color:var(--text-muted);font-size:13px;">In microbiome sequencing (saliva, biopsy, gut), 70-95% of reads come from the human host. Bowtie2 can output unmapped read pairs directly into clean FASTQ files with zero loss:</p>
+      
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-deplete')">Copy</button></div>
+        <pre id="c-deplete"># Filter out host (human) reads; keep only pure microbial reads
+bowtie2 -p 8 -x hg38_index/genome \
+  -1 raw_R1.fastq.gz -2 raw_R2.fastq.gz \
+  --un-conc-gz microbial_reads_R%.fastq.gz \
+  --very-sensitive \
+  -S /dev/null</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 0 -->
+    <section class="lab-section" id="stage-0">
+      <div class="section-head">
+        <h2>0. Burrows-Wheeler Transform & FM-Index Concepts</h2>
+        <button class="explain-btn" onclick="showExplain('stage-0')">💡 Explain</button>
+      </div>
+      <p>Bowtie 2 creates an FM-index from the Burrows-Wheeler Transformed reference genome. This allows matching 22-nucleotide seeds in exact algorithmic time proportional only to the read length, completely independent of the reference genome size.</p>
+    </section>
+
+    <!-- STAGE 1 -->
+    <section class="lab-section" id="stage-1">
+      <div class="section-head">
+        <h2>1. Indexing Reference Genome (.bt2 vs .bt2l)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-1')">💡 Explain</button>
+      </div>
+      <p>Genomes < 4 GB use standard 32-bit <code>.bt2</code> indexes; larger genomes automatically use 64-bit <code>.bt2l</code> indexes.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st1')">Copy</button></div>
+        <pre id="c-st1"># Build Bowtie 2 index using 8 threads
+bowtie2-build --threads 8 reference.fasta bt2_index/genome</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 2 -->
+    <section class="lab-section" id="stage-2">
+      <div class="section-head">
+        <h2>2. gDNA & Exome Alignment Execution</h2>
+        <button class="explain-btn" onclick="showExplain('stage-2')">💡 Explain</button>
+      </div>
+      <p>Standard paired-end gDNA alignment streaming directly to coordinate-sorted BAM.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st2')">Copy</button></div>
+        <pre id="c-st2">bowtie2 -p 8 --sensitive \
+  -x bt2_index/genome \
+  -1 sample_R1.fastq.gz -2 sample_R2.fastq.gz | \
+  samtools sort -@ 8 -m 2G -o sample_aligned.bam -
+
+samtools index -@ 8 sample_aligned.bam</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 3 -->
+    <section class="lab-section" id="stage-3">
+      <div class="section-head">
+        <h2>3. ChIP-Seq & ATAC-Seq Short Read Mapping</h2>
+        <button class="explain-btn" onclick="showExplain('stage-3')">💡 Explain</button>
+      </div>
+      <p>ChIP-seq and ATAC-seq require strict concordant mapping and fragment size filters (e.g. <code>-X 2000</code> for wide nucleosome fragments).</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st3')">Copy</button></div>
+        <pre id="c-st3"># ATAC-seq mapping allowing fragment inserts up to 2000 bp
+bowtie2 -p 8 --very-sensitive -X 2000 --no-mixed --no-discordant \
+  -x bt2_index/genome \
+  -1 atac_R1.fastq.gz -2 atac_R2.fastq.gz | \
+  samtools view -@ 8 -b -q 30 -F 4 -F 256 - | \
+  samtools sort -@ 8 -o atac_clean.bam -</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 4 -->
+    <section class="lab-section" id="stage-4">
+      <div class="section-head">
+        <h2>4. End-to-End vs Local Soft-Clipping</h2>
+        <button class="explain-btn" onclick="showExplain('stage-4')">💡 Explain</button>
+      </div>
+      <p>In <code>--local</code> mode, Bowtie 2 allows the ends of reads to be soft-clipped if they contain residual adapter sequences or poor quality basecalls.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st4')">Copy</button></div>
+        <pre id="c-st4"># Local mode for trimming-free robust alignment
+bowtie2 -p 8 --local --very-sensitive-local \
+  -x bt2_index/genome \
+  -1 sample_R1.fastq.gz -2 sample_R2.fastq.gz -S local_aligned.sam</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 5 -->
+    <section class="lab-section" id="stage-5">
+      <div class="section-head">
+        <h2>5. Multi-mapping & Discordant Read Handling</h2>
+        <button class="explain-btn" onclick="showExplain('stage-5')">💡 Explain</button>
+      </div>
+      <p>Control whether Bowtie 2 reports one primary alignment, searches for up to $k$ valid alignments (<code>-k 10</code>), or searches for all valid alignments (<code>-a</code>).</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st5')">Copy</button></div>
+        <pre id="c-st5"># Report up to 5 distinct alignments per read for repetitive region inspection
+bowtie2 -p 8 -k 5 \
+  -x bt2_index/genome \
+  -U single_reads.fastq.gz -S multi_hits.sam</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 6 -->
+    <section class="lab-section" id="stage-6">
+      <div class="section-head">
+        <h2>6. Metagenomic Host Read Depletion</h2>
+        <button class="explain-btn" onclick="showExplain('stage-6')">💡 Explain</button>
+      </div>
+      <p>Decontaminate human/mouse host reads from environmental metagenomes prior to de novo assembly.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st6')">Copy</button></div>
+        <pre id="c-st6">bowtie2 -p 8 --very-sensitive \
+  -x host_genome/hg38 \
+  -1 sample_R1.fq.gz -2 sample_R2.fq.gz \
+  --un-conc-gz decontaminated_R%.fq.gz \
+  --al-conc-gz host_contaminant_R%.fq.gz \
+  -S /dev/null</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 7 -->
+    <section class="lab-section" id="stage-7">
+      <div class="section-head">
+        <h2>7. Alignment Score Interpretation (AS:i vs XS:i)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-7')">💡 Explain</button>
+      </div>
+      <p>Bowtie 2 records the best alignment score in <code>AS:i</code> and the second-best in <code>XS:i</code>. If <code>AS == XS</code>, the read is a multi-mapper (MAPQ = 0 or 1).</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st7')">Copy</button></div>
+        <pre id="c-st7"># Filter out multi-mapping reads: keep only unique alignments (MAPQ >= 20)
+samtools view -@ 4 -b -q 20 sample_aligned.bam -o uniquely_mapped.bam</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 8 -->
+    <section class="lab-section" id="stage-8">
+      <div class="section-head">
+        <h2>8. Downstream ChIP-Seq Peak Calling (MACS3)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-8')">💡 Explain</button>
+      </div>
+      <p>Call narrow or broad binding summits using MACS3 with ChIP treatment and Input control BAMs.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st8')">Copy</button></div>
+        <pre id="c-st8"># Call narrow histone / transcription factor peaks
+macs3 callpeak \
+  -t chip_treatment.bam \
+  -c chip_control_input.bam \
+  -f BAMPE -g hs -n sample_peaks \
+  -q 0.05 --outdir macs3_peaks/</pre>
+      </div>
+    </section>
+
+    <!-- DECISION GUIDE -->
+    <section class="lab-section" id="sec-decision">
+      <div class="section-head">
+        <h2>🔀 Decision Architecture: Short Read Aligner Choice</h2>
+        <span class="tag-badge">Decision Tree</span>
+      </div>
+      <div class="decision-box">
+        <div style="font-weight:700;font-size:13.5px;">Select Sequencing Experiment:</div>
+        <div class="decision-options">
+          <button class="dec-btn active" onclick="setDecision('chip')">ChIP-seq / ATAC-seq</button>
+          <button class="dec-btn" onclick="setDecision('wgs')">Whole Genome (WGS > 150bp) Variant Calling</button>
+          <button class="dec-btn" onclick="setDecision('rnaseq')">Eukaryotic mRNA (Spliced)</button>
+        </div>
+        <div class="dec-result" id="decText">
+          <strong>Recommended: Bowtie 2 with --very-sensitive</strong><br>
+          Bowtie 2 is the gold standard for ChIP-seq and ATAC-seq because of its fine control over discordant pairs (<code>--no-discordant</code>) and fragment insert size limits (<code>-X</code>).
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="explainModal" onclick="closeModal(event)">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModalDirect()">&times;</button>
+    <h3 id="modalTitle" style="margin-top:0;">Explanation</h3>
+    <div id="modalContent" style="color:var(--text-muted);font-size:13.5px;line-height:1.6;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+function calcScoreThreshold() {
+  const mode = document.getElementById('btMode').value;
+  const preset = document.getElementById('btPreset').value;
+  const L = parseFloat(document.getElementById('btReadLen').value) || 150;
+  
+  let minScore = 0;
+  let formula = "";
+  if (mode === 'end-to-end') {
+    minScore = -0.6 + -0.6 * L;
+    formula = `-0.6 + -0.6 * ${L}`;
+  } else {
+    minScore = 20 + 8.0 * Math.log(L);
+    formula = `20 + 8.0 * ln(${L})`;
+  }
+  document.getElementById('btMinScore').textContent = minScore.toFixed(1);
+  document.getElementById('btScoreFormula').textContent = formula;
+
+  const seedLen = document.getElementById('btSeedLen');
+  const seedMis = document.getElementById('btSeedMis');
+  const seedInt = document.getElementById('btSeedInt');
+
+  if (preset === 'very-fast') {
+    seedLen.textContent = "22"; seedMis.textContent = "0"; seedInt.textContent = "S,1,2.5";
+  } else if (preset === 'fast') {
+    seedLen.textContent = "22"; seedMis.textContent = "0"; seedInt.textContent = "S,1,1.7";
+  } else if (preset === 'sensitive') {
+    seedLen.textContent = "22"; seedMis.textContent = "0"; seedInt.textContent = "S,1,1.15";
+  } else {
+    seedLen.textContent = "20"; seedMis.textContent = "0"; seedInt.textContent = "S,1,0.5";
+  }
+}
+
+const EXPLAINS = {
+  'stage-0': {
+    title: 'Burrows-Wheeler Transform & Exact Matching',
+    content: 'BWT rearranges characters in the genome so identical substrings cluster together. The FM-index then performs backward search in constant time, allowing rapid discovery of seed locations before full dynamic alignment.'
+  },
+  'stage-1': {
+    title: 'Index Types (.bt2 vs .bt2l)',
+    content: 'Genomes with fewer than 4 billion nucleotides generate six files ending in <code>.1.bt2</code> to <code>.4.bt2</code> plus <code>.rev.1.bt2</code>. For huge genomes (e.g. wheat, pine), Bowtie2 automatically uses 64-bit offsets ending in <code>.bt2l</code>.'
+  },
+  'stage-2': {
+    title: 'gDNA Alignment Streaming',
+    content: 'Streaming standard output directly to <code>samtools sort</code> avoids saving massive uncompressed SAM files that can quickly exhaust drive space.'
+  },
+  'stage-3': {
+    title: 'ChIP-Seq & ATAC-Seq Best Practices',
+    content: 'Use <code>--no-mixed</code> and <code>--no-discordant</code> to ensure only properly paired reads from intact chromatin fragments are used for downstream peak calling.'
+  },
+  'stage-4': {
+    title: 'Local vs End-to-End Alignment',
+    content: 'In end-to-end mode, all nucleotides in the read must participate in alignment. In local mode, characters at the ends with mismatches or adapters can be soft-clipped without penalty.'
+  },
+  'stage-5': {
+    title: 'Multi-mapping Reads Handling',
+    content: 'By default, Bowtie 2 reports one primary alignment. If a read matches multiple loci equally well, one is chosen at random with MAPQ 0 or 1.'
+  },
+  'stage-6': {
+    title: 'Host Read Depletion in Metagenomics',
+    content: 'Using <code>--un-conc-gz</code> writes both reads of unmapped pairs directly into compressed FASTQ files, filtering out 90%+ host background DNA in a single pass.'
+  },
+  'stage-7': {
+    title: 'Alignment Score vs Second Best Score',
+    content: 'The distance between <code>AS:i</code> and <code>XS:i</code> determines the MAPQ score. A large difference indicates confident unique mapping.'
+  },
+  'stage-8': {
+    title: 'MACS3 Integration',
+    content: 'MACS3 uses Poisson distribution and local dynamic lambda to identify true binding peaks against non-specific background control signals.'
+  }
+};
+
+function showExplain(id) {
+  const item = EXPLAINS[id];
+  if (!item) return;
+  document.getElementById('modalTitle').textContent = item.title;
+  document.getElementById('modalContent').innerHTML = item.content;
+  document.getElementById('explainModal').classList.add('active');
+}
+
+function closeModal(e) {
+  if (e.target.id === 'explainModal') document.getElementById('explainModal').classList.remove('active');
+}
+function closeModalDirect() {
+  document.getElementById('explainModal').classList.remove('active');
+}
+
+function setDecision(type) {
+  document.querySelectorAll('.dec-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const txt = document.getElementById('decText');
+  if (type === 'chip') {
+    txt.innerHTML = "<strong>Recommended: Bowtie 2 with --very-sensitive</strong><br>Bowtie 2 is the gold standard for ChIP-seq and ATAC-seq because of its fine control over discordant pairs (<code>--no-discordant</code>) and fragment insert size limits (<code>-X</code>).";
+  } else if (type === 'wgs') {
+    txt.innerHTML = "<strong>Recommended: BWA-MEM or Bowtie 2</strong><br>For standard Illumina 150bp WGS variant discovery, BWA-MEM is standard for GATK pipelines, though Bowtie 2 with end-to-end sensitive settings performs with comparable accuracy.";
+  } else if (type === 'rnaseq') {
+    txt.innerHTML = "<strong>Recommended: HISAT2 or STAR (NOT Bowtie 2)</strong><br>Bowtie 2 cannot map reads spanning across intron junctions. Use HISAT2 for splice-aware transcriptomic alignment.";
+  }
+}
+
+function copyCode(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    toast("Command copied to clipboard!");
+  });
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function toggleTheme() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  if (isDark) {
+    document.body.removeAttribute('data-theme');
+    document.getElementById('themeBtn').textContent = '🌙 Theme';
+    localStorage.setItem('bioTheme', 'light');
+  } else {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+    localStorage.setItem('bioTheme', 'dark');
+  }
+}
+
+function exportScript() {
+  const script = `#!/usr/bin/env bash
+# ==============================================================
+# Production Bowtie 2 Alignment Pipeline
+# Generated by Bowtie 2 Master Interactive Lab
+# ==============================================================
+set -euo pipefail
+THREADS=8
+INDEX="bt2_index/genome"
+SAMPLE="sample_01"
+
+echo "[1/3] Aligning paired-end reads with Bowtie 2..."
+bowtie2 -p \${THREADS} --very-sensitive \\
+  -x \${INDEX} \\
+  -1 \${SAMPLE}_R1.fastq.gz -2 \${SAMPLE}_R2.fastq.gz | \\
+  samtools sort -@ \${THREADS} -m 2G -o \${SAMPLE}.sorted.bam -
+
+echo "[2/3] Indexing BAM..."
+samtools index -@ \${THREADS} \${SAMPLE}.sorted.bam
+
+echo "[3/3] Generating Flagstat..."
+samtools flagstat -@ \${THREADS} \${SAMPLE}.sorted.bam > \${SAMPLE}.flagstat.txt
+
+echo "Bowtie 2 alignment pipeline complete!"
+`;
+  const blob = new Blob([script], { type: 'text/x-sh' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'bowtie2_pipeline.sh';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("Bash script exported!");
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  calcScoreThreshold();
+  if (localStorage.getItem('bioTheme') === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+  }
+});
+</script>
+</body>
+</html>

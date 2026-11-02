@@ -1,0 +1,1021 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>DESeq2 & EdgeR RNA-Seq Differential Expression Workbench | Bioinformatics Hub</title>
+<style>
+:root {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-alt: #f1f5f9;
+  --panel-hover: #f8fafc;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-focus: #0284c7;
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-light: #f0f9ff;
+  --primary-dark: #075985;
+  --primary-glow: rgba(2, 132, 199, 0.12);
+  --accent: #10b981;
+  --accent-light: #ecfdf5;
+  --code-bg: #0d1117;
+  --code-header: #161b22;
+  --code-text: #e6edf3;
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --header-bg: rgba(255, 255, 255, 0.88);
+  --header-border: rgba(226, 232, 240, 0.8);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+[data-theme="dark"] {
+  --bg: #090d16;
+  --panel: #0f172a;
+  --panel-alt: #161f30;
+  --panel-hover: #1b263b;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --border: #1e293b;
+  --border-subtle: #141c2e;
+  --border-focus: #38bdf8;
+  --primary: #38bdf8;
+  --primary-hover: #7dd3fc;
+  --primary-light: #082f49;
+  --primary-dark: #bae6fd;
+  --primary-glow: rgba(56, 189, 248, 0.15);
+  --accent: #34d399;
+  --accent-light: #064e3b;
+  --code-bg: #05080f;
+  --code-header: #0d121f;
+  --code-text: #f1f5f9;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --header-bg: rgba(9, 13, 22, 0.88);
+  --header-border: rgba(30, 41, 59, 0.8);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14.5px/1.65 var(--font-sans);
+  letter-spacing: -0.011em;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.header-inner {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand-wrapper { display: flex; align-items: center; gap: 12px; }
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0284c7, #10b981);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 13px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+.brand-text h1 { margin: 0; font-size: 16px; font-weight: 700; color: var(--text); }
+.brand-text p { margin: 1px 0 0; font-size: 11.5px; color: var(--text-muted); }
+
+.header-controls { display: flex; align-items: center; gap: 10px; }
+.nav-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.nav-btn:hover { background: var(--panel-alt); border-color: var(--border-focus); }
+.nav-btn.primary { background: var(--primary); color: white; border-color: var(--primary); }
+
+.layout {
+  display: flex;
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 24px;
+  gap: 28px;
+}
+
+aside.sidebar {
+  width: 290px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 75px;
+  max-height: calc(100vh - 95px);
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.nav-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  margin: 18px 0 8px 6px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 12.8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 7px;
+  transition: all 0.12s;
+  margin-bottom: 2px;
+}
+.nav-link:hover, .nav-link.active {
+  background: var(--panel-alt);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+main.content { flex: 1; min-width: 0; }
+
+.hero-box {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(16, 185, 129, 0.08));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+}
+.hero-box h2 { margin: 0 0 8px; font-size: 24px; font-weight: 800; }
+.hero-box p { margin: 0; color: var(--text-muted); font-size: 14.5px; max-width: 880px; }
+
+section.lab-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--card-shadow);
+  scroll-margin-top: 85px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.section-head h2 { margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.tag-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-glow);
+}
+
+.tool-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.calc-card {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.calc-card h4 { margin: 0 0 10px; font-size: 13.5px; font-weight: 700; }
+
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+.form-control {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-family: inherit;
+}
+
+.volcano-container {
+  display: flex;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+.volcano-plot-box {
+  flex: 1;
+  min-width: 320px;
+  height: 320px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 14px 0;
+}
+.code-header {
+  background: var(--code-header);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.code-lang { font-family: var(--font-mono); font-size: 11.5px; color: #94a3b8; }
+.copy-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+pre {
+  margin: 0;
+  padding: 14px;
+  color: var(--code-text);
+  font-family: var(--font-mono);
+  font-size: 12.8px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+.explain-btn {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  max-width: 650px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+
+.decision-box {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.decision-options { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.dec-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.dec-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.dec-result {
+  background: var(--panel);
+  border-left: 4px solid var(--primary);
+  padding: 12px 14px;
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+@media(max-width: 900px) {
+  .layout { flex-direction: column; }
+  aside.sidebar { width: 100%; position: static; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand-wrapper">
+      <a href="../" class="brand-badge">🧬 Hub</a>
+      <div class="brand-text">
+        <h1>DESeq2 & EdgeR RNA-Seq Expression Lab</h1>
+        <p>Negative Binomial GLMs, Variance Stabilization, Volcano Plots & Pathway Enrichment</p>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button class="nav-btn" onclick="exportRScript()">⬇ Export R Script</button>
+      <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">🌙 Theme</button>
+      <a href="../" class="nav-btn primary">← Back to Hub</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="nav-group-title">Interactive Simulators</div>
+    <a href="#sec-volcano-sim" class="nav-link">🌋 Volcano Plot & Cutoff Simulator</a>
+    <a href="#sec-formula-gen" class="nav-link">📐 Design Formula Generator</a>
+
+    <div class="nav-group-title">Workflow Stages</div>
+    <a href="#stage-0" class="nav-link">0. Overdispersion & Negative Binomial</a>
+    <a href="#stage-1" class="nav-link">1. Matrix & Metadata Ingestion</a>
+    <a href="#stage-2" class="nav-link">2. Reference Levels (relevel)</a>
+    <a href="#stage-3" class="nav-link">3. Low-Count Filtering</a>
+    <a href="#stage-4" class="nav-link">4. Differential Expression (DESeq)</a>
+    <a href="#stage-5" class="nav-link">5. Variance Stabilization (vst/rlog)</a>
+    <a href="#stage-6" class="nav-link">6. PCA & Sample Distance Heatmaps</a>
+    <a href="#stage-7" class="nav-link">7. Results & FDR (Benjamini-Hochberg)</a>
+    <a href="#stage-8" class="nav-link">8. LFC Shrinkage (apeglm / ashr)</a>
+    <a href="#stage-9" class="nav-link">9. Enhanced Volcano Plotting</a>
+    <a href="#stage-10" class="nav-link">10. GO & KEGG Pathway Enrichment</a>
+
+    <div class="nav-group-title">Decision Guide</div>
+    <a href="#sec-decision" class="nav-link">🔀 Decision Architecture</a>
+  </aside>
+
+  <main class="content">
+    <div class="hero-box">
+      <h2>📈 Robust Statistical Modeling for RNA-Seq Counts</h2>
+      <p>RNA-seq count data exhibits biological variance exceeding Poisson expectations (overdispersion). DESeq2 models gene counts with a Negative Binomial generalized linear model (GLM), using empirical Bayes shrinkage for dispersions and fold-changes to reliably detect differential expression even with small replicate sizes ($N \ge 3$).</p>
+    </div>
+
+    <!-- SIMULATOR 1: Volcano Plot -->
+    <section class="lab-section" id="sec-volcano-sim">
+      <div class="section-head">
+        <h2><span>🌋</span> Interactive Volcano Plot & Significance Simulator</h2>
+        <span class="tag-badge">Interactive Visualizer</span>
+      </div>
+      <div class="volcano-container">
+        <div style="flex:1;min-width:280px;">
+          <div class="form-group">
+            <label>Log2 Fold Change Cutoff (|log2FC| &ge;):</label>
+            <input type="range" id="volcLfcRange" min="0.5" max="3.0" step="0.25" value="1.0" class="form-control" oninput="updateVolcano()">
+            <div style="display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-muted);">
+              <span>0.5 (1.4×)</span>
+              <strong id="lfcValDisplay">1.0 (2.0×)</strong>
+              <span>3.0 (8.0×)</span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Adjusted p-value / FDR Threshold (padj &le;):</label>
+            <select id="volcPadjSelect" class="form-control" onchange="updateVolcano()">
+              <option value="0.05">0.05 (-log10 = 1.3)</option>
+              <option value="0.01">0.01 (-log10 = 2.0)</option>
+              <option value="0.001">0.001 (-log10 = 3.0)</option>
+            </select>
+          </div>
+          <div style="background:var(--panel-alt);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:14px;font-size:12.5px;">
+            <div>🔴 Down-regulated: <strong id="volcDownCount" style="color:#ef4444;">128</strong> genes</div>
+            <div>🟢 Up-regulated: <strong id="volcUpCount" style="color:#10b981;">164</strong> genes</div>
+            <div>⚪ Not Significant: <strong id="volcNsCount" style="color:var(--text-dim);">4,708</strong> genes</div>
+          </div>
+        </div>
+
+        <div class="volcano-plot-box">
+          <svg id="volcanoSvg" width="100%" height="100%" viewBox="0 0 400 300"></svg>
+        </div>
+      </div>
+    </section>
+
+    <!-- SIMULATOR 2: Design Formula Generator -->
+    <section class="lab-section" id="sec-formula-gen">
+      <div class="section-head">
+        <h2><span>📐</span> Experimental Design Formula & Contrast Generator</h2>
+        <span class="tag-badge">Interactive Tool</span>
+      </div>
+      <div class="tool-calc-grid">
+        <div class="calc-card">
+          <h4>Experimental Structure</h4>
+          <div class="form-group">
+            <label>Experimental Design Type:</label>
+            <select id="designType" class="form-control" onchange="updateDesignFormula()">
+              <option value="single">Single Factor (Control vs Treated)</option>
+              <option value="batch">Two-Factor with Batch Correction (Batch + Condition)</option>
+              <option value="interaction">Interaction Model (Genotype:Treatment)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Reference Baseline Level (Control):</label>
+            <input type="text" id="refLevel" class="form-control" value="Control" oninput="updateDesignFormula()">
+          </div>
+        </div>
+
+        <div class="calc-card" style="display:flex;flex-direction:column;justify-content:center;">
+          <h4>Generated R Formula & Contrast</h4>
+          <div style="font-family:var(--font-mono);font-size:13.5px;color:var(--primary);font-weight:700;margin-bottom:8px;">
+            design = <span id="rFormula">~ condition</span>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:12px;color:var(--text-muted);">
+            results(dds, contrast = <span id="rContrast">c("condition", "Treated", "Control")</span>)
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 0 -->
+    <section class="lab-section" id="stage-0">
+      <div class="section-head">
+        <h2>0. The Negative Binomial Model ($Y \sim \text{NB}(\mu, \alpha)$)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-0')">💡 Explain</button>
+      </div>
+      <p>Because biological replicates exhibit variance exceeding Poisson sampling noise ($\text{Var} = \mu + \alpha \mu^2$), DESeq2 models raw unnormalized read counts with a Negative Binomial distribution where $\alpha$ represents dispersion. Information is pooled across genes to shrink dispersion estimates toward a common trend.</p>
+    </section>
+
+    <!-- STAGE 1 -->
+    <section class="lab-section" id="stage-1">
+      <div class="section-head">
+        <h2>1. Count Matrix & Sample Metadata Ingestion</h2>
+        <button class="explain-btn" onclick="showExplain('stage-1')">💡 Explain</button>
+      </div>
+      <p>Input raw non-normalized integer counts and a matching sample annotation data frame.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">R</span><button class="copy-btn" onclick="copyCode('c-r1')">Copy</button></div>
+        <pre id="c-r1">library(DESeq2)
+library(tidyverse)
+
+# Read raw counts matrix (rows = genes, cols = sample IDs)
+counts_matrix <- read.table("gene_counts.txt", header=TRUE, row.names=1, sep="\t")
+
+# Read metadata (row names must exactly match column names of counts_matrix)
+col_data <- read.csv("sample_metadata.csv", row.names=1)
+stopifnot(all(colnames(counts_matrix) == rownames(col_data)))</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 2 -->
+    <section class="lab-section" id="stage-2">
+      <div class="section-head">
+        <h2>2. Setting Factor Reference Levels (relevel)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-2')">💡 Explain</button>
+      </div>
+      <p>Explicitly designate the control condition as the reference level so fold-changes are positive for up-regulated genes.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">R</span><button class="copy-btn" onclick="copyCode('c-r2')">Copy</button></div>
+        <pre id="c-r2"># Explicitly designate 'Control' as denominator
+col_data$condition <- relevel(factor(col_data$condition), ref = "Control")
+
+# Build the DESeqDataSet object
+dds <- DESeqDataSetFromMatrix(countData = counts_matrix,
+                              colData = col_data,
+                              design = ~ condition)</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 3 -->
+    <section class="lab-section" id="stage-3">
+      <div class="section-head">
+        <h2>3. Pre-filtering Low-Count Noise Genes</h2>
+        <button class="explain-btn" onclick="showExplain('stage-3')">💡 Explain</button>
+      </div>
+      <p>Remove genes with zero or negligible read counts across samples to reduce multiple testing burden.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">R</span><button class="copy-btn" onclick="copyCode('c-r3')">Copy</button></div>
+        <pre id="c-r3"># Keep only genes with at least 10 reads in at least 3 samples (min group size)
+keep <- rowSums(counts(dds) >= 10) >= 3
+dds <- dds[keep, ]</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 4 -->
+    <section class="lab-section" id="stage-4">
+      <div class="section-head">
+        <h2>4. Running Core Differential Expression (DESeq)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-4')">💡 Explain</button>
+      </div>
+      <p>Executes size factor estimation, dispersion estimation, and negative binomial Wald tests in one function.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">R</span><button class="copy-btn" onclick="copyCode('c-r4')">Copy</button></div>
+        <pre id="c-r4"># Run DESeq2 statistical workflow
+dds <- DESeq(dds)
+
+# Inspect estimated dispersion curve
+plotDispEsts(dds)</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 5 -->
+    <section class="lab-section" id="stage-5">
+      <div class="section-head">
+        <h2>5. Variance-Stabilizing Transformation (VST / rlog)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-5')">💡 Explain</button>
+      </div>
+      <p>Apply VST to normalize count heteroskedasticity for distance clustering and exploratory PCA plots.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">R</span><button class="copy-btn" onclick="copyCode('c-r5')">Copy</button></div>
+        <pre id="c-r5"># Variance-stabilizing transformation for N > 30 samples (or rlog for small cohorts)
+vsd <- vst(dds, blind = FALSE)</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 6 -->
+    <section class="lab-section" id="stage-6">
+      <div class="section-head">
+        <h2>6. Exploratory PCA & Sample Distance Heatmaps</h2>
+        <button class="explain-btn" onclick="showExplain('stage-6')">💡 Explain</button>
+      </div>
+      <p>Verify that biological replicates cluster tightly together and identify potential outlier samples or batch effects.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">R</span><button class="copy-btn" onclick="copyCode('c-r6')">Copy</button></div>
+        <pre id="c-r6">library(pheatmap)
+library(RColorBrewer)
+
+# Principal Component Analysis
+plotPCA(vsd, intgroup = c("condition"))
+
+# Sample Euclidean distance matrix
+sampleDists <- dist(t(assay(vsd)))
+sampleDistMatrix <- as.matrix(sampleDists)
+pheatmap(sampleDistMatrix,
+         clustering_distance_rows = sampleDists,
+         clustering_distance_cols = sampleDists,
+         col = colorRampPalette(rev(brewer.pal(9, "Blues")))(255))</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 7 -->
+    <section class="lab-section" id="stage-7">
+      <div class="section-head">
+        <h2>7. Extracting Differential Results & FDR Correction</h2>
+        <button class="explain-btn" onclick="showExplain('stage-7')">💡 Explain</button>
+      </div>
+      <p>Extract log2 fold changes, Wald test statistics, and Benjamini-Hochberg adjusted p-values.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">R</span><button class="copy-btn" onclick="copyCode('c-r7')">Copy</button></div>
+        <pre id="c-r7"># Extract results table at 5% FDR
+res <- results(dds, contrast=c("condition", "Treated", "Control"), alpha=0.05)
+summary(res)
+
+# Export significant genes table
+res_sig <- subset(res, padj < 0.05 & abs(log2FoldChange) >= 1)
+write.csv(as.data.frame(res_sig), "DESeq2_significant_genes.csv")</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 8 -->
+    <section class="lab-section" id="stage-8">
+      <div class="section-head">
+        <h2>8. Log2 Fold Change Shrinkage (apeglm / ashr)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-8')">💡 Explain</button>
+      </div>
+      <p>Shrink noisy fold changes from low-count genes without modifying high-confidence signal.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">R</span><button class="copy-btn" onclick="copyCode('c-r8')">Copy</button></div>
+        <pre id="c-r8"># Shrink LFC with apeglm algorithm
+res_shrunk <- lfcShrink(dds, coef = "condition_Treated_vs_Control", type = "apeglm")
+plotMA(res_shrunk, ylim = c(-5, 5))</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 9 -->
+    <section class="lab-section" id="stage-9">
+      <div class="section-head">
+        <h2>9. Enhanced Volcano Plotting</h2>
+        <button class="explain-btn" onclick="showExplain('stage-9')">💡 Explain</button>
+      </div>
+      <p>Generate publication-quality volcano plots highlighting top candidates.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">R</span><button class="copy-btn" onclick="copyCode('c-r9')">Copy</button></div>
+        <pre id="c-r9">library(EnhancedVolcano)
+
+EnhancedVolcano(res_shrunk,
+  lab = rownames(res_shrunk),
+  x = 'log2FoldChange',
+  y = 'padj',
+  pCutoff = 0.05,
+  FCcutoff = 1.0,
+  pointSize = 2.0,
+  labSize = 4.0,
+  title = 'Treated vs Control Volcano Plot')</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 10 -->
+    <section class="lab-section" id="stage-10">
+      <div class="section-head">
+        <h2>10. Pathway & Gene Ontology Enrichment (clusterProfiler)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-10')">💡 Explain</button>
+      </div>
+      <p>Identify overrepresented biological processes (GO-BP) and KEGG metabolic pathways in up/downregulated gene sets.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">R</span><button class="copy-btn" onclick="copyCode('c-r10')">Copy</button></div>
+        <pre id="c-r10">library(clusterProfiler)
+library(org.Hs.eg.db)
+
+# Extract significant upregulated Entrez IDs
+up_genes <- rownames(subset(res_sig, log2FoldChange > 0))
+
+# Over-representation analysis (GO Biological Process)
+ego <- enrichGO(gene          = up_genes,
+                OrgDb         = org.Hs.eg.db,
+                keyType       = 'SYMBOL',
+                ont           = "BP",
+                pAdjustMethod = "BH",
+                pvalueCutoff  = 0.05)
+
+dotplot(ego, showCategory=15, title="Top Enriched Biological Processes")</pre>
+      </div>
+    </section>
+
+    <!-- DECISION GUIDE -->
+    <section class="lab-section" id="sec-decision">
+      <div class="section-head">
+        <h2>🔀 Decision Architecture: DESeq2 vs EdgeR vs Limma-voom</h2>
+        <span class="tag-badge">Decision Tree</span>
+      </div>
+      <div class="decision-box">
+        <div style="font-weight:700;font-size:13.5px;">Select Replicate Cohort Size:</div>
+        <div class="decision-options">
+          <button class="dec-btn active" onclick="setDecision('small')">Small Replicates (N = 3 - 10 per group)</button>
+          <button class="dec-btn" onclick="setDecision('large')">Large Cohort (N > 50 e.g. TCGA/GTEx)</button>
+          <button class="dec-btn" onclick="setDecision('singlecell')">Single-cell RNA-seq (scRNA)</button>
+        </div>
+        <div class="dec-result" id="decText">
+          <strong>Recommended: DESeq2 or EdgeR (Quasi-Likelihood glmQLFit)</strong><br>
+          For typical biological experiments with 3-10 replicates, DESeq2 provides the most reliable error control through empirical Bayes dispersion shrinkage and apeglm fold-change moderation.
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="explainModal" onclick="closeModal(event)">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModalDirect()">&times;</button>
+    <h3 id="modalTitle" style="margin-top:0;">Explanation</h3>
+    <div id="modalContent" style="color:var(--text-muted);font-size:13.5px;line-height:1.6;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+// Mock volcano plot data generator
+let mockGenes = [];
+function initMockGenes() {
+  mockGenes = [];
+  for (let i = 0; i < 5000; i++) {
+    // Normal-ish distribution for log2FC, Gamma/Exp for pval
+    const lfc = (Math.random() - 0.5) * 6 + (Math.random() - 0.5) * 2;
+    const baseP = Math.random();
+    // Correlate significance somewhat with large fold changes
+    const padj = Math.max(1e-15, Math.pow(baseP, 1.5 + Math.abs(lfc) * 0.8));
+    mockGenes.push({ lfc, padj });
+  }
+}
+
+function updateVolcano() {
+  const lfcCut = parseFloat(document.getElementById('volcLfcRange').value);
+  document.getElementById('lfcValDisplay').textContent = `${lfcCut.toFixed(1)} (${Math.pow(2, lfcCut).toFixed(1)}×)`;
+  const padjCut = parseFloat(document.getElementById('volcPadjSelect').value);
+  const logPadjCut = -Math.log10(padjCut);
+
+  let up = 0, down = 0, ns = 0;
+  const svg = document.getElementById('volcanoSvg');
+  svg.innerHTML = '';
+
+  // Draw axes
+  const axisG = document.createElementNS('http://www.w3.org/2000/svg', 'g');
+  axisG.innerHTML = `
+    <line x1="40" y1="260" x2="380" y2="260" stroke="#94a3b8" stroke-width="1"/>
+    <line x1="40" y1="260" x2="40" y2="20" stroke="#94a3b8" stroke-width="1"/>
+    <text x="210" y="290" text-anchor="middle" fill="#64748b" font-size="11">log2 Fold Change</text>
+    <text x="15" y="140" text-anchor="middle" fill="#64748b" font-size="11" transform="rotate(-90 15 140)">-log10(padj)</text>
+  `;
+  svg.appendChild(axisG);
+
+  // Map scales: X: [-4, 4] -> [40, 380] (center 210)
+  // Y: [0, 8] -> [260, 20]
+  const mapX = (lfc) => 210 + (lfc / 4) * 170;
+  const mapY = (negLogP) => 260 - (Math.min(8, negLogP) / 8) * 240;
+
+  // Render subset of points for speed (1000 points)
+  mockGenes.slice(0, 1000).forEach(g => {
+    const negLogP = -Math.log10(g.padj);
+    const x = mapX(g.lfc);
+    const y = mapY(negLogP);
+    
+    let color = '#94a3b8';
+    let opacity = 0.35;
+    if (negLogP >= logPadjCut) {
+      if (g.lfc >= lfcCut) {
+        color = '#10b981';
+        opacity = 0.8;
+        up++;
+      } else if (g.lfc <= -lfcCut) {
+        color = '#ef4444';
+        opacity = 0.8;
+        down++;
+      } else {
+        ns++;
+      }
+    } else {
+      ns++;
+    }
+
+    const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle');
+    circle.setAttribute('cx', x);
+    circle.setAttribute('cy', y);
+    circle.setAttribute('r', '2.5');
+    circle.setAttribute('fill', color);
+    circle.setAttribute('opacity', opacity);
+    svg.appendChild(circle);
+  });
+
+  // Extrapolate counts to 5000
+  document.getElementById('volcUpCount').textContent = (up * 5).toLocaleString();
+  document.getElementById('volcDownCount').textContent = (down * 5).toLocaleString();
+  document.getElementById('volcNsCount').textContent = (ns * 5).toLocaleString();
+}
+
+function updateDesignFormula() {
+  const type = document.getElementById('designType').value;
+  const ref = document.getElementById('refLevel').value || 'Control';
+  const rF = document.getElementById('rFormula');
+  const rC = document.getElementById('rContrast');
+
+  if (type === 'single') {
+    rF.textContent = "~ condition";
+    rC.textContent = `c("condition", "Treated", "${ref}")`;
+  } else if (type === 'batch') {
+    rF.textContent = "~ batch + condition";
+    rC.textContent = `c("condition", "Treated", "${ref}")`;
+  } else {
+    rF.textContent = "~ genotype + treatment + genotype:treatment";
+    rC.textContent = `c("treatment", "Drug", "${ref}")`;
+  }
+}
+
+const EXPLAINS = {
+  'stage-0': {
+    title: 'Why Negative Binomial?',
+    content: 'In technical replicates, sequencing read counts follow a Poisson distribution (mean = variance). However, in biological replicates, gene expression varies naturally between individuals. The Negative Binomial distribution adds a quadratic dispersion parameter to accurately model this extra biological variation without overestimating significance.'
+  },
+  'stage-1': {
+    title: 'Raw Counts vs TPM / FPKM',
+    content: 'CRITICAL RULE: DESeq2 requires RAW UNNORMALIZED integer counts. Do NOT feed TPM, FPKM, or RPKM into DESeq2. DESeq2 needs the unnormalized counts because it models sampling variance as a function of the raw read depth.'
+  },
+  'stage-2': {
+    title: 'Reference Level Importance',
+    content: 'By default, R sorts factor levels alphabetically. If your groups are "Control" and "Treated", alphabetical order makes Control the reference. However, if your groups are "Wildtype" and "Mutant", "Mutant" would become the reference by default! Always use <code>relevel()</code> to explicitly specify your control baseline.'
+  },
+  'stage-3': {
+    title: 'Low-Count Filtering',
+    content: 'Filtering out genes that have essentially zero reads in all samples reduces the number of multiple testing hypotheses, which increases the statistical power (via lower Benjamini-Hochberg FDR adjustments) for the remaining genes.'
+  },
+  'stage-4': {
+    title: 'The DESeq() Pipeline Function',
+    content: 'The single <code>DESeq()</code> call internally executes three discrete steps: 1) <code>estimateSizeFactors()</code> using the median of ratios; 2) <code>estimateDispersions()</code> fitting empirical Bayes dispersion curves; 3) <code>nbinomWaldTest()</code> testing for differential coefficients.'
+  },
+  'stage-5': {
+    title: 'VST vs rlog Transformations',
+    content: 'Variance Stabilizing Transformation (VST) is recommended for medium to large experiments (N > 30) because it is extremely fast and yields homoskedastic values suitable for clustering. Regularized log (rlog) is slightly better for tiny sample sets (N < 10) but is computationally intensive.'
+  },
+  'stage-6': {
+    title: 'PCA Diagnostic Insights',
+    content: 'In a successful RNA-seq experiment, PC1 (usually accounting for 40-70% of variance) should separate your treatment and control groups. If PC1 separates samples by sequencing date or extraction batch, batch correction in your design formula is mandatory.'
+  },
+  'stage-7': {
+    title: 'Benjamini-Hochberg FDR vs p-value',
+    content: 'Testing 20,000 genes at an unadjusted p < 0.05 will yield 1,000 false positives purely by random chance. The Benjamini-Hochberg procedure adjusts p-values to control the False Discovery Rate (FDR), guaranteeing that no more than 5% of reported significant genes are false positives.'
+  },
+  'stage-8': {
+    title: 'apeglm Fold Change Shrinkage',
+    content: 'Low-expression genes have high sampling variance that often generates extreme log2FC values (e.g. +8.0 or -9.0) based on only 1 or 2 reads. <code>lfcShrink()</code> applies an adaptive shrinkage prior that pulls these noisy estimates back toward zero while leaving well-expressed true positives unaltered.'
+  },
+  'stage-9': {
+    title: 'Volcano Plot Principles',
+    content: 'The volcano plot visualizes statistical significance (-log10 padj) on the Y-axis against biological effect size (log2FC) on the X-axis, immediately highlighting the most impactful candidates in the upper corners.'
+  },
+  'stage-10': {
+    title: 'Pathway Enrichment Analysis',
+    content: 'Over-representation analysis with hypergeometric tests determines if your differentially expressed gene list contains more members of specific pathways (e.g. NF-kB signaling or cell cycle) than expected by chance across the genome.'
+  }
+};
+
+function showExplain(id) {
+  const item = EXPLAINS[id];
+  if (!item) return;
+  document.getElementById('modalTitle').textContent = item.title;
+  document.getElementById('modalContent').innerHTML = item.content;
+  document.getElementById('explainModal').classList.add('active');
+}
+
+function closeModal(e) {
+  if (e.target.id === 'explainModal') document.getElementById('explainModal').classList.remove('active');
+}
+function closeModalDirect() {
+  document.getElementById('explainModal').classList.remove('active');
+}
+
+function setDecision(type) {
+  document.querySelectorAll('.dec-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const txt = document.getElementById('decText');
+  if (type === 'small') {
+    txt.innerHTML = "<strong>Recommended: DESeq2 or EdgeR (glmQLFit)</strong><br>For biological experiments with 3-10 replicates, DESeq2 provides the most reliable error control through empirical Bayes dispersion shrinkage and apeglm fold-change moderation.";
+  } else if (type === 'large') {
+    txt.innerHTML = "<strong>Recommended: Limma-voom or DESeq2</strong><br>For cohorts with hundreds of samples (e.g. TCGA cancer datasets), Limma-voom runs in seconds with excellent statistical power by converting counts to log-CPM with precision weights.";
+  } else if (type === 'singlecell') {
+    txt.innerHTML = "<strong>Recommended: Seurat FindMarkers (Wilcoxon) or MAST</strong><br>Single-cell RNA data contains high dropout (excess zeros) and cellular heterogeneity. Standard bulk negative binomial models like DESeq2 can be overly conservative or slow on thousands of cells.";
+  }
+}
+
+function copyCode(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    toast("R Code copied to clipboard!");
+  });
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function toggleTheme() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  if (isDark) {
+    document.body.removeAttribute('data-theme');
+    document.getElementById('themeBtn').textContent = '🌙 Theme';
+    localStorage.setItem('bioTheme', 'light');
+  } else {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+    localStorage.setItem('bioTheme', 'dark');
+  }
+}
+
+function exportRScript() {
+  const script = `#!/usr/bin/env Rscript
+# ==============================================================
+# Complete Production DESeq2 RNA-Seq Workflow
+# Generated by DESeq2 Master Interactive Lab
+# ==============================================================
+
+suppressPackageStartupMessages({
+  library(DESeq2)
+  library(tidyverse)
+  library(pheatmap)
+  library(RColorBrewer)
+  library(EnhancedVolcano)
+})
+
+# 1. Ingest raw counts and sample metadata
+counts_matrix <- read.table("gene_counts.txt", header=TRUE, row.names=1, sep="\t")
+col_data <- read.csv("sample_metadata.csv", row.names=1)
+
+# Ensure sample IDs align perfectly
+stopifnot(all(colnames(counts_matrix) == rownames(col_data)))
+
+# 2. Establish experimental design and set reference baseline
+col_data$condition <- relevel(factor(col_data$condition), ref = "Control")
+dds <- DESeqDataSetFromMatrix(countData = counts_matrix,
+                              colData = col_data,
+                              design = ~ condition)
+
+# 3. Pre-filter low count genes (minimum 10 counts in >= 3 samples)
+keep <- rowSums(counts(dds) >= 10) >= 3
+dds <- dds[keep, ]
+
+# 4. Execute DESeq2 statistical model
+dds <- DESeq(dds)
+
+# 5. Exploratory PCA & Clustering
+vsd <- vst(dds, blind = FALSE)
+pca_plot <- plotPCA(vsd, intgroup = "condition")
+ggsave("PCA_plot.pdf", pca_plot, width = 7, height = 5)
+
+# 6. Extract differential results with LFC shrinkage
+res <- results(dds, contrast=c("condition", "Treated", "Control"), alpha=0.05)
+res_shrunk <- lfcShrink(dds, coef=resultsNames(dds)[2], type="apeglm")
+
+# 7. Write output results table
+res_sig <- subset(res_shrunk, padj < 0.05 & abs(log2FoldChange) >= 1)
+write.csv(as.data.frame(res_shrunk), "DESeq2_all_results.csv")
+write.csv(as.data.frame(res_sig), "DESeq2_significant_genes.csv")
+
+cat("DESeq2 differential analysis complete! Found", nrow(res_sig), "significant genes.\n")
+`;
+  const blob = new Blob([script], { type: 'text/plain' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'deseq2_analysis.R';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("R script exported!");
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  initMockGenes();
+  updateVolcano();
+  updateDesignFormula();
+  if (localStorage.getItem('bioTheme') === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+  }
+});
+</script>
+</body>
+</html>

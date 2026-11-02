@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>AlphaFold & ColabFold Structural Modeling Lab | Bioinformatics Hub</title>
+<style>
+:root {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-alt: #f1f5f9;
+  --panel-hover: #f8fafc;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-focus: #0284c7;
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-light: #f0f9ff;
+  --primary-dark: #075985;
+  --primary-glow: rgba(2, 132, 199, 0.12);
+  --accent: #8b5cf6;
+  --accent-light: #f5f3ff;
+  --code-bg: #0d1117;
+  --code-header: #161b22;
+  --code-text: #e6edf3;
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --header-bg: rgba(255, 255, 255, 0.88);
+  --header-border: rgba(226, 232, 240, 0.8);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+[data-theme="dark"] {
+  --bg: #090d16;
+  --panel: #0f172a;
+  --panel-alt: #161f30;
+  --panel-hover: #1b263b;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --border: #1e293b;
+  --border-subtle: #141c2e;
+  --border-focus: #38bdf8;
+  --primary: #38bdf8;
+  --primary-hover: #7dd3fc;
+  --primary-light: #082f49;
+  --primary-dark: #bae6fd;
+  --primary-glow: rgba(56, 189, 248, 0.15);
+  --accent: #a78bfa;
+  --accent-light: #2e1065;
+  --code-bg: #05080f;
+  --code-header: #0d121f;
+  --code-text: #f1f5f9;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --header-bg: rgba(9, 13, 22, 0.88);
+  --header-border: rgba(30, 41, 59, 0.8);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14.5px/1.65 var(--font-sans);
+  letter-spacing: -0.011em;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.header-inner {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand-wrapper { display: flex; align-items: center; gap: 12px; }
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0284c7, #8b5cf6);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 13px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+.brand-text h1 { margin: 0; font-size: 16px; font-weight: 700; color: var(--text); }
+.brand-text p { margin: 1px 0 0; font-size: 11.5px; color: var(--text-muted); }
+
+.header-controls { display: flex; align-items: center; gap: 10px; }
+.nav-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.nav-btn:hover { background: var(--panel-alt); border-color: var(--border-focus); }
+.nav-btn.primary { background: var(--primary); color: white; border-color: var(--primary); }
+
+.layout {
+  display: flex;
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 24px;
+  gap: 28px;
+}
+
+aside.sidebar {
+  width: 290px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 75px;
+  max-height: calc(100vh - 95px);
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.nav-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  margin: 18px 0 8px 6px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 12.8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 7px;
+  transition: all 0.12s;
+  margin-bottom: 2px;
+}
+.nav-link:hover, .nav-link.active {
+  background: var(--panel-alt);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+main.content { flex: 1; min-width: 0; }
+
+.hero-box {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(139, 92, 246, 0.08));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+}
+.hero-box h2 { margin: 0 0 8px; font-size: 24px; font-weight: 800; }
+.hero-box p { margin: 0; color: var(--text-muted); font-size: 14.5px; max-width: 880px; }
+
+section.lab-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--card-shadow);
+  scroll-margin-top: 85px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.section-head h2 { margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.tag-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-glow);
+}
+
+.tool-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.calc-card {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.calc-card h4 { margin: 0 0 10px; font-size: 13.5px; font-weight: 700; }
+
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+.form-control {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-family: inherit;
+}
+
+.plddt-spectrum {
+  height: 24px;
+  border-radius: 6px;
+  background: linear-gradient(90deg, #ff7d45 0%, #ffdb13 50%, #65cbf3 70%, #0053d6 100%);
+  margin: 12px 0 8px;
+  position: relative;
+}
+.plddt-marker {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 4px;
+  background: #0f172a;
+  border: 1px solid white;
+  border-radius: 2px;
+  transform: translateX(-50%);
+  transition: left 0.15s ease;
+}
+
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 14px 0;
+}
+.code-header {
+  background: var(--code-header);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.code-lang { font-family: var(--font-mono); font-size: 11.5px; color: #94a3b8; }
+.copy-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+pre {
+  margin: 0;
+  padding: 14px;
+  color: var(--code-text);
+  font-family: var(--font-mono);
+  font-size: 12.8px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+.explain-btn {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  max-width: 650px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+
+.decision-box {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.decision-options { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.dec-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.dec-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.dec-result {
+  background: var(--panel);
+  border-left: 4px solid var(--primary);
+  padding: 12px 14px;
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+@media(max-width: 900px) {
+  .layout { flex-direction: column; }
+  aside.sidebar { width: 100%; position: static; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand-wrapper">
+      <a href="../" class="brand-badge">🧬 Hub</a>
+      <div class="brand-text">
+        <h1>AlphaFold & ColabFold Structural Modeling Lab</h1>
+        <p>AI Macromolecular Folding, pLDDT Confidence, PAE Matrices, Protein Complexes & ESMFold</p>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button class="nav-btn" onclick="exportScript()">⬇ Export Shell Script</button>
+      <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">🌙 Theme</button>
+      <a href="../" class="nav-btn primary">← Back to Hub</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="nav-group-title">Interactive Simulators</div>
+    <a href="#sec-plddt-calc" class="nav-link">🎯 pLDDT Score & Dynamics Decoder</a>
+    <a href="#sec-pae-demo" class="nav-link">🧩 PAE Matrix Domain Explainer</a>
+
+    <div class="nav-group-title">Pipeline Workflow</div>
+    <a href="#stage-0" class="nav-link">0. AI Architecture (Evoformer & IPA)</a>
+    <a href="#stage-1" class="nav-link">1. Sequence & Multimer Formatting</a>
+    <a href="#stage-2" class="nav-link">2. Fast MSA with MMseqs2</a>
+    <a href="#stage-3" class="nav-link">3. PDB Template Search</a>
+    <a href="#stage-4" class="nav-link">4. ColabFold Batch Inference</a>
+    <a href="#stage-5" class="nav-link">5. Amber Force Field Relaxation</a>
+    <a href="#stage-6" class="nav-link">6. Extracting pLDDT, pTM, ipTM</a>
+    <a href="#stage-7" class="nav-link">7. PyMOL & ChimeraX Scripting</a>
+    <a href="#stage-8" class="nav-link">8. In Silico Mutagenesis (FoldX)</a>
+    <a href="#stage-9" class="nav-link">9. ESMFold Ultrafast Prediction</a>
+    <a href="#stage-10" class="nav-link">10. Small-Molecule Docking Prep</a>
+
+    <div class="nav-group-title">Decision Guide</div>
+    <a href="#sec-decision" class="nav-link">🔀 Decision Architecture</a>
+  </aside>
+
+  <main class="content">
+    <div class="hero-box">
+      <h2>🔮 Next-Generation AI Structural Biology</h2>
+      <p>AlphaFold2 and ColabFold predict atomic-resolution 3D macromolecular protein folds directly from primary amino acid sequences. Understand per-residue confidence (pLDDT), relative inter-domain orientations (PAE), and multi-chain quaternary protein-protein interactions (ipTM).</p>
+    </div>
+
+    <!-- CALCULATOR 1: pLDDT Decoder -->
+    <section class="lab-section" id="sec-plddt-calc">
+      <div class="section-head">
+        <h2><span>🎯</span> pLDDT Confidence & Structural Interpretation</h2>
+        <span class="tag-badge">Interactive Decoder</span>
+      </div>
+      <div class="tool-calc-grid">
+        <div class="calc-card">
+          <h4>Input Residue Score</h4>
+          <div class="form-group">
+            <label>Predicted Local Distance Difference Test (pLDDT: 0 - 100):</label>
+            <input type="range" id="plddtRange" min="0" max="100" step="1" value="86" class="form-control" oninput="updatePLDDT()">
+            <div style="font-size:14px;font-weight:800;color:var(--primary);margin-top:4px;" id="plddtDisplay">86.0</div>
+          </div>
+          <div class="plddt-spectrum">
+            <div class="plddt-marker" id="plddtMarker" style="left:86%;"></div>
+          </div>
+        </div>
+
+        <div class="calc-card" style="display:flex;flex-direction:column;justify-content:center;">
+          <h4>Structural Interpretation</h4>
+          <div id="plddtTier" style="font-weight:800;font-size:15px;color:#0053d6;margin-bottom:6px;">
+            🔷 Confident (70 - 90)
+          </div>
+          <div id="plddtMeaning" style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">
+            Backbone conformation is highly reliable. Suitable for topological fold classification and active site pocket localization.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALCULATOR 2: PAE Matrix -->
+    <section class="lab-section" id="sec-pae-demo">
+      <div class="section-head">
+        <h2><span>🧩</span> Predicted Aligned Error (PAE) Matrix Explainer</h2>
+        <span class="tag-badge">Matrix Concept</span>
+      </div>
+      <p style="color:var(--text-muted);font-size:13px;">The PAE matrix measures expected position error (in Ångströms) at residue $y$ when the predicted and true structures are aligned on residue $x$. Low error (dark green) indicates rigid relative orientation; high error (light yellow/white) indicates flexible hinge motions or independent domains.</p>
+      
+      <div style="background:var(--panel-alt);border:1px solid var(--border);border-radius:10px;padding:16px;display:flex;gap:20px;flex-wrap:wrap;align-items:center;">
+        <svg width="220" height="220" viewBox="0 0 200 200" style="background:white;border-radius:8px;border:1px solid var(--border);">
+          <!-- Domain 1: 0-90 -->
+          <rect x="10" y="10" width="80" height="80" fill="#15803d" opacity="0.85"/>
+          <!-- Domain 2: 100-190 -->
+          <rect x="100" y="100" width="90" height="90" fill="#15803d" opacity="0.85"/>
+          <!-- Off-diagonal (inter-domain flexibility) -->
+          <rect x="100" y="10" width="90" height="80" fill="#fef08a" opacity="0.75"/>
+          <rect x="10" y="100" width="80" height="90" fill="#fef08a" opacity="0.75"/>
+          <text x="50" y="55" fill="white" font-size="11" text-anchor="middle" font-weight="700">Domain 1</text>
+          <text x="145" y="150" fill="white" font-size="11" text-anchor="middle" font-weight="700">Domain 2</text>
+          <text x="145" y="55" fill="#854d0e" font-size="9" text-anchor="middle">Flexible Linker</text>
+        </svg>
+        <div style="flex:1;min-width:260px;font-size:13px;color:var(--text-muted);">
+          <strong>Key Rule:</strong> High pLDDT does NOT guarantee rigid inter-domain docking. Always evaluate the off-diagonal squares in the PAE plot before concluding whether two domains or multimer subunits bind stably.
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 0 -->
+    <section class="lab-section" id="stage-0">
+      <div class="section-head">
+        <h2>0. Deep Learning Architecture (Evoformer & IPA)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-0')">💡 Explain</button>
+      </div>
+      <p>AlphaFold2 transforms primary sequences and homologous alignments using the Evoformer (which exchanges co-evolutionary residue pair information) and the Invariant Point Attention (IPA) module (which optimizes rigid 3D geometric transformations directly in Euclidean space without templates).</p>
+    </section>
+
+    <!-- STAGE 1 -->
+    <section class="lab-section" id="stage-1">
+      <div class="section-head">
+        <h2>1. FASTA Curation & Multimer Stoichiometry</h2>
+        <button class="explain-btn" onclick="showExplain('stage-1')">💡 Explain</button>
+      </div>
+      <p>For protein complexes and homomers/heteromers, format sequences separated by a colon <code>:</code>.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">FASTA</span><button class="copy-btn" onclick="copyCode('c-fa')">Copy</button></div>
+        <pre id="c-fa">>complex_A2B1
+MKTIIALSYIFCLVFA:MKTIIALSYIFCLVFA:MDPEEVAERLAAGFEE</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 2 -->
+    <section class="lab-section" id="stage-2">
+      <div class="section-head">
+        <h2>2. Ultra-Fast Multiple Sequence Alignment (MMseqs2)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-2')">💡 Explain</button>
+      </div>
+      <p>ColabFold replaces traditional slow JackHMMER searches (which took hours) with MMseqs2 against UniRef30 and environmental databases, constructing rich MSAs in seconds.</p>
+    </section>
+
+    <!-- STAGE 3 -->
+    <section class="lab-section" id="stage-3">
+      <div class="section-head">
+        <h2>3. Structural Template Searching (PDB70 / PDB100)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-3')">💡 Explain</button>
+      </div>
+      <p>Optional PDB template searching provides experimental coordinates for homologous crystallization scaffolds.</p>
+    </section>
+
+    <!-- STAGE 4 -->
+    <section class="lab-section" id="stage-4">
+      <div class="section-head">
+        <h2>4. ColabFold Batch Inference Execution</h2>
+        <button class="explain-btn" onclick="showExplain('stage-4')">💡 Explain</button>
+      </div>
+      <p>Run high-throughput local GPU prediction across multiple sequences with recycling.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st4')">Copy</button></div>
+        <pre id="c-st4"># Run ColabFold on local NVIDIA GPU (with 3 recycles)
+colabfold_batch \
+  --num-recycle 3 \
+  --amber \
+  --use-gpu-relax \
+  targets.fasta \
+  predictions_out/</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 5 -->
+    <section class="lab-section" id="stage-5">
+      <div class="section-head">
+        <h2>5. Amber Force Field Energy Relaxation</h2>
+        <button class="explain-btn" onclick="showExplain('stage-5')">💡 Explain</button>
+      </div>
+      <p>Resolves steric clashes and unphysical bond angle overlaps in side-chains using gradient descent energy minimization in the Amber99SB force field.</p>
+    </section>
+
+    <!-- STAGE 6 -->
+    <section class="lab-section" id="stage-6">
+      <div class="section-head">
+        <h2>6. Confidence Metric Extraction (pLDDT, pTM, ipTM)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-6')">💡 Explain</button>
+      </div>
+      <p>For complexes, evaluate the combined interface score: $\text{Model Score} = 0.8 \times \text{ipTM} + 0.2 \times \text{pTM}$. Scores $> 0.75$ signify high confidence interaction.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">PYTHON</span><button class="copy-btn" onclick="copyCode('c-st6')">Copy</button></div>
+        <pre id="c-st6">import json
+
+with open("predictions_out/target_scores_rank_001.json") as f:
+    scores = json.load(f)
+
+print("Mean pLDDT:", sum(scores['plddt']) / len(scores['plddt']))
+if 'iptm' in scores:
+    print(f"pTM: {scores['ptm']:.3f} | ipTM: {scores['iptm']:.3f}")</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 7 -->
+    <section class="lab-section" id="stage-7">
+      <div class="section-head">
+        <h2>7. PyMOL & ChimeraX Scripting & Visuals</h2>
+        <button class="explain-btn" onclick="showExplain('stage-7')">💡 Explain</button>
+      </div>
+      <p>Render structures colored according to the AlphaFold b-factor pLDDT gradient.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">PYMOL</span><button class="copy-btn" onclick="copyCode('c-st7')">Copy</button></div>
+        <pre id="c-st7"># PyMOL Command Script:
+load target_relaxed_rank_001.pdb
+spectrum b, rainbow_rev, minimum=50, maximum=90
+show cartoon
+set ray_shadows, 0
+ray 1800, 1400
+png target_structure.png</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 8 -->
+    <section class="lab-section" id="stage-8">
+      <div class="section-head">
+        <h2>8. In Silico Mutagenesis & Stability (FoldX / Rosetta)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-8')">💡 Explain</button>
+      </div>
+      <p>Calculate free energy changes ($\Delta\Delta G = \Delta G_{\text{mutant}} - \Delta G_{\text{wildtype}}$) caused by clinical missense mutations.</p>
+    </section>
+
+    <!-- STAGE 9 -->
+    <section class="lab-section" id="stage-9">
+      <div class="section-head">
+        <h2>9. ESMFold Ultra-Fast Protein Language Modeling</h2>
+        <button class="explain-btn" onclick="showExplain('stage-9')">💡 Explain</button>
+      </div>
+      <p>ESMFold by Meta AI predicts 3D structures 60x faster than AlphaFold directly from single sequences without needing multiple sequence alignments.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">PYTHON</span><button class="copy-btn" onclick="copyCode('c-st9')">Copy</button></div>
+        <pre id="c-st9">import torch
+import esm
+
+model = esm.pretrained.esmfold_v1()
+model = model.eval().cuda()
+
+sequence = "MKTIIALSYIFCLVFADYKDDDDK"
+with torch.no_grad():
+    output = model.infer_pdb(sequence)
+
+with open("esmfold_result.pdb", "w") as f:
+    f.write(output)</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 10 -->
+    <section class="lab-section" id="stage-10">
+      <div class="section-head">
+        <h2>10. Small-Molecule Docking Preparation</h2>
+        <button class="explain-btn" onclick="showExplain('stage-10')">💡 Explain</button>
+      </div>
+      <p>Prepare predicted receptor structures for AutoDock Vina or Glide by adding polar hydrogens and computing Gasteiger partial charges.</p>
+    </section>
+
+    <!-- DECISION GUIDE -->
+    <section class="lab-section" id="sec-decision">
+      <div class="section-head">
+        <h2>🔀 Decision Architecture: AI Modeling Tool Choice</h2>
+        <span class="tag-badge">Decision Tree</span>
+      </div>
+      <div class="decision-box">
+        <div style="font-weight:700;font-size:13.5px;">Select Structural Modeling Task:</div>
+        <div class="decision-options">
+          <button class="dec-btn active" onclick="setDecision('monomer')">Monomer with High Quality MSA</button>
+          <button class="dec-btn" onclick="setDecision('complex')">Multi-Chain Protein-Protein Complex</button>
+          <button class="dec-btn" onclick="setDecision('metagenome')">Metagenome Screening (Millions of Proteins)</button>
+        </div>
+        <div class="dec-result" id="decText">
+          <strong>Recommended: ColabFold (AlphaFold2-ptm)</strong><br>
+          ColabFold combines MMseqs2 fast homology searching with AlphaFold2, predicting monomer folds with state-of-the-art accuracy in 1-2 minutes per protein on a standard GPU.
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="explainModal" onclick="closeModal(event)">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModalDirect()">&times;</button>
+    <h3 id="modalTitle" style="margin-top:0;">Explanation</h3>
+    <div id="modalContent" style="color:var(--text-muted);font-size:13.5px;line-height:1.6;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+function updatePLDDT() {
+  const val = parseFloat(document.getElementById('plddtRange').value);
+  document.getElementById('plddtDisplay').textContent = val.toFixed(1);
+  document.getElementById('plddtMarker').style.left = val + "%";
+
+  const tier = document.getElementById('plddtTier');
+  const meaning = document.getElementById('plddtMeaning');
+
+  if (val > 90) {
+    tier.textContent = "🔵 Very High (pLDDT > 90)";
+    tier.style.color = "#0053d6";
+    meaning.textContent = "High accuracy side-chain rotamers. Comparable to experimental high-resolution X-ray crystallography (< 1.5 Å). Excellent for structure-based drug design.";
+  } else if (val >= 70) {
+    tier.textContent = "🔷 Confident (70 <= pLDDT <= 90)";
+    tier.style.color = "#0284c7";
+    meaning.textContent = "Backbone conformation is highly reliable. Secondary structures (alpha helices, beta sheets) are trustworthy; side-chains may vary slightly.";
+  } else if (val >= 50) {
+    tier.textContent = "🟡 Low (50 <= pLDDT < 70)";
+    tier.style.color = "#ca8a04";
+    meaning.textContent = "Ribbon conformation is uncertain. Often represents flexible surface loops, inter-domain hinges, or weakly structured segments.";
+  } else {
+    tier.textContent = "🔴 Very Low (pLDDT < 50)";
+    tier.style.color = "#dc2626";
+    meaning.textContent = "Strong signal of an Intrinsically Disordered Region (IDR) or unfolded domain. Do NOT interpret as a rigid static structure.";
+  }
+}
+
+const EXPLAINS = {
+  'stage-0': {
+    title: 'Evoformer & Structural Module',
+    content: 'AlphaFold does not simply match templates. The Evoformer treats MSA and pair representations as two communicating channels, discovering correlated mutations that imply physical proximity. The Invariant Point Attention module translates these pairwise constraints into 3D coordinates.'
+  },
+  'stage-1': {
+    title: 'AlphaFold-Multimer Formatting',
+    content: 'For multimer complexes, separate each polypeptide sequence with a colon <code>:</code>. For example, a heterodimer of protein A and protein B is entered as <code>SEQ_A:SEQ_B</code>.'
+  },
+  'stage-2': {
+    title: 'MMseqs2 Acceleration',
+    content: 'Standard AlphaFold uses JackHMMER against massive 2.5 TB databases which takes 1-3 hours per target. ColabFold\'s MMseqs2 server reduces this search step to 10-30 seconds with equivalent downstream folding accuracy.'
+  },
+  'stage-3': {
+    title: 'PDB Template Impact',
+    content: 'For most natural proteins with deep MSAs (> 100 sequences), templates have negligible impact because co-evolution signals dominate. Templates are primarily helpful for orphan proteins with fewer than 30 homologous sequences.'
+  },
+  'stage-4': {
+    title: 'Recycling in AlphaFold',
+    content: 'Recycling feeds predicted coordinates and pairwise representations back into the Evoformer for multiple iterations (default: 3 recycles), progressively refining tertiary packing and domain orientations.'
+  },
+  'stage-5': {
+    title: 'Amber Force Field Relaxation',
+    content: 'The neural network can occasionally predict overlapping atom spheres (steric clashes) or distorted peptide bonds. Amber relaxation performs a gentle energy minimization to eliminate clashes without altering the overall fold topology.'
+  },
+  'stage-6': {
+    title: 'pTM vs ipTM Scores',
+    content: 'pTM measures predicted TM-score for the full structure. ipTM measures the predicted TM-score specifically at inter-chain interfaces. For multimers, look for ipTM > 0.70 to confirm genuine binding.'
+  },
+  'stage-7': {
+    title: 'Visualizing B-factor as pLDDT',
+    content: 'In AlphaFold PDB files, the temperature factor (B-factor) column does not store experimental vibration; it stores the per-residue pLDDT score (0 to 100). Coloring by B-factor directly visualizes prediction confidence.'
+  },
+  'stage-8': {
+    title: 'FoldX Free Energy Calculations',
+    content: 'FoldX uses an empirical physical force field to calculate whether single-point amino acid substitutions stabilize or destabilize the protein scaffold.'
+  },
+  'stage-9': {
+    title: 'ESMFold Language Modeling',
+    content: 'ESMFold uses a 15-billion parameter protein language model (ESM-2) that understands protein folding directly from evolutionary syntax without building MSAs, enabling structural prediction of millions of metagenomic contigs in days.'
+  },
+  'stage-10': {
+    title: 'Preparing for Molecular Docking',
+    content: 'Always ensure flexible low-pLDDT (< 50) N-terminal and C-terminal tails are trimmed before molecular docking, as unconstrained floppy loops can artificially block binding pockets.'
+  }
+};
+
+function showExplain(id) {
+  const item = EXPLAINS[id];
+  if (!item) return;
+  document.getElementById('modalTitle').textContent = item.title;
+  document.getElementById('modalContent').innerHTML = item.content;
+  document.getElementById('explainModal').classList.add('active');
+}
+
+function closeModal(e) {
+  if (e.target.id === 'explainModal') document.getElementById('explainModal').classList.remove('active');
+}
+function closeModalDirect() {
+  document.getElementById('explainModal').classList.remove('active');
+}
+
+function setDecision(type) {
+  document.querySelectorAll('.dec-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const txt = document.getElementById('decText');
+  if (type === 'monomer') {
+    txt.innerHTML = "<strong>Recommended: ColabFold (AlphaFold2-ptm)</strong><br>ColabFold combines MMseqs2 fast homology searching with AlphaFold2, predicting monomer folds with state-of-the-art accuracy in 1-2 minutes per protein on a standard GPU.";
+  } else if (type === 'complex') {
+    txt.innerHTML = "<strong>Recommended: AlphaFold-Multimer (v3) via ColabFold</strong><br>Trained specifically on multimeric interfaces in the PDB. Evaluates inter-subunit contacts and outputs ipTM interface confidence scores.";
+  } else if (type === 'metagenome') {
+    txt.innerHTML = "<strong>Recommended: ESMFold (Meta AI)</strong><br>Zero MSA requirement. Predicts up to 60 structures per minute on a single A100 GPU, ideal for large-scale metagenomic protein catalogs.";
+  }
+}
+
+function copyCode(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    toast("Command copied to clipboard!");
+  });
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function toggleTheme() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  if (isDark) {
+    document.body.removeAttribute('data-theme');
+    document.getElementById('themeBtn').textContent = '🌙 Theme';
+    localStorage.setItem('bioTheme', 'light');
+  } else {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+    localStorage.setItem('bioTheme', 'dark');
+  }
+}
+
+function exportScript() {
+  const script = `#!/usr/bin/env bash
+# ==============================================================
+# Production ColabFold Structure Prediction Pipeline
+# Generated by AlphaFold Master Interactive Lab
+# ==============================================================
+set -euo pipefail
+INPUT_FASTA="targets.fasta"
+OUT_DIR="predictions_out"
+
+echo "[1/2] Running ColabFold batch prediction..."
+colabfold_batch \\
+  --num-recycle 3 \\
+  --amber \\
+  --use-gpu-relax \\
+  \${INPUT_FASTA} \${OUT_DIR}
+
+echo "[2/2] Generating PyMOL visualization scripts..."
+cat << 'EOF' > \${OUT_DIR}/visualize.pml
+load *relaxed_rank_001*.pdb
+spectrum b, rainbow_rev, minimum=50, maximum=90
+show cartoon
+set ray_shadows, 0
+EOF
+
+echo "AlphaFold modeling pipeline finished!"
+`;
+  const blob = new Blob([script], { type: 'text/x-sh' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'alphafold_pipeline.sh';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("Shell script exported!");
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  updatePLDDT();
+  if (localStorage.getItem('bioTheme') === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+  }
+});
+</script>
+</body>
+</html>

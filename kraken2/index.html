@@ -1,0 +1,860 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Kraken 2 & Bracken Taxonomic Profiling Lab | Bioinformatics Hub</title>
+<style>
+:root {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-alt: #f1f5f9;
+  --panel-hover: #f8fafc;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-focus: #0284c7;
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-light: #f0f9ff;
+  --primary-dark: #075985;
+  --primary-glow: rgba(2, 132, 199, 0.12);
+  --accent: #06b6d4;
+  --accent-light: #ecfeff;
+  --code-bg: #0d1117;
+  --code-header: #161b22;
+  --code-text: #e6edf3;
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --header-bg: rgba(255, 255, 255, 0.88);
+  --header-border: rgba(226, 232, 240, 0.8);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+[data-theme="dark"] {
+  --bg: #090d16;
+  --panel: #0f172a;
+  --panel-alt: #161f30;
+  --panel-hover: #1b263b;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --border: #1e293b;
+  --border-subtle: #141c2e;
+  --border-focus: #38bdf8;
+  --primary: #38bdf8;
+  --primary-hover: #7dd3fc;
+  --primary-light: #082f49;
+  --primary-dark: #bae6fd;
+  --primary-glow: rgba(56, 189, 248, 0.15);
+  --accent: #22d3ee;
+  --accent-light: #083344;
+  --code-bg: #05080f;
+  --code-header: #0d121f;
+  --code-text: #f1f5f9;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --header-bg: rgba(9, 13, 22, 0.88);
+  --header-border: rgba(30, 41, 59, 0.8);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14.5px/1.65 var(--font-sans);
+  letter-spacing: -0.011em;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.header-inner {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand-wrapper { display: flex; align-items: center; gap: 12px; }
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0284c7, #06b6d4);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 13px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+.brand-text h1 { margin: 0; font-size: 16px; font-weight: 700; color: var(--text); }
+.brand-text p { margin: 1px 0 0; font-size: 11.5px; color: var(--text-muted); }
+
+.header-controls { display: flex; align-items: center; gap: 10px; }
+.nav-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.nav-btn:hover { background: var(--panel-alt); border-color: var(--border-focus); }
+.nav-btn.primary { background: var(--primary); color: white; border-color: var(--primary); }
+
+.layout {
+  display: flex;
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 24px;
+  gap: 28px;
+}
+
+aside.sidebar {
+  width: 290px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 75px;
+  max-height: calc(100vh - 95px);
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.nav-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  margin: 18px 0 8px 6px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 12.8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 7px;
+  transition: all 0.12s;
+  margin-bottom: 2px;
+}
+.nav-link:hover, .nav-link.active {
+  background: var(--panel-alt);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+main.content { flex: 1; min-width: 0; }
+
+.hero-box {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(6, 182, 212, 0.08));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+}
+.hero-box h2 { margin: 0 0 8px; font-size: 24px; font-weight: 800; }
+.hero-box p { margin: 0; color: var(--text-muted); font-size: 14.5px; max-width: 880px; }
+
+section.lab-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--card-shadow);
+  scroll-margin-top: 85px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.section-head h2 { margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.tag-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-glow);
+}
+
+.tool-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.calc-card {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.calc-card h4 { margin: 0 0 10px; font-size: 13.5px; font-weight: 700; }
+
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+.form-control {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-family: inherit;
+}
+
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 14px 0;
+}
+.code-header {
+  background: var(--code-header);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.code-lang { font-family: var(--font-mono); font-size: 11.5px; color: #94a3b8; }
+.copy-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+pre {
+  margin: 0;
+  padding: 14px;
+  color: var(--code-text);
+  font-family: var(--font-mono);
+  font-size: 12.8px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+.explain-btn {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  max-width: 650px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+
+.decision-box {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.decision-options { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.dec-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.dec-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.dec-result {
+  background: var(--panel);
+  border-left: 4px solid var(--primary);
+  padding: 12px 14px;
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+@media(max-width: 900px) {
+  .layout { flex-direction: column; }
+  aside.sidebar { width: 100%; position: static; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand-wrapper">
+      <a href="../" class="brand-badge">🧬 Hub</a>
+      <div class="brand-text">
+        <h1>Kraken 2 & Bracken Taxonomic Profiling Lab</h1>
+        <p>Exact k-mer Alignment, Lowest Common Ancestor (LCA), Bayesian Abundance Re-estimation & Krona Visuals</p>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button class="nav-btn" onclick="exportScript()">⬇ Export Bash Script</button>
+      <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">🌙 Theme</button>
+      <a href="../" class="nav-btn primary">← Back to Hub</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="nav-group-title">Interactive Simulators</div>
+    <a href="#sec-lca-sim" class="nav-link">🌳 k-mer LCA Mapping Simulator</a>
+    <a href="#sec-bracken-calc" class="nav-link">⚖️ Bracken Bayesian Command Gen</a>
+
+    <div class="nav-group-title">Pipeline Workflow</div>
+    <a href="#stage-0" class="nav-link">0. Compact Hash Tables & Minimizers</a>
+    <a href="#stage-1" class="nav-link">1. Database Selection & Download</a>
+    <a href="#stage-2" class="nav-link">2. Memory Optimization (--memory-mapping)</a>
+    <a href="#stage-3" class="nav-link">3. Pre-filtering Host Reads</a>
+    <a href="#stage-4" class="nav-link">4. Executing Kraken 2 Paired Profiling</a>
+    <a href="#stage-5" class="nav-link">5. Decoding Kraken Report Format</a>
+    <a href="#stage-6" class="nav-link">6. Bracken Bayesian Re-estimation</a>
+    <a href="#stage-7" class="nav-link">7. Multi-Sample Abundance Matrices</a>
+    <a href="#stage-8" class="nav-link">8. Krona & Pavian Visualizations</a>
+    <a href="#stage-9" class="nav-link">9. BIOM Export for QIIME 2</a>
+    <a href="#stage-10" class="nav-link">10. Diversity Statistics in R</a>
+
+    <div class="nav-group-title">Decision Guide</div>
+    <a href="#sec-decision" class="nav-link">🔀 Decision Architecture</a>
+  </aside>
+
+  <main class="content">
+    <div class="hero-box">
+      <h2>🧪 Ultra-Fast Taxonomic Profiling of Whole Metagenomes</h2>
+      <p>Kraken 2 matches exact 35-mer minimizers against an indexed database of all NCBI microbial genomes in seconds. Bracken (Bayesian Re-estimation of Abundance with KrakEN) redistributes reads assigned to higher taxonomic nodes down to the species level, yielding accurate relative abundance profiles.</p>
+    </div>
+
+    <!-- CALCULATOR 1: LCA Mapping Simulator -->
+    <section class="lab-section" id="sec-lca-sim">
+      <div class="section-head">
+        <h2><span>🌳</span> k-mer Exact Match & Lowest Common Ancestor (LCA) Simulator</h2>
+        <span class="tag-badge">Interactive Concept</span>
+      </div>
+      <p style="color:var(--text-muted);font-size:13px;">When a sequencing read contains multiple 35-mers that match different reference species, Kraken 2 finds the single Lowest Common Ancestor (LCA) node that contains all matches. Select a simulated read profile:</p>
+
+      <div class="form-group" style="max-width:380px;">
+        <label>Simulated 150bp Read Scenario:</label>
+        <select id="lcaScenario" class="form-control" onchange="updateLCADemo()">
+          <option value="strain">100% Species-Specific k-mers (Matches only E. coli K-12)</option>
+          <option value="genus">Shared Genus k-mers (Matches E. coli, E. fergusonii, E. albertii)</option>
+          <option value="family">Conserved Operon k-mers (Matches E. coli & Salmonella enterica)</option>
+          <option value="unclassified">No Database Matches (Novel environmental taxon)</option>
+        </select>
+      </div>
+
+      <div style="background:var(--panel-alt);border:1px solid var(--border);border-radius:10px;padding:16px;margin-top:14px;">
+        <div style="font-weight:700;font-size:13.5px;margin-bottom:6px;">Resulting Classification:</div>
+        <div id="lcaResultNode" style="font-size:16px;font-weight:800;color:var(--primary);margin-bottom:6px;">
+          Species: Escherichia coli (taxid: 562)
+        </div>
+        <div id="lcaResultExplanation" style="font-size:12.5px;color:var(--text-muted);line-height:1.5;">
+          All 35-mer minimizers uniquely hit the E. coli lineage in the NCBI taxonomy tree. Confident species assignment.
+        </div>
+      </div>
+    </section>
+
+    <!-- CALCULATOR 2: Bracken Command Generator -->
+    <section class="lab-section" id="sec-bracken-calc">
+      <div class="section-head">
+        <h2><span>⚖️</span> Bracken Bayesian Re-estimation Configurator</h2>
+        <span class="tag-badge">Command Generator</span>
+      </div>
+      <div class="tool-calc-grid">
+        <div class="calc-card">
+          <h4>Sequencing & Target Rank</h4>
+          <div class="form-group">
+            <label>Read Length (r in bp):</label>
+            <select id="brackenLen" class="form-control" onchange="updateBrackenCmd()">
+              <option value="150" selected>150 bp (Illumina NovaSeq / NextSeq)</option>
+              <option value="100">100 bp (Illumina HiSeq)</option>
+              <option value="250">250 bp (Illumina MiSeq)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Target Taxonomic Level (-l):</label>
+            <select id="brackenLevel" class="form-control" onchange="updateBrackenCmd()">
+              <option value="S" selected>Species (S)</option>
+              <option value="G">Genus (G)</option>
+              <option value="F">Family (F)</option>
+              <option value="P">Phylum (P)</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Minimum Read Threshold (-t):</label>
+            <input type="number" id="brackenThresh" class="form-control" value="10" oninput="updateBrackenCmd()">
+          </div>
+        </div>
+
+        <div class="calc-card" style="display:flex;flex-direction:column;justify-content:center;">
+          <h4>Generated Bracken CLI Command</h4>
+          <div class="code-block" style="margin:0;">
+            <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-bracken')">Copy</button></div>
+            <pre id="c-bracken">bracken -d ${DB} -i sample.k2report -o sample_bracken_S.tsv -r 150 -l S -t 10</pre>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 0 -->
+    <section class="lab-section" id="stage-0">
+      <div class="section-head">
+        <h2>0. Compact Hash Tables & Minimizer Concept</h2>
+        <button class="explain-btn" onclick="showExplain('stage-0')">💡 Explain</button>
+      </div>
+      <p>Kraken 2 searches canonical 35-mers by selecting the lexicographically smallest 31-mer (the minimizer) in each window. This shrinks database storage from terabytes to ~60 GB while retaining exact taxonomic resolution.</p>
+    </section>
+
+    <!-- STAGE 1 -->
+    <section class="lab-section" id="stage-1">
+      <div class="section-head">
+        <h2>1. Database Selection & Download</h2>
+        <button class="explain-btn" onclick="showExplain('stage-1')">💡 Explain</button>
+      </div>
+      <p>Download pre-built Ben Langmead databases hosted by the Center for Computational Biology at Johns Hopkins.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st1')">Copy</button></div>
+        <pre id="c-st1"># Download Standard 16GB pre-built database (Bacteria, Archaea, Viral, Human)
+wget -c https://genome-idx.s3.amazonaws.com/kraken/k2_standard_16gb_20240112.tar.gz
+tar -xvzf k2_standard_16gb_20240112.tar.gz -C kraken_db/</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 2 -->
+    <section class="lab-section" id="stage-2">
+      <div class="section-head">
+        <h2>2. Memory Optimization (--memory-mapping)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-2')">💡 Explain</button>
+      </div>
+      <p>For systems with limited RAM, the <code>--memory-mapping</code> flag streams the hash table from high-speed NVMe SSDs without consuming 60+ GB of physical memory.</p>
+    </section>
+
+    <!-- STAGE 3 -->
+    <section class="lab-section" id="stage-3">
+      <div class="section-head">
+        <h2>3. Pre-filtering & Host Decontamination</h2>
+        <button class="explain-btn" onclick="showExplain('stage-3')">💡 Explain</button>
+      </div>
+      <p>Quality-trim raw reads and strip human host background before taxonomic profiling.</p>
+    </section>
+
+    <!-- STAGE 4 -->
+    <section class="lab-section" id="stage-4">
+      <div class="section-head">
+        <h2>4. Executing Kraken 2 Paired-End Classification</h2>
+        <button class="explain-btn" onclick="showExplain('stage-4')">💡 Explain</button>
+      </div>
+      <p>Generate both the full sequence-by-sequence output and the summary hierarchical report.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st4')">Copy</button></div>
+        <pre id="c-st4">kraken2 --db kraken_db/ \
+  --paired clean_R1.fq.gz clean_R2.fq.gz \
+  --threads 8 \
+  --confidence 0.1 \
+  --report sample.k2report \
+  --output sample.kraken2</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 5 -->
+    <section class="lab-section" id="stage-5">
+      <div class="section-head">
+        <h2>5. Decoding the Kraken Report Format</h2>
+        <button class="explain-btn" onclick="showExplain('stage-5')">💡 Explain</button>
+      </div>
+      <p>The standard 6-column report records: 1) Percentage of fragments; 2) Cumulative clade fragments; 3) Unassigned direct fragments; 4) Taxonomic rank code (U, R, D, P, C, O, F, G, S); 5) NCBI TaxID; 6) Indented scientific name.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">REPORT</span><button class="copy-btn" onclick="copyCode('c-st5')">Copy</button></div>
+        <pre id="c-st5"> 42.15  1264500  1264500   U   0       unclassified
+ 57.85  1735500     2500   R   1       root
+ 56.40  1692000     4500   D   2       Bacteria
+ 34.20  1026000    12000   P   1239    Firmicutes
+ 18.50   555000     8000   G   1578    Lactobacillus
+ 12.10   363000   363000   S   1579      Lactobacillus acidophilus</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 6 -->
+    <section class="lab-section" id="stage-6">
+      <div class="section-head">
+        <h2>6. Bracken Bayesian Abundance Re-estimation</h2>
+        <button class="explain-btn" onclick="showExplain('stage-6')">💡 Explain</button>
+      </div>
+      <p>Redistribute reads mapped to higher clades (Genus, Family) down to Species based on pre-computed genomic probabilities.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st6')">Copy</button></div>
+        <pre id="c-st6">bracken -d kraken_db/ \
+  -i sample.k2report \
+  -o sample_bracken_species.tsv \
+  -r 150 -l S -t 10</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 7 -->
+    <section class="lab-section" id="stage-7">
+      <div class="section-head">
+        <h2>7. Merging Multiple Bracken Outputs into a Unified Matrix</h2>
+        <button class="explain-btn" onclick="showExplain('stage-7')">💡 Explain</button>
+      </div>
+      <p>Combine individual sample abundance tables into a single matrix for cross-cohort statistics.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st7')">Copy</button></div>
+        <pre id="c-st7">combine_bracken_outputs.py \
+  --files sample_01_bracken.tsv sample_02_bracken.tsv sample_03_bracken.tsv \
+  --output combined_species_abundance.tsv</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 8 -->
+    <section class="lab-section" id="stage-8">
+      <div class="section-head">
+        <h2>8. Interactive Krona & Pavian Visualizations</h2>
+        <button class="explain-btn" onclick="showExplain('stage-8')">💡 Explain</button>
+      </div>
+      <p>Generate interactive multi-layered zoomable pie charts with KronaTools.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st8')">Copy</button></div>
+        <pre id="c-st8"># Convert kraken report to Krona HTML
+ktImportTaxonomy -m 3 -t 5 sample.k2report -o krona_visualization.html</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 9 -->
+    <section class="lab-section" id="stage-9">
+      <div class="section-head">
+        <h2>9. BIOM Export for QIIME 2 & Phyloseq</h2>
+        <button class="explain-btn" onclick="showExplain('stage-9')">💡 Explain</button>
+      </div>
+      <p>Convert Kraken reports to Biological Observation Matrix (BIOM) format for downstream alpha/beta diversity analysis.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st9')">Copy</button></div>
+        <pre id="c-st9">kraken-biom sample_*.k2report \
+  --max S --min S \
+  -o table_species.biom</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 10 -->
+    <section class="lab-section" id="stage-10">
+      <div class="section-head">
+        <h2>10. Diversity Statistics in R (Phyloseq & Vegan)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-10')">💡 Explain</button>
+      </div>
+      <p>Compute Shannon index, Bray-Curtis dissimilarity, and NMDS ordinations across experimental groups.</p>
+    </section>
+
+    <!-- DECISION GUIDE -->
+    <section class="lab-section" id="sec-decision">
+      <div class="section-head">
+        <h2>🔀 Decision Architecture: Metagenomics Profiler Selection</h2>
+        <span class="tag-badge">Decision Tree</span>
+      </div>
+      <div class="decision-box">
+        <div style="font-weight:700;font-size:13.5px;">Select Primary Workflow Requirement:</div>
+        <div class="decision-options">
+          <button class="dec-btn active" onclick="setDecision('speed')">Ultra-Fast Whole Metagenome (Kraken 2 + Bracken)</button>
+          <button class="dec-btn" onclick="setDecision('markers')">Clade-Specific Marker Genes (MetaPhlAn 4)</button>
+          <button class="dec-btn" onclick="setDecision('amplicon')">Targeted 16S / 18S / ITS Amplicons (QIIME 2)</button>
+        </div>
+        <div class="dec-result" id="decText">
+          <strong>Recommended: Kraken 2 + Bracken</strong><br>
+          Classifies 1-2 million reads per minute using all NCBI genomes. Always pair Kraken 2 with Bracken to eliminate taxonomic bias from reads mapped to higher clades.
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="explainModal" onclick="closeModal(event)">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModalDirect()">&times;</button>
+    <h3 id="modalTitle" style="margin-top:0;">Explanation</h3>
+    <div id="modalContent" style="color:var(--text-muted);font-size:13.5px;line-height:1.6;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+function updateLCADemo() {
+  const scenario = document.getElementById('lcaScenario').value;
+  const node = document.getElementById('lcaResultNode');
+  const exp = document.getElementById('lcaResultExplanation');
+
+  if (scenario === 'strain') {
+    node.textContent = "Species: Escherichia coli (taxid: 562)";
+    exp.textContent = "All 35-mer minimizers uniquely hit the E. coli lineage in the NCBI taxonomy tree. Confident species assignment.";
+  } else if (scenario === 'genus') {
+    node.textContent = "Genus: Escherichia (taxid: 561)";
+    exp.textContent = "Minimizers matched multiple closely related species within the Escherichia genus. Kraken 2 elevates the read to the Lowest Common Ancestor (genus level).";
+  } else if (scenario === 'family') {
+    node.textContent = "Family: Enterobacteriaceae (taxid: 543)";
+    exp.textContent = "The read spans a highly conserved ribosomal or metabolic gene shared across enteric bacteria. Resolved to Family level to prevent false-positive species calls.";
+  } else {
+    node.textContent = "Unclassified (taxid: 0)";
+    exp.textContent = "Fewer than the required threshold of minimizers matched any sequence in the database. Read is marked unclassified.";
+  }
+}
+
+function updateBrackenCmd() {
+  const r = document.getElementById('brackenLen').value;
+  const l = document.getElementById('brackenLevel').value;
+  const t = document.getElementById('brackenThresh').value || '10';
+
+  document.getElementById('c-bracken').textContent = 
+    `bracken -d \${DB} -i sample.k2report -o sample_bracken_${l}.tsv -r ${r} -l ${l} -t ${t}`;
+}
+
+const EXPLAINS = {
+  'stage-0': {
+    title: 'How Kraken 2 Achieves Extreme Speed',
+    content: 'Traditional BLAST alignments align nucleotide by nucleotide using dynamic programming. Kraken 2 indexes every 35-mer in the database using a Compact Hash Table. Query reads are chopped into k-mers and looked up in O(1) constant time, classifying 100,000+ reads per second.'
+  },
+  'stage-1': {
+    title: 'Standard vs PlusPFP Databases',
+    content: 'The Standard database includes Archaea, Bacteria, Viral, Human, and UniVec vectors. The PlusPF database adds Fungi and Protozoa, which is critical when analyzing soil or environmental microbiomes containing microbial eukaryotes.'
+  },
+  'stage-2': {
+    title: 'Memory-Mapping on NVMe Drives',
+    content: 'Using <code>--memory-mapping</code> allows the operating system to page in parts of the 60+ GB hash table on demand from an SSD, enabling Kraken 2 to run smoothly on machines with only 16-32 GB of physical RAM.'
+  },
+  'stage-3': {
+    title: 'Human Host Filtering',
+    content: 'Even though Kraken 2 includes the human genome in its standard database, pre-filtering host reads with Bowtie2 prevents human ribosomal RNA or repetitive elements from artificially misclassifying as microbial homologs.'
+  },
+  'stage-4': {
+    title: 'The --confidence Parameter',
+    content: 'Setting <code>--confidence 0.1</code> requires at least 10% of minimizers in a read to support the assigned taxon, dramatically reducing false-positive species identifications in clinical metagenomics.'
+  },
+  'stage-5': {
+    title: 'Kraken Report Column Meaning',
+    content: 'Column 1 shows cumulative percentage of reads in that taxonomic clade; Column 2 is cumulative fragment count; Column 3 is fragments assigned directly to that exact taxon without descending deeper.'
+  },
+  'stage-6': {
+    title: 'Why Bracken is Essential',
+    content: 'Because conserved sequences map to Genus or Family, raw Kraken reports severely underestimate species abundances. Bracken uses a Bayesian statistical re-estimation model that calculates genome uniqueness to probabilistically reallocate higher-level reads down to species.'
+  },
+  'stage-7': {
+    title: 'Matrix Generation for Statistical Testing',
+    content: '<code>combine_bracken_outputs.py</code> parses multiple Bracken output files and generates a single tabular abundance matrix (rows = species, columns = sample IDs) ready for R packages like DESeq2, ANCOM-BC, and Vegan.'
+  },
+  'stage-8': {
+    title: 'Krona Visualizations',
+    content: 'Krona provides hierarchical radial multi-level pie charts where users can click to zoom into specific phyla, families, or species, visually comparing relative abundance shares.'
+  },
+  'stage-9': {
+    title: 'BIOM Format Conversion',
+    content: '<code>kraken-biom</code> creates Biological Observation Matrix files that directly interface with the QIIME 2 <code>qiime tools import</code> command for seamless transition into core diversity pipelines.'
+  },
+  'stage-10': {
+    title: 'Diversity Metrics',
+    content: 'Alpha diversity (Shannon, Simpson, Chao1) quantifies richness within a sample, while Beta diversity (Bray-Curtis, Jaccard) evaluates compositional turnover across experimental conditions.'
+  }
+};
+
+function showExplain(id) {
+  const item = EXPLAINS[id];
+  if (!item) return;
+  document.getElementById('modalTitle').textContent = item.title;
+  document.getElementById('modalContent').innerHTML = item.content;
+  document.getElementById('explainModal').classList.add('active');
+}
+
+function closeModal(e) {
+  if (e.target.id === 'explainModal') document.getElementById('explainModal').classList.remove('active');
+}
+function closeModalDirect() {
+  document.getElementById('explainModal').classList.remove('active');
+}
+
+function setDecision(type) {
+  document.querySelectorAll('.dec-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const txt = document.getElementById('decText');
+  if (type === 'speed') {
+    txt.innerHTML = "<strong>Recommended: Kraken 2 + Bracken</strong><br>Classifies 1-2 million reads per minute using all NCBI genomes. Always pair Kraken 2 with Bracken to eliminate taxonomic bias from reads mapped to higher clades.";
+  } else if (type === 'markers') {
+    txt.innerHTML = "<strong>Recommended: MetaPhlAn 4</strong><br>MetaPhlAn 4 maps reads against ~1 million unique clade-specific marker genes. It has a virtually zero false-positive rate and directly outputs relative abundance without needing Bracken.";
+  } else if (type === 'amplicon') {
+    txt.innerHTML = "<strong>Recommended: QIIME 2 (DADA2 + SILVA Classifier)</strong><br>If sequencing PCR amplicons (16S V4, 18S, ITS), do NOT use shotgun k-mer profilers. Use QIIME 2 with DADA2 ASV resolution and a Naive Bayes classifier.";
+  }
+}
+
+function copyCode(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    toast("Command copied to clipboard!");
+  });
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function toggleTheme() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  if (isDark) {
+    document.body.removeAttribute('data-theme');
+    document.getElementById('themeBtn').textContent = '🌙 Theme';
+    localStorage.setItem('bioTheme', 'light');
+  } else {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+    localStorage.setItem('bioTheme', 'dark');
+  }
+}
+
+function exportScript() {
+  const script = `#!/usr/bin/env bash
+# ==============================================================
+# Production Kraken 2 & Bracken Taxonomic Profiling Pipeline
+# Generated by Kraken 2 Master Interactive Lab
+# ==============================================================
+set -euo pipefail
+THREADS=8
+DB="kraken_db/"
+SAMPLE="sample_01"
+
+echo "[1/4] Running Kraken 2 Paired Classification..."
+kraken2 --db \${DB} \\
+  --paired \${SAMPLE}_R1.fq.gz \${SAMPLE}_R2.fq.gz \\
+  --threads \${THREADS} \\
+  --confidence 0.1 \\
+  --report \${SAMPLE}.k2report \\
+  --output \${SAMPLE}.kraken2
+
+echo "[2/4] Bracken Bayesian Abundance Re-estimation (Species level)..."
+bracken -d \${DB} \\
+  -i \${SAMPLE}.k2report \\
+  -o \${SAMPLE}_bracken_species.tsv \\
+  -r 150 -l S -t 10
+
+echo "[3/4] Generating Krona Interactive Pie Chart..."
+ktImportTaxonomy -m 3 -t 5 \${SAMPLE}.k2report -o \${SAMPLE}_krona.html
+
+echo "[4/4] Converting to BIOM format..."
+kraken-biom \${SAMPLE}.k2report --max S --min S -o \${SAMPLE}_species.biom
+
+echo "Kraken 2 and Bracken pipeline finished successfully!"
+`;
+  const blob = new Blob([script], { type: 'text/x-sh' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'kraken2_pipeline.sh';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("Bash script exported!");
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  updateLCADemo();
+  updateBrackenCmd();
+  if (localStorage.getItem('bioTheme') === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+  }
+});
+</script>
+</body>
+</html>

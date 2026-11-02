@@ -1,0 +1,1132 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SAMtools & BAMtools Master Interactive Lab | Bioinformatics Hub</title>
+<style>
+:root {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-alt: #f1f5f9;
+  --panel-hover: #f8fafc;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-focus: #0284c7;
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-light: #f0f9ff;
+  --primary-dark: #075985;
+  --primary-glow: rgba(2, 132, 199, 0.12);
+  --accent: #0f766e;
+  --accent-light: #f0fdfa;
+  --warning-bg: #fffbeb;
+  --warning-border: #fef3c7;
+  --warning-text: #92400e;
+  --success-bg: #f0fdf4;
+  --success-border: #bbf7d0;
+  --success-text: #166534;
+  --danger-bg: #fef2f2;
+  --danger-border: #fecaca;
+  --danger-text: #991b1b;
+  --code-bg: #0d1117;
+  --code-header: #161b22;
+  --code-text: #e6edf3;
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --card-shadow-hover: 0 10px 24px -4px rgba(15, 23, 42, 0.07), 0 4px 8px -2px rgba(15, 23, 42, 0.03);
+  --header-bg: rgba(255, 255, 255, 0.88);
+  --header-border: rgba(226, 232, 240, 0.8);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+[data-theme="dark"] {
+  --bg: #090d16;
+  --panel: #0f172a;
+  --panel-alt: #161f30;
+  --panel-hover: #1b263b;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --border: #1e293b;
+  --border-subtle: #141c2e;
+  --border-focus: #38bdf8;
+  --primary: #38bdf8;
+  --primary-hover: #7dd3fc;
+  --primary-light: #082f49;
+  --primary-dark: #bae6fd;
+  --primary-glow: rgba(56, 189, 248, 0.15);
+  --accent: #14b8a6;
+  --accent-light: #042f2e;
+  --warning-bg: #422006;
+  --warning-border: #713f12;
+  --warning-text: #fde68a;
+  --success-bg: #052e16;
+  --success-border: #14532d;
+  --success-text: #86efac;
+  --danger-bg: #450a0a;
+  --danger-border: #7f1d1d;
+  --danger-text: #fca5a5;
+  --code-bg: #05080f;
+  --code-header: #0d121f;
+  --code-text: #f1f5f9;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --card-shadow-hover: 0 14px 28px -4px rgba(0, 0, 0, 0.6);
+  --header-bg: rgba(9, 13, 22, 0.88);
+  --header-border: rgba(30, 41, 59, 0.8);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14.5px/1.65 var(--font-sans);
+  letter-spacing: -0.011em;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.header-inner {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0284c7, #0d9488);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 13px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+
+.brand-text h1 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  color: var(--text);
+}
+.brand-text p {
+  margin: 1px 0 0;
+  font-size: 11.5px;
+  color: var(--text-muted);
+}
+
+.header-controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.nav-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.nav-btn:hover {
+  background: var(--panel-alt);
+  border-color: var(--border-focus);
+}
+.nav-btn.primary {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+
+.layout {
+  display: flex;
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 24px;
+  gap: 28px;
+}
+
+aside.sidebar {
+  width: 290px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 75px;
+  max-height: calc(100vh - 95px);
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.nav-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  margin: 18px 0 8px 6px;
+}
+
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 12.8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 7px;
+  transition: all 0.12s;
+  margin-bottom: 2px;
+}
+.nav-link:hover, .nav-link.active {
+  background: var(--panel-alt);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+main.content {
+  flex: 1;
+  min-width: 0;
+}
+
+.hero-box {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(13, 148, 136, 0.08));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+}
+.hero-box h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--text);
+}
+.hero-box p {
+  margin: 0;
+  color: var(--text-muted);
+  font-size: 14.5px;
+  max-width: 880px;
+}
+
+section.lab-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--card-shadow);
+  scroll-margin-top: 85px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.section-head h2 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.tag-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-glow);
+}
+
+.tool-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.calc-card {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.calc-card h4 {
+  margin: 0 0 10px;
+  font-size: 13.5px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.form-group {
+  margin-bottom: 12px;
+}
+.form-group label {
+  display: block;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-muted);
+  margin-bottom: 4px;
+}
+.form-control {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-family: inherit;
+}
+
+.flag-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 8px;
+  margin: 12px 0;
+}
+.flag-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: var(--panel);
+  border: 1px solid var(--border);
+  padding: 6px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 12px;
+}
+.flag-item input {
+  cursor: pointer;
+}
+.flag-val {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--primary);
+  font-weight: 700;
+}
+
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 14px 0;
+}
+.code-header {
+  background: var(--code-header);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.code-lang {
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  color: #94a3b8;
+}
+.copy-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+.copy-btn:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+pre {
+  margin: 0;
+  padding: 14px;
+  color: var(--code-text);
+  font-family: var(--font-mono);
+  font-size: 12.8px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+.explain-btn {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  max-width: 650px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+
+.decision-box {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.decision-options {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 12px 0;
+}
+.dec-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.dec-btn.active {
+  background: var(--primary);
+  color: white;
+  border-color: var(--primary);
+}
+.dec-result {
+  background: var(--panel);
+  border-left: 4px solid var(--primary);
+  padding: 12px 14px;
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+}
+.toast.show {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+@media(max-width: 900px) {
+  .layout { flex-direction: column; }
+  aside.sidebar { width: 100%; position: static; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand-wrapper">
+      <a href="../" class="brand-badge">🧬 Hub</a>
+      <div class="brand-text">
+        <h1>SAMtools & BAMtools Master Lab</h1>
+        <p>High-Throughput Sequence Alignment Manipulation, CRAM Compression & Variant Pipeline</p>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button class="nav-btn" onclick="exportScript()">⬇ Export Bash Script</button>
+      <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">🌙 Theme</button>
+      <a href="../" class="nav-btn primary">← Back to Hub</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="nav-group-title">Interactive Simulators</div>
+    <a href="#sec-flag-calc" class="nav-link">🚩 Bitwise SAM Flag Calculator</a>
+    <a href="#sec-coverage-calc" class="nav-link">📊 Coverage & Depth Estimator</a>
+    
+    <div class="nav-group-title">Workflow Stages</div>
+    <a href="#stage-0" class="nav-link">0. SAM Format & Header Specs</a>
+    <a href="#stage-1" class="nav-link">1. Compression & Validation</a>
+    <a href="#stage-2" class="nav-link">2. Coordinate vs Name Sorting</a>
+    <a href="#stage-3" class="nav-link">3. BAM Indexing (BAI vs CSI)</a>
+    <a href="#stage-4" class="nav-link">4. Quality & Flagstat Metrics</a>
+    <a href="#stage-5" class="nav-link">5. Duplicate Marking (markdup)</a>
+    <a href="#stage-6" class="nav-link">6. Regional Slicing & Bed Filter</a>
+    <a href="#stage-7" class="nav-link">7. Ultra-Compact CRAM Archiving</a>
+    <a href="#stage-8" class="nav-link">8. Extracting FASTQ from BAM</a>
+    <a href="#stage-9" class="nav-link">9. mpileup & BCFtools Calling</a>
+    <a href="#stage-10" class="nav-link">10. BAMtools Advanced Queries</a>
+
+    <div class="nav-group-title">Decision Guide</div>
+    <a href="#sec-decision" class="nav-link">🔀 Decision Architecture</a>
+  </aside>
+
+  <main class="content">
+    <div class="hero-box">
+      <h2>🛠️ High-Throughput Alignment Workbench</h2>
+      <p>SAMtools and BAMtools form the foundational standard for manipulating genomic, transcriptomic, and targeted sequence alignments in SAM, BAM, and CRAM formats. Use the interactive tools below to calculate bitwise flags, calculate sequencing coverage, and generate production-grade bash commands.</p>
+    </div>
+
+    <!-- CALCULATOR 1: Bitwise Flag Calculator -->
+    <section class="lab-section" id="sec-flag-calc">
+      <div class="section-head">
+        <h2><span>🚩</span> SAM Bitwise Flag Decoder & Command Generator</h2>
+        <span class="tag-badge">Interactive Tool</span>
+      </div>
+      <p style="color:var(--text-muted);font-size:13.5px;">Each mapped read in a SAM/BAM file has a 12-bit integer flag representing its paired-end state, orientation, and mapping validity. Check the properties below or type any flag integer (e.g. <code>99</code>, <code>147</code>, <code>163</code>, <code>83</code>, <code>1024</code>) to decode it in real time.</p>
+
+      <div class="form-group" style="max-width:280px;">
+        <label>Flag Integer Input:</label>
+        <input type="number" id="flagInput" class="form-control" value="99" oninput="onFlagInput(this.value)">
+      </div>
+
+      <div class="flag-grid" id="flagGrid">
+        <!-- Generated by JS -->
+      </div>
+
+      <div style="background:var(--panel-alt);border:1px solid var(--border);border-radius:8px;padding:12px;margin-top:14px;">
+        <div style="font-weight:700;font-size:13px;margin-bottom:6px;">Decoded Interpretation:</div>
+        <div id="flagMeaning" style="font-size:13px;color:var(--text-muted);line-height:1.5;"></div>
+        <div style="margin-top:8px;font-family:var(--font-mono);font-size:12px;color:var(--primary);">
+          Filter Inclusion: <code style="background:var(--panel);padding:2px 6px;border-radius:4px;">samtools view -f <span id="flagIncVal">99</span> alignments.bam</code>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALCULATOR 2: Coverage & Depth Calculator -->
+    <section class="lab-section" id="sec-coverage-calc">
+      <div class="section-head">
+        <h2><span>📊</span> Coverage Depth & Lander-Waterman Estimator</h2>
+        <span class="tag-badge">Interactive Calculator</span>
+      </div>
+      <div class="tool-calc-grid">
+        <div class="calc-card">
+          <h4>Experimental Parameters</h4>
+          <div class="form-group">
+            <label>Reference Genome Size (bp):</label>
+            <input type="number" id="covGenSize" class="form-control" value="3100000000" oninput="calcCoverage()">
+            <span style="font-size:11px;color:var(--text-dim);">e.g. Human ~3.1 Gb, E. coli ~4.6 Mb</span>
+          </div>
+          <div class="form-group">
+            <label>Total Number of Reads (Millions):</label>
+            <input type="number" id="covNumReads" class="form-control" value="600" oninput="calcCoverage()">
+          </div>
+          <div class="form-group">
+            <label>Read Length (bp):</label>
+            <input type="number" id="covReadLen" class="form-control" value="150" oninput="calcCoverage()">
+          </div>
+        </div>
+
+        <div class="calc-card" style="display:flex;flex-direction:column;justify-content:center;">
+          <h4>Computed Metrics</h4>
+          <div style="margin-bottom:12px;">
+            <div style="font-size:11.5px;color:var(--text-muted);">Theoretical Mean Fold-Coverage (C = LN / G):</div>
+            <div id="covResultDepth" style="font-size:24px;font-weight:800;color:var(--primary);">29.03×</div>
+          </div>
+          <div>
+            <div style="font-size:11.5px;color:var(--text-muted);">Lander-Waterman Base Coverage Probability:</div>
+            <div id="covResultProb" style="font-size:20px;font-weight:700;color:var(--success-text);">> 99.999%</div>
+          </div>
+          <div style="margin-top:14px;font-size:11.5px;color:var(--text-dim);">
+            Command: <code>samtools coverage -r chr1:1000000-2000000 input.bam</code>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 0 -->
+    <section class="lab-section" id="stage-0">
+      <div class="section-head">
+        <h2>0. SAM Format & Header Specifications</h2>
+        <button class="explain-btn" onclick="showExplain('stage-0')">💡 Explain</button>
+      </div>
+      <p>SAM (Sequence Alignment/Map) files consist of optional header lines starting with <code>@</code> followed by tab-delimited alignment records. Critical header tags include <code>@HD</code> (format version & sort order), <code>@SQ</code> (reference sequences & lengths), <code>@RG</code> (Read Groups linking reads to libraries/samples), and <code>@PG</code> (program provenance).</p>
+      
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">BASH</span>
+          <button class="copy-btn" onclick="copyCode('c-head')">Copy</button>
+        </div>
+        <pre id="c-head"># Inspect SAM header without decompressing all records
+samtools view -H sample.bam
+
+# Extract and inspect specific Read Group tags (@RG)
+samtools view -H sample.bam | grep "^@RG"</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 1 -->
+    <section class="lab-section" id="stage-1">
+      <div class="section-head">
+        <h2>1. SAM to BAM Compression & Multi-threaded Conversion</h2>
+        <button class="explain-btn" onclick="showExplain('stage-1')">💡 Explain</button>
+      </div>
+      <p>Converting human-readable SAM into binary compressed BGZF-blocked BAM reduces disk footprint by 75-80% and unlocks indexed random access.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">BASH</span>
+          <button class="copy-btn" onclick="copyCode('c-st1')">Copy</button>
+        </div>
+        <pre id="c-st1"># Convert SAM to BAM using 8 compression threads
+samtools view -@ 8 -bS raw_alignments.sam -o raw_alignments.bam
+
+# Validate BAM structural integrity and BGZF EOF block marker
+samtools quickcheck -v raw_alignments.bam</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 2 -->
+    <section class="lab-section" id="stage-2">
+      <div class="section-head">
+        <h2>2. Coordinate vs Queryname Sorting</h2>
+        <button class="explain-btn" onclick="showExplain('stage-2')">💡 Explain</button>
+      </div>
+      <p>Downstream tools require specific sorting: Variant calling and genome browsers require <strong>coordinate sort</strong> (by chromosome and base position), while read pair fixers (<code>fixmate</code>) and count extractors (<code>htseq-count</code>) require <strong>queryname sort</strong> (by read identifier).</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">BASH</span>
+          <button class="copy-btn" onclick="copyCode('c-st2')">Copy</button>
+        </div>
+        <pre id="c-st2"># Coordinate sort (default) allocating 2G RAM per thread
+samtools sort -@ 8 -m 2G -o sorted_coord.bam raw_alignments.bam
+
+# Queryname sort (grouped by read ID for pairing)
+samtools sort -n -@ 8 -m 2G -o sorted_name.bam raw_alignments.bam</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 3 -->
+    <section class="lab-section" id="stage-3">
+      <div class="section-head">
+        <h2>3. BAM Indexing (Standard BAI vs CSI Large Chromosomes)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-3')">💡 Explain</button>
+      </div>
+      <p>Indexing enables sub-second retrieval of reads spanning specific chromosomal coordinates without scanning gigabytes of data.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">BASH</span>
+          <button class="copy-btn" onclick="copyCode('c-st3')">Copy</button>
+        </div>
+        <pre id="c-st3"># Build standard BAM index (.bai for reference chromosomes < 512 Mbp)
+samtools index -@ 4 sorted_coord.bam
+
+# Build Coordinate-Sorted Index (.csi) for gigantic chromosomes (e.g. axolotl, wheat)
+samtools index -c -m 14 -@ 4 sorted_coord.bam</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 4 -->
+    <section class="lab-section" id="stage-4">
+      <div class="section-head">
+        <h2>4. Alignment Metrics & Flag Statistics</h2>
+        <button class="explain-btn" onclick="showExplain('stage-4')">💡 Explain</button>
+      </div>
+      <p>Inspect overall alignment rate, mapped reads, properly paired proportions, and per-chromosome read counts.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">BASH</span>
+          <button class="copy-btn" onclick="copyCode('c-st4')">Copy</button>
+        </div>
+        <pre id="c-st4"># High-level flag metrics (mapped %, paired %, singletons)
+samtools flagstat -@ 4 sorted_coord.bam
+
+# Detailed per-chromosome read distribution (mapped vs unmapped counts)
+samtools idxstats sorted_coord.bam
+
+# Comprehensive alignment quality statistics (insert size distribution, error rate)
+samtools stats -@ 4 sorted_coord.bam > alignment_qc.stats</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 5 -->
+    <section class="lab-section" id="stage-5">
+      <div class="section-head">
+        <h2>5. PCR & Optical Duplicate Marking (markdup)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-5')">💡 Explain</button>
+      </div>
+      <p>PCR duplicates share identical 5' start coordinates and can introduce false allele frequency skews in variant calling. SAMtools provides a streamlined native markdup pipeline.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">BASH</span>
+          <button class="copy-btn" onclick="copyCode('c-st5')">Copy</button>
+        </div>
+        <pre id="c-st5"># Step 1: Queryname grouping with collate
+samtools collate -@ 8 -O -u sorted_coord.bam tmp-collate | \
+# Step 2: Add ms and MC mate tags
+samtools fixmate -m -u - - | \
+# Step 3: Coordinate sort
+samtools sort -@ 8 -m 2G -u - | \
+# Step 4: Mark duplicates (add 0x400 flag)
+samtools markdup -@ 8 -s - marked_duplicates.bam</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 6 -->
+    <section class="lab-section" id="stage-6">
+      <div class="section-head">
+        <h2>6. Targeted Regional Slicing & BED Filtering</h2>
+        <button class="explain-btn" onclick="showExplain('stage-6')">💡 Explain</button>
+      </div>
+      <p>Extract only alignments overlapping target genes, exons, or exome capture bait regions defined in a BED file.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">BASH</span>
+          <button class="copy-btn" onclick="copyCode('c-st6')">Copy</button>
+        </div>
+        <pre id="c-st6"># Slicing specific genomic interval
+samtools view -@ 4 -b sorted_coord.bam "chr7:140453136-140624564" -o braf_locus.bam
+
+# Slicing all regions listed in a BED capture panel
+samtools view -@ 4 -b -L exome_targets.bed sorted_coord.bam -o on_target.bam</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 7 -->
+    <section class="lab-section" id="stage-7">
+      <div class="section-head">
+        <h2>7. CRAM Ultra-Compact Reference-Based Archiving</h2>
+        <button class="explain-btn" onclick="showExplain('stage-7')">💡 Explain</button>
+      </div>
+      <p>CRAM achieves 50-60% smaller file size than BAM by storing only differences relative to a reference FASTA file.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">BASH</span>
+          <button class="copy-btn" onclick="copyCode('c-st7')">Copy</button>
+        </div>
+        <pre id="c-st7"># Compress BAM to CRAM with reference genome
+samtools view -@ 8 -C -T reference.fasta -o archived.cram sorted_coord.bam
+
+# Index the CRAM archive
+samtools index archived.cram</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 8 -->
+    <section class="lab-section" id="stage-8">
+      <div class="section-head">
+        <h2>8. Extracting Clean FASTQ Reads from BAM</h2>
+        <button class="explain-btn" onclick="showExplain('stage-8')">💡 Explain</button>
+      </div>
+      <p>Safely convert BAM back to paired-end FASTQ while properly routing singletons and discarding optical duplicates.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">BASH</span>
+          <button class="copy-btn" onclick="copyCode('c-st8')">Copy</button>
+        </div>
+        <pre id="c-st8"># Collate reads by queryname first, then extract cleanly
+samtools collate -u -O -@ 8 sorted_coord.bam | \
+samtools fastq -@ 8 \
+  -1 read_1.fastq.gz \
+  -2 read_2.fastq.gz \
+  -0 /dev/null \
+  -s singleton.fastq.gz -</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 9 -->
+    <section class="lab-section" id="stage-9">
+      <div class="section-head">
+        <h2>9. mpileup & BCFtools Variant Calling Pipeline</h2>
+        <button class="explain-btn" onclick="showExplain('stage-9')">💡 Explain</button>
+      </div>
+      <p>Generate genotype likelihoods across all reference positions and call SNVs and indels with the multiallelic caller.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">BASH</span>
+          <button class="copy-btn" onclick="copyCode('c-st9')">Copy</button>
+        </div>
+        <pre id="c-st9"># Stream mpileup into bcftools call for accurate SNV/INDEL calling
+bcftools mpileup -Ou -f reference.fasta -a FORMAT/AD,FORMAT/DP marked_duplicates.bam | \
+bcftools call -mv -Oz -o raw_variants.vcf.gz
+
+# Index the resulting compressed VCF
+bcftools index -t raw_variants.vcf.gz</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 10 -->
+    <section class="lab-section" id="stage-10">
+      <div class="section-head">
+        <h2>10. BAMtools Advanced Querying & Manipulation</h2>
+        <button class="explain-btn" onclick="showExplain('stage-10')">💡 Explain</button>
+      </div>
+      <p>Use BAMtools for JSON-based filtering, tag inspection, and split-by-chromosome workflows.</p>
+      <div class="code-block">
+        <div class="code-header">
+          <span class="code-lang">BASH</span>
+          <button class="copy-btn" onclick="copyCode('c-st10')">Copy</button>
+        </div>
+        <pre id="c-st10"># Split BAM into individual chromosomes
+bamtools split -in sorted_coord.bam -reference
+
+# Count total alignments matching criteria
+bamtools count -in sorted_coord.bam -mapQuality ">=30"</pre>
+      </div>
+    </section>
+
+    <!-- DECISION GUIDE -->
+    <section class="lab-section" id="sec-decision">
+      <div class="section-head">
+        <h2>🔀 Decision Architecture: Storage & Duplicate Strategy</h2>
+        <span class="tag-badge">Decision Tree</span>
+      </div>
+      <div class="decision-box">
+        <div style="font-weight:700;font-size:13.5px;">Select Primary Workflow Requirement:</div>
+        <div class="decision-options">
+          <button class="dec-btn active" onclick="setDecision('cram')">Long-term Archival</button>
+          <button class="dec-btn" onclick="setDecision('variant')">WGS / WES Variant Calling</button>
+          <button class="dec-btn" onclick="setDecision('rnaseq')">RNA-Seq Expression Quantification</button>
+          <button class="dec-btn" onclick="setDecision('singlecell')">Single-cell / UMI-tagged</button>
+        </div>
+        <div class="dec-result" id="decText">
+          <strong>Recommended: CRAM Format (CRAM 3.0)</strong><br>
+          Compress BAM to CRAM with <code>samtools view -C -T ref.fa</code>. Saves ~55% storage. Always preserve exact reference FASTA checksums (MD5) to ensure lossless decoding.
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="explainModal" onclick="closeModal(event)">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModalDirect()">&times;</button>
+    <h3 id="modalTitle" style="margin-top:0;">Explanation</h3>
+    <div id="modalContent" style="color:var(--text-muted);font-size:13.5px;line-height:1.6;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+const FLAGS = [
+  { bit: 1, name: "Read Paired", desc: "Template having multiple segments in sequencing (paired-end)" },
+  { bit: 2, name: "Proper Pair", desc: "Each segment properly aligned according to aligner's orientation rules" },
+  { bit: 4, name: "Read Unmapped", desc: "Segment itself is unmapped" },
+  { bit: 8, name: "Mate Unmapped", desc: "Next segment in the template is unmapped" },
+  { bit: 16, name: "Read Reverse Strand", desc: "SEQ is reverse complemented" },
+  { bit: 32, name: "Mate Reverse Strand", desc: "SEQ of the next segment in the template is reverse complemented" },
+  { bit: 64, name: "First in Pair (R1)", desc: "The first segment in the template" },
+  { bit: 128, name: "Second in Pair (R2)", desc: "The last segment in the template" },
+  { bit: 256, name: "Secondary Alignment", desc: "Secondary alignment (not primary aligner output)" },
+  { bit: 512, name: "Failed Platform QC", desc: "Not passing vendor/platform quality controls" },
+  { bit: 1024, name: "PCR / Optical Duplicate", desc: "PCR or optical duplicate read" },
+  { bit: 2048, name: "Supplementary Alignment", desc: "Supplementary alignment (e.g. chimeric or split read)" }
+];
+
+function initFlagGrid() {
+  const container = document.getElementById('flagGrid');
+  container.innerHTML = '';
+  FLAGS.forEach(f => {
+    const item = document.createElement('label');
+    item.className = 'flag-item';
+    item.innerHTML = `
+      <input type="checkbox" id="flag_${f.bit}" value="${f.bit}" onchange="onCheckboxChange()">
+      <div>
+        <span class="flag-val">0x${f.bit.toString(16)} (${f.bit})</span>
+        <div style="font-weight:600;">${f.name}</div>
+      </div>
+    `;
+    container.appendChild(item);
+  });
+  decodeFlag(99);
+}
+
+function onFlagInput(val) {
+  const num = parseInt(val, 10) || 0;
+  FLAGS.forEach(f => {
+    const cb = document.getElementById(`flag_${f.bit}`);
+    if (cb) cb.checked = (num & f.bit) !== 0;
+  });
+  updateFlagMeaning(num);
+}
+
+function onCheckboxChange() {
+  let sum = 0;
+  FLAGS.forEach(f => {
+    const cb = document.getElementById(`flag_${f.bit}`);
+    if (cb && cb.checked) sum += f.bit;
+  });
+  document.getElementById('flagInput').value = sum;
+  updateFlagMeaning(sum);
+}
+
+function decodeFlag(num) {
+  document.getElementById('flagInput').value = num;
+  onFlagInput(num);
+}
+
+function updateFlagMeaning(num) {
+  document.getElementById('flagIncVal').textContent = num;
+  const active = FLAGS.filter(f => (num & f.bit) !== 0);
+  if (active.length === 0) {
+    document.getElementById('flagMeaning').innerHTML = "<em>No flags set (single-end unmapped/default).</em>";
+    return;
+  }
+  const summary = active.map(f => `<strong>${f.name}</strong>: ${f.desc}`).join("<br>• ");
+  document.getElementById('flagMeaning').innerHTML = "• " + summary;
+}
+
+function calcCoverage() {
+  const G = parseFloat(document.getElementById('covGenSize').value) || 1;
+  const N_millions = parseFloat(document.getElementById('covNumReads').value) || 0;
+  const L = parseFloat(document.getElementById('covReadLen').value) || 0;
+  const N = N_millions * 1e6;
+  const C = (L * N) / G;
+  
+  document.getElementById('covResultDepth').textContent = C.toFixed(2) + "×";
+  const prob = (1 - Math.exp(-C)) * 100;
+  document.getElementById('covResultProb').textContent = prob > 99.999 ? "> 99.999%" : prob.toFixed(3) + "%";
+}
+
+const EXPLAINS = {
+  'stage-0': {
+    title: 'SAM Header Specifications & Read Groups',
+    content: 'SAM headers contain critical experimental metadata. The <code>@RG</code> (Read Group) line is mandatory for GATK and multi-sample pipelines because it links reads to specific sequencing libraries (<code>LB</code>), samples (<code>SM</code>), and flowcell lanes (<code>ID</code>). Without <code>@RG</code> tags, variant callers cannot perform base quality score recalibration (BQSR).'
+  },
+  'stage-1': {
+    title: 'SAM vs BAM Compression',
+    content: 'BAM is a compressed binary representation of SAM using Block GZIP (BGZF). Unlike normal gzip which creates a single compressed stream, BGZF splits data into 64KB uncompressed blocks, allowing index-based random seeks without decompressing the entire file from the beginning.'
+  },
+  'stage-2': {
+    title: 'Coordinate vs Queryname Sorting',
+    content: 'Coordinate sorting orders alignments by chromosome name and leftmost 1-based base position. It is essential for genome browsers and BAM indexing. In contrast, queryname sorting (<code>samtools sort -n</code>) groups forward and reverse reads together by read ID, which is required for mate-fixing and read counts.'
+  },
+  'stage-3': {
+    title: 'BAI vs CSI Index Format',
+    content: 'Standard BAI indexes use a binning scheme limited to reference chromosomes smaller than 512 Mbp (2^29 bp). For giant plant or amphibian chromosomes exceeding 512 Mbp, you must create a CSI index with <code>samtools index -c -m 14</code>.'
+  },
+  'stage-4': {
+    title: 'Flagstat Metrics & QC Traps',
+    content: 'A high proportion of singletons or discordant read pairs indicates library preparation problems, excessive chimeric fragments, or structural rearrangements. Ensure primary mapping rate exceeds 85-90% before proceeding to downstream variant discovery.'
+  },
+  'stage-5': {
+    title: 'Duplicate Marking Rationale',
+    content: 'PCR duplicates arise during amplification and share identical 5\' alignment coordinates on both paired-end reads. Marking them adds the 0x400 bitwise flag so variant callers like GATK can ignore them without permanently deleting the raw reads.'
+  },
+  'stage-6': {
+    title: 'Targeted Regional Extraction',
+    content: 'Using <code>samtools view -b -L targets.bed</code> drastically speeds up exome and amplicon workflows by discarding off-target intergenic reads, reducing downstream memory and CPU runtime.'
+  },
+  'stage-7': {
+    title: 'CRAM Reference-Based Archiving',
+    content: 'CRAM substitutes matching reference bases with an identity code rather than writing the base literal (A/C/G/T). This achieves 50% smaller sizes than BAM while preserving 100% of quality scores and cigar strings.'
+  },
+  'stage-8': {
+    title: 'Extracting FASTQ from BAM',
+    content: 'When re-aligning legacy data to a newer genome build (e.g. GRCh37 to GRCh38), use <code>samtools collate | samtools fastq</code> to preserve paired read integrity while discarding secondary alignments.'
+  },
+  'stage-9': {
+    title: 'Mpileup & BCFtools Calling',
+    content: '<code>bcftools mpileup</code> aggregates coverage and base qualities across all reads covering each nucleotide position. Streaming directly to <code>bcftools call -mv</code> enables multiallelic and indel calling without creating intermediate multi-gigabyte pileup files on disk.'
+  },
+  'stage-10': {
+    title: 'BAMtools Capabilities',
+    content: 'BAMtools provides a robust C++ API and CLI toolset for complex JSON-specified filtering criteria, including mapping quality ranges, alignment edit distance, and custom BAM tags.'
+  }
+};
+
+function showExplain(id) {
+  const item = EXPLAINS[id];
+  if (!item) return;
+  document.getElementById('modalTitle').textContent = item.title;
+  document.getElementById('modalContent').innerHTML = item.content;
+  document.getElementById('explainModal').classList.add('active');
+}
+
+function closeModal(e) {
+  if (e.target.id === 'explainModal') {
+    document.getElementById('explainModal').classList.remove('active');
+  }
+}
+function closeModalDirect() {
+  document.getElementById('explainModal').classList.remove('active');
+}
+
+function setDecision(type) {
+  document.querySelectorAll('.dec-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const txt = document.getElementById('decText');
+  if (type === 'cram') {
+    txt.innerHTML = "<strong>Recommended: CRAM Format (CRAM 3.0)</strong><br>Compress BAM to CRAM with <code>samtools view -C -T ref.fa</code>. Saves ~55% disk storage. Always preserve exact reference FASTA checksums (MD5) to ensure lossless decoding.";
+  } else if (type === 'variant') {
+    txt.innerHTML = "<strong>Recommended: Coordinate-Sorted BAM with Marked Duplicates</strong><br>Keep coordinate-sorted BAM with BAI index. Run <code>samtools markdup</code> so variant callers can skip duplicates while maintaining full read context.";
+  } else if (type === 'rnaseq') {
+    txt.innerHTML = "<strong>Recommended: Do NOT Remove Duplicates</strong><br>In RNA-Seq, highly expressed genes naturally produce reads with identical start sites. Removing duplicates skews true expression quantification. Keep coordinate-sorted BAM for IGV and queryname-sorted for HTSeq/featureCounts.";
+  } else if (type === 'singlecell') {
+    txt.innerHTML = "<strong>Recommended: Queryname-Sorted with Cell Barcode & UMI Tags</strong><br>Deduplication must be performed at the Unique Molecular Identifier (UMI) level using tools like UMI-tools or CellRanger rather than standard positional markdup.";
+  }
+}
+
+function copyCode(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    toast("Command copied to clipboard!");
+  });
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function toggleTheme() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  if (isDark) {
+    document.body.removeAttribute('data-theme');
+    document.getElementById('themeBtn').textContent = '🌙 Theme';
+    localStorage.setItem('bioTheme', 'light');
+  } else {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+    localStorage.setItem('bioTheme', 'dark');
+  }
+}
+
+function exportScript() {
+  const script = `#!/usr/bin/env bash
+# ==============================================================
+# Production SAMtools Alignment Processing & QC Pipeline
+# Generated by SAMtools Master Interactive Lab
+# ==============================================================
+set -euo pipefail
+THREADS=8
+REF="reference.fasta"
+RAW_SAM="raw_alignments.sam"
+SAMPLE="sample_01"
+
+echo "[1/6] Converting SAM to coordinate-sorted BAM..."
+samtools view -@ \${THREADS} -bS \${RAW_SAM} | \\
+samtools sort -@ \${THREADS} -m 2G -o \${SAMPLE}.sorted.bam -
+
+echo "[2/6] Indexing BAM..."
+samtools index -@ \${THREADS} \${SAMPLE}.sorted.bam
+
+echo "[3/6] Generating Flagstat & Alignment Statistics..."
+samtools flagstat -@ \${THREADS} \${SAMPLE}.sorted.bam > \${SAMPLE}.flagstat.txt
+samtools idxstats \${SAMPLE}.sorted.bam > \${SAMPLE}.idxstats.txt
+samtools stats -@ \${THREADS} \${SAMPLE}.sorted.bam > \${SAMPLE}.stats.txt
+
+echo "[4/6] Marking PCR Duplicates..."
+samtools collate -@ \${THREADS} -O -u \${SAMPLE}.sorted.bam tmp-collate | \\
+samtools fixmate -m -u - - | \\
+samtools sort -@ \${THREADS} -m 2G -u - | \\
+samtools markdup -@ \${THREADS} -s - \${SAMPLE}.markdup.bam
+samtools index -@ \${THREADS} \${SAMPLE}.markdup.bam
+
+echo "[5/6] Calling Variants with BCFtools..."
+bcftools mpileup -Ou -f \${REF} -a FORMAT/AD,FORMAT/DP \${SAMPLE}.markdup.bam | \\
+bcftools call -mv -Oz -o \${SAMPLE}.variants.vcf.gz
+bcftools index -t \${SAMPLE}.variants.vcf.gz
+
+echo "[6/6] Archiving to CRAM..."
+samtools view -@ \${THREADS} -C -T \${REF} -o \${SAMPLE}.cram \${SAMPLE}.markdup.bam
+samtools index \${SAMPLE}.cram
+
+echo "Pipeline finished successfully!"
+`;
+  const blob = new Blob([script], { type: 'text/x-sh' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'samtools_complete_pipeline.sh';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("Bash script exported!");
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  initFlagGrid();
+  calcCoverage();
+  if (localStorage.getItem('bioTheme') === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+  }
+});
+</script>
+</body>
+</html>

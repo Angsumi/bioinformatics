@@ -1,0 +1,925 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Shotgun Metagenome Assembly & MAG Binning Lab | Bioinformatics Hub</title>
+<style>
+:root {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-alt: #f1f5f9;
+  --panel-hover: #f8fafc;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-focus: #0284c7;
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-light: #f0f9ff;
+  --primary-dark: #075985;
+  --primary-glow: rgba(2, 132, 199, 0.12);
+  --accent: #14b8a6;
+  --accent-light: #f0fdfa;
+  --code-bg: #0d1117;
+  --code-header: #161b22;
+  --code-text: #e6edf3;
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --header-bg: rgba(255, 255, 255, 0.88);
+  --header-border: rgba(226, 232, 240, 0.8);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+[data-theme="dark"] {
+  --bg: #090d16;
+  --panel: #0f172a;
+  --panel-alt: #161f30;
+  --panel-hover: #1b263b;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --border: #1e293b;
+  --border-subtle: #141c2e;
+  --border-focus: #38bdf8;
+  --primary: #38bdf8;
+  --primary-hover: #7dd3fc;
+  --primary-light: #082f49;
+  --primary-dark: #bae6fd;
+  --primary-glow: rgba(56, 189, 248, 0.15);
+  --accent: #2dd4bf;
+  --accent-light: #042f2e;
+  --code-bg: #05080f;
+  --code-header: #0d121f;
+  --code-text: #f1f5f9;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --header-bg: rgba(9, 13, 22, 0.88);
+  --header-border: rgba(30, 41, 59, 0.8);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14.5px/1.65 var(--font-sans);
+  letter-spacing: -0.011em;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.header-inner {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand-wrapper { display: flex; align-items: center; gap: 12px; }
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0284c7, #14b8a6);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 13px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+.brand-text h1 { margin: 0; font-size: 16px; font-weight: 700; color: var(--text); }
+.brand-text p { margin: 1px 0 0; font-size: 11.5px; color: var(--text-muted); }
+
+.header-controls { display: flex; align-items: center; gap: 10px; }
+.nav-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.nav-btn:hover { background: var(--panel-alt); border-color: var(--border-focus); }
+.nav-btn.primary { background: var(--primary); color: white; border-color: var(--primary); }
+
+.layout {
+  display: flex;
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 24px;
+  gap: 28px;
+}
+
+aside.sidebar {
+  width: 290px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 75px;
+  max-height: calc(100vh - 95px);
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.nav-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  margin: 18px 0 8px 6px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 12.8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 7px;
+  transition: all 0.12s;
+  margin-bottom: 2px;
+}
+.nav-link:hover, .nav-link.active {
+  background: var(--panel-alt);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+main.content { flex: 1; min-width: 0; }
+
+.hero-box {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(20, 184, 166, 0.08));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+}
+.hero-box h2 { margin: 0 0 8px; font-size: 24px; font-weight: 800; }
+.hero-box p { margin: 0; color: var(--text-muted); font-size: 14.5px; max-width: 880px; }
+
+section.lab-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--card-shadow);
+  scroll-margin-top: 85px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.section-head h2 { margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.tag-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-glow);
+}
+
+.tool-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.calc-card {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.calc-card h4 { margin: 0 0 10px; font-size: 13.5px; font-weight: 700; }
+
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+.form-control {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-family: inherit;
+}
+
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 14px 0;
+}
+.code-header {
+  background: var(--code-header);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.code-lang { font-family: var(--font-mono); font-size: 11.5px; color: #94a3b8; }
+.copy-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+pre {
+  margin: 0;
+  padding: 14px;
+  color: var(--code-text);
+  font-family: var(--font-mono);
+  font-size: 12.8px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+.explain-btn {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  max-width: 650px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+
+.decision-box {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.decision-options { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.dec-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.dec-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.dec-result {
+  background: var(--panel);
+  border-left: 4px solid var(--primary);
+  padding: 12px 14px;
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+@media(max-width: 900px) {
+  .layout { flex-direction: column; }
+  aside.sidebar { width: 100%; position: static; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand-wrapper">
+      <a href="../" class="brand-badge">🧬 Hub</a>
+      <div class="brand-text">
+        <h1>Shotgun Metagenome Assembly & MAG Binning Lab</h1>
+        <p>De Novo Assembly, Tetranucleotide Frequency, MetaBAT2, CheckM2 & GTDB-Tk Phylogenomics</p>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button class="nav-btn" onclick="exportScript()">⬇ Export Bash Script</button>
+      <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">🌙 Theme</button>
+      <a href="../" class="nav-btn primary">← Back to Hub</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="nav-group-title">Interactive Simulators</div>
+    <a href="#sec-checkm-calc" class="nav-link">🔬 CheckM MAG Quality Tier</a>
+    <a href="#sec-asm-advisor" class="nav-link">💾 Assembler RAM & k-mer Advisor</a>
+
+    <div class="nav-group-title">Pipeline Workflow</div>
+    <a href="#stage-0" class="nav-link">0. Shotgun Metagenome Principles</a>
+    <a href="#stage-1" class="nav-link">1. QC & Host Decontamination</a>
+    <a href="#stage-2" class="nav-link">2. De Novo Assembly (MEGAHIT)</a>
+    <a href="#stage-3" class="nav-link">3. Assembly QC with QUAST</a>
+    <a href="#stage-4" class="nav-link">4. Contig Depth Profile (jgi)</a>
+    <a href="#stage-5" class="nav-link">5. Binning with MetaBAT2</a>
+    <a href="#stage-6" class="nav-link">6. Bin Refinement & Dereplication</a>
+    <a href="#stage-7" class="nav-link">7. CheckM2 Quality Assessment</a>
+    <a href="#stage-8" class="nav-link">8. GTDB-Tk Taxonomic Classify</a>
+    <a href="#stage-9" class="nav-link">9. Functional Annotation (Bakta)</a>
+    <a href="#stage-10" class="nav-link">10. MAG Abundance with CoverM</a>
+
+    <div class="nav-group-title">Decision Guide</div>
+    <a href="#sec-decision" class="nav-link">🔀 Decision Architecture</a>
+  </aside>
+
+  <main class="content">
+    <div class="hero-box">
+      <h2>🦠 Reconstructing Uncultured Genomes from Environmental DNA</h2>
+      <p>Shotgun metagenomics sequences all microbial DNA directly from soil, marine, gut, or host environments. Modern bioinformatic pipelines assemble contigs and group them into Metagenome-Assembled Genomes (MAGs) using tetranucleotide frequencies and differential co-abundance coverage profiles across samples.</p>
+    </div>
+
+    <!-- CALCULATOR 1: CheckM Quality Tier -->
+    <section class="lab-section" id="sec-checkm-calc">
+      <div class="section-head">
+        <h2><span>🔬</span> CheckM2 MAG Quality Tier & MIMAG Standards</h2>
+        <span class="tag-badge">Interactive Tool</span>
+      </div>
+      <div class="tool-calc-grid">
+        <div class="calc-card">
+          <h4>Single-Copy Marker Metrics</h4>
+          <div class="form-group">
+            <label>Completeness (%):</label>
+            <input type="range" id="magCompRange" min="0" max="100" step="1" value="94" class="form-control" oninput="calcMAGQuality()">
+            <div style="font-size:12px;font-weight:700;color:var(--primary);margin-top:2px;" id="magCompVal">94%</div>
+          </div>
+          <div class="form-group">
+            <label>Contamination (%):</label>
+            <input type="range" id="magContRange" min="0" max="30" step="0.5" value="2.5" class="form-control" oninput="calcMAGQuality()">
+            <div style="font-size:12px;font-weight:700;color:var(--text);margin-top:2px;" id="magContVal">2.5%</div>
+          </div>
+        </div>
+
+        <div class="calc-card" style="display:flex;flex-direction:column;justify-content:center;">
+          <h4>Calculated MIMAG Quality Tier</h4>
+          <div id="magTierBadge" style="display:inline-block;padding:6px 12px;border-radius:8px;font-weight:800;font-size:15px;background:#f0fdf4;color:#166534;border:1px solid #bbf7d0;margin-bottom:8px;">
+            🌟 High-Quality Draft MAG
+          </div>
+          <div style="font-size:12px;color:var(--text-muted);">
+            Quality Score (QS = Comp - 5 * Contam): <strong id="magScoreVal" style="color:var(--primary);">81.5</strong>
+          </div>
+          <div id="magTierNotes" style="font-size:11.5px;color:var(--text-dim);margin-top:8px;">
+            MIMAG Standard: > 90% Completeness, < 5% Contamination. Eligible for NCBI submission and GTDB novel species assignment.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- CALCULATOR 2: Assembler Advisor -->
+    <section class="lab-section" id="sec-asm-advisor">
+      <div class="section-head">
+        <h2><span>💾</span> Assembler RAM & Multi-k-mer Optimization</h2>
+        <span class="tag-badge">Resource Advisor</span>
+      </div>
+      <div class="tool-calc-grid">
+        <div class="calc-card">
+          <h4>Dataset Specs</h4>
+          <div class="form-group">
+            <label>Metagenome Raw Data Volume (Gbp):</label>
+            <input type="number" id="dsSize" class="form-control" value="25" oninput="calcAsmRAM()">
+          </div>
+          <div class="form-group">
+            <label>Environmental Sample Complexity:</label>
+            <select id="envComplexity" class="form-control" onchange="calcAsmRAM()">
+              <option value="gut">Human / Animal Gut (Medium Complexity)</option>
+              <option value="soil">Soil / Sediment (Extreme Complexity)</option>
+              <option value="water">Marine / Freshwater (Low-Medium Complexity)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="calc-card" style="display:flex;flex-direction:column;justify-content:center;">
+          <h4>Resource & Tool Recommendation</h4>
+          <div style="margin-bottom:8px;">
+            <div>MEGAHIT Memory Requirement: <strong id="ramMegahit" style="color:var(--primary);">~12.5 GB RAM</strong></div>
+            <div>metaSPAdes Memory Requirement: <strong id="ramSpades" style="color:#ef4444;">~125 GB RAM</strong></div>
+          </div>
+          <div style="font-family:var(--font-mono);font-size:11.5px;color:var(--text-muted);background:var(--panel);padding:6px 8px;border-radius:6px;border:1px solid var(--border);">
+            k-mer list: <span id="kmerList">21,29,39,59,79,99,119,141</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 0 -->
+    <section class="lab-section" id="stage-0">
+      <div class="section-head">
+        <h2>0. Shotgun Metagenomics vs 16S Marker Gene Sequencing</h2>
+        <button class="explain-btn" onclick="showExplain('stage-0')">💡 Explain</button>
+      </div>
+      <p>While 16S amplicon sequencing surveys only the bacterial hypervariable region, whole-metagenome shotgun (WMS) sequencing untangles full viral, bacterial, archaeal, and eukaryotic genomes, resolving single-nucleotide strain diversity and complete biosynthetic gene clusters (BGCs).</p>
+    </section>
+
+    <!-- STAGE 1 -->
+    <section class="lab-section" id="stage-1">
+      <div class="section-head">
+        <h2>1. Quality Control & Host Decontamination</h2>
+        <button class="explain-btn" onclick="showExplain('stage-1')">💡 Explain</button>
+      </div>
+      <p>Clean raw paired-end reads and purge host contamination (human, mouse, or plant DNA) using Bowtie2.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st1')">Copy</button></div>
+        <pre id="c-st1"># Adapter trimming and low-quality filtering
+fastp -w 8 -i raw_R1.fq.gz -I raw_R2.fq.gz \
+  -o clean_R1.fq.gz -O clean_R2.fq.gz --detect_adapter_for_pe
+
+# Remove human host reads with Bowtie 2
+bowtie2 -p 8 -x hg38_index/genome \
+  -1 clean_R1.fq.gz -2 clean_R2.fq.gz \
+  --un-conc-gz microbial_R%.fq.gz -S /dev/null</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 2 -->
+    <section class="lab-section" id="stage-2">
+      <div class="section-head">
+        <h2>2. De Novo Assembly with MEGAHIT</h2>
+        <button class="explain-btn" onclick="showExplain('stage-2')">💡 Explain</button>
+      </div>
+      <p>Assemble contiguous sequences (contigs) from millions of short reads using a succinct de Bruijn graph across multiple increasing k-mer sizes.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st2')">Copy</button></div>
+        <pre id="c-st2">megahit -t 16 -m 0.85 \
+  -1 microbial_R1.fq.gz -2 microbial_R2.fq.gz \
+  --k-list 21,29,39,59,79,99,119,141 \
+  --min-contig-len 1000 \
+  -o megahit_assembly/</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 3 -->
+    <section class="lab-section" id="stage-3">
+      <div class="section-head">
+        <h2>3. Assembly Quality Assessment with MetaQUAST</h2>
+        <button class="explain-btn" onclick="showExplain('stage-3')">💡 Explain</button>
+      </div>
+      <p>Evaluate assembly metrics: total length, contig count, largest contig, and N50.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st3')">Copy</button></div>
+        <pre id="c-st3">metaquast.py megahit_assembly/final.contigs.fa \
+  -t 8 -o quast_report/</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 4 -->
+    <section class="lab-section" id="stage-4">
+      <div class="section-head">
+        <h2>4. Contig Coverage Profiling (jgi_summarize_bam_contig_depths)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-4')">💡 Explain</button>
+      </div>
+      <p>Align clean reads back to the assembled contigs to calculate base-level depth across samples. Differential co-abundance is essential for MetaBAT2 binning.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st4')">Copy</button></div>
+        <pre id="c-st4"># Step 1: Index contigs and align reads
+bowtie2-build megahit_assembly/final.contigs.fa contigs_bt2
+bowtie2 -p 16 -x contigs_bt2 -1 microbial_R1.fq.gz -2 microbial_R2.fq.gz | \
+  samtools sort -@ 8 -m 2G -o contig_coverage.sorted.bam -
+samtools index contig_coverage.sorted.bam
+
+# Step 2: Compute depth matrix
+jgi_summarize_bam_contig_depths \
+  --outputDepth depth.txt contig_coverage.sorted.bam</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 5 -->
+    <section class="lab-section" id="stage-5">
+      <div class="section-head">
+        <h2>5. Metagenomic Binning with MetaBAT 2</h2>
+        <button class="explain-btn" onclick="showExplain('stage-5')">💡 Explain</button>
+      </div>
+      <p>Cluster contigs into individual putative organismal bins based on tetranucleotide frequencies (TNF) and coverage depth profiles.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st5')">Copy</button></div>
+        <pre id="c-st5">metabat2 -t 8 \
+  -i megahit_assembly/final.contigs.fa \
+  -a depth.txt \
+  -m 1500 \
+  -o metabat_bins/bin</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 6 -->
+    <section class="lab-section" id="stage-6">
+      <div class="section-head">
+        <h2>6. Bin Refinement & Dereplication (DAS Tool & dRep)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-6')">💡 Explain</button>
+      </div>
+      <p>Combine multiple binners (MetaBAT2, MaxBin2, SemiBin2) into consensus non-redundant bins using DAS Tool, and dereplicate redundant genomes at 99% ANI with dRep.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st6')">Copy</button></div>
+        <pre id="c-st6"># Dereplicate bins at species boundary (95% ANI) or strain boundary (99% ANI)
+dRep dereplicate drep_out/ \
+  -p 16 -g metabat_bins/*.fa \
+  -sa 0.95 -nc 0.30</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 7 -->
+    <section class="lab-section" id="stage-7">
+      <div class="section-head">
+        <h2>7. CheckM2 Machine-Learning Quality Assessment</h2>
+        <button class="explain-btn" onclick="showExplain('stage-7')">💡 Explain</button>
+      </div>
+      <p>Evaluate MAG completeness and contamination using gradient-boosted decision trees trained on complete reference genomes.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st7')">Copy</button></div>
+        <pre id="c-st7">checkm2 predict --threads 8 \
+  -x fa \
+  --input drep_out/dereplicated_genomes/ \
+  --output-directory checkm2_out/</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 8 -->
+    <section class="lab-section" id="stage-8">
+      <div class="section-head">
+        <h2>8. GTDB-Tk Phylogenomic Taxonomic Classification</h2>
+        <button class="explain-btn" onclick="showExplain('stage-8')">💡 Explain</button>
+      </div>
+      <p>Assign standardized taxonomic lineages across 120 bacterial and 53 archaeal marker genes using FastTree and RED (Relative Evolutionary Divergence).</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st8')">Copy</button></div>
+        <pre id="c-st8">gtdbtk classify_wf \
+  --genome_dir drep_out/dereplicated_genomes/ \
+  -x fa \
+  --out_dir gtdbtk_out/ \
+  --cpus 16</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 9 -->
+    <section class="lab-section" id="stage-9">
+      <div class="section-head">
+        <h2>9. Functional Annotation with Bakta & DRAM</h2>
+        <button class="explain-btn" onclick="showExplain('stage-9')">💡 Explain</button>
+      </div>
+      <p>Annotate CDS features, tRNA/rRNA genes, and reconstruct metabolic distillates (carbon, nitrogen, sulfur pathways).</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st9')">Copy</button></div>
+        <pre id="c-st9"># High-speed modern bacterial annotation with Bakta
+bakta --threads 8 --db bakta_db/ \
+  --output bakta_annotation/ \
+  --prefix MAG_01 \
+  drep_out/dereplicated_genomes/MAG_01.fa</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 10 -->
+    <section class="lab-section" id="stage-10">
+      <div class="section-head">
+        <h2>10. Cohort MAG Abundance Profiling (CoverM)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-10')">💡 Explain</button>
+      </div>
+      <p>Calculate relative abundance and trimmed mean coverage of each MAG across all sample cohorts.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st10')">Copy</button></div>
+        <pre id="c-st10">coverm genome \
+  --genome-fasta-directory drep_out/dereplicated_genomes/ -x fa \
+  --bam-files sample_*.sorted.bam \
+  --methods relative_abundance trimmed_mean \
+  --threads 8 \
+  -o mag_abundance_table.tsv</pre>
+      </div>
+    </section>
+
+    <!-- DECISION GUIDE -->
+    <section class="lab-section" id="sec-decision">
+      <div class="section-head">
+        <h2>🔀 Decision Architecture: Assembly & Binning Strategy</h2>
+        <span class="tag-badge">Decision Tree</span>
+      </div>
+      <div class="decision-box">
+        <div style="font-weight:700;font-size:13.5px;">Select Metagenome Sequencing Strategy:</div>
+        <div class="decision-options">
+          <button class="dec-btn active" onclick="setDecision('single')">Single-Sample Independent Assembly</button>
+          <button class="dec-btn" onclick="setDecision('coassembly')">Multi-Sample Co-Assembly</button>
+          <button class="dec-btn" onclick="setDecision('longread')">PacBio HiFi / Nanopore Long Reads</button>
+        </div>
+        <div class="dec-result" id="decText">
+          <strong>Recommended: Single-Sample Assembly + Multi-Sample Co-Binning</strong><br>
+          Assemble each sample individually to avoid chimeric contig collapse between distinct strains. Then, map reads from ALL samples across all assemblies to build a high-dimensional depth matrix for MetaBAT2.
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="explainModal" onclick="closeModal(event)">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModalDirect()">&times;</button>
+    <h3 id="modalTitle" style="margin-top:0;">Explanation</h3>
+    <div id="modalContent" style="color:var(--text-muted);font-size:13.5px;line-height:1.6;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+function calcMAGQuality() {
+  const comp = parseFloat(document.getElementById('magCompRange').value);
+  const cont = parseFloat(document.getElementById('magContRange').value);
+  document.getElementById('magCompVal').textContent = comp.toFixed(0) + "%";
+  document.getElementById('magContVal').textContent = cont.toFixed(1) + "%";
+
+  const qs = comp - 5 * cont;
+  document.getElementById('magScoreVal').textContent = qs.toFixed(1);
+
+  const badge = document.getElementById('magTierBadge');
+  const notes = document.getElementById('magTierNotes');
+
+  if (comp > 90 && cont < 5) {
+    badge.textContent = "🌟 High-Quality Draft MAG";
+    badge.style.background = "#f0fdf4";
+    badge.style.color = "#166534";
+    badge.style.borderColor = "#bbf7d0";
+    notes.textContent = "MIMAG Standard: > 90% Completeness, < 5% Contamination. Eligible for NCBI submission and GTDB novel species assignment.";
+  } else if (comp >= 50 && cont < 10) {
+    badge.textContent = "🌿 Medium-Quality Draft MAG";
+    badge.style.background = "#eff6ff";
+    badge.style.color = "#1e40af";
+    badge.style.borderColor = "#bfdbfe";
+    notes.textContent = "MIMAG Standard: >= 50% Completeness, < 10% Contamination. Suitable for comparative genomics and abundance quantification.";
+  } else {
+    badge.textContent = "⚠️ Low-Quality Bin";
+    badge.style.background = "#fef2f2";
+    badge.style.color = "#991b1b";
+    badge.style.borderColor = "#fecaca";
+    notes.textContent = "MIMAG Standard: < 50% Completeness or >= 10% Contamination. Should be excluded from phylogenetic and metabolic publications.";
+  }
+}
+
+function calcAsmRAM() {
+  const gbp = parseFloat(document.getElementById('dsSize').value) || 25;
+  const env = document.getElementById('envComplexity').value;
+  let mult = 0.5;
+  if (env === 'soil') mult = 1.0;
+  if (env === 'water') mult = 0.4;
+
+  const megaRAM = (gbp * mult).toFixed(1);
+  const spadesRAM = (gbp * mult * 8.5).toFixed(0);
+
+  document.getElementById('ramMegahit').textContent = "~" + megaRAM + " GB RAM";
+  document.getElementById('ramSpades').textContent = "~" + spadesRAM + " GB RAM";
+}
+
+const EXPLAINS = {
+  'stage-0': {
+    title: '16S vs Shotgun Metagenomics',
+    content: '16S sequencing only provides genus-level resolution and cannot determine strain differences or the presence of antibiotic resistance genes (ARGs) or biosynthetic gene clusters (BGCs). Shotgun metagenomics recovers near-complete uncultured organismal genomes directly from nature.'
+  },
+  'stage-1': {
+    title: 'Host Decontamination Imperative',
+    content: 'In human gut or biopsy samples, failure to remove human reads leads to human genome fragments contaminating the metagenome assembly, generating spurious "novel" eukaryotic MAGs.'
+  },
+  'stage-2': {
+    title: 'MEGAHIT vs metaSPAdes',
+    content: 'MEGAHIT uses an ultra-efficient succinct de Bruijn graph algorithm that processes 100 Gbp in < 60 GB RAM. metaSPAdes uses standard de Bruijn graphs with read error correction, producing longer contigs but requiring massive memory (250-500+ GB RAM).'
+  },
+  'stage-3': {
+    title: 'N50 and Metagenome Metrics',
+    content: 'N50 is the contig length such that 50% of the entire assembly consists of contigs of that size or larger. In metagenomics, N50 > 5-10 kbp is considered high quality.'
+  },
+  'stage-4': {
+    title: 'Differential Coverage Binning',
+    content: 'All contigs originating from the same physical bacterial chromosome share identical sequencing depth within a single sample, and their depth fluctuates identically across distinct longitudinal samples. This co-abundance correlation provides strong evidence for bin grouping.'
+  },
+  'stage-5': {
+    title: 'Tetranucleotide Frequency (TNF)',
+    content: 'Every bacterial species has a unique oligonucleotide composition signature (4-mer frequencies) determined by its replication machinery and GC content, independent of gene function.'
+  },
+  'stage-6': {
+    title: 'dRep Dereplication at 95% ANI',
+    content: 'Average Nucleotide Identity (ANI) >= 95% is the universal microbiological boundary for bacterial species demarcation. dRep picks the single highest quality representative genome per species cluster.'
+  },
+  'stage-7': {
+    title: 'CheckM2 Machine Learning',
+    content: 'Unlike original CheckM which relied on hardcoded lineage marker sets, CheckM2 uses neural networks and LightGBM models trained on thousands of finished reference genomes, accurately estimating quality even for novel candidate phyla (CPR).'
+  },
+  'stage-8': {
+    title: 'GTDB-Tk Standardized Taxonomy',
+    content: 'The Genome Taxonomy Database (GTDB) corrects historical Polyphyletic errors in NCBI taxonomy by using concatenated single-copy protein alignments and Relative Evolutionary Divergence (RED) calibrations.'
+  },
+  'stage-9': {
+    title: 'Bakta Annotation Pipeline',
+    content: 'Bakta provides comprehensive bacterial genome annotation in minutes, matching genes against UniProt, RefSeq, and specialized antibiotic resistance databases (CARD) and virulence factor databases (VFDB).'
+  },
+  'stage-10': {
+    title: 'CoverM Trimmed Mean Profiling',
+    content: 'Trimmed mean coverage calculates average depth after excluding the top and bottom 10% of positions, preventing ultra-conserved repeat regions from distorting abundance estimates.'
+  }
+};
+
+function showExplain(id) {
+  const item = EXPLAINS[id];
+  if (!item) return;
+  document.getElementById('modalTitle').textContent = item.title;
+  document.getElementById('modalContent').innerHTML = item.content;
+  document.getElementById('explainModal').classList.add('active');
+}
+
+function closeModal(e) {
+  if (e.target.id === 'explainModal') document.getElementById('explainModal').classList.remove('active');
+}
+function closeModalDirect() {
+  document.getElementById('explainModal').classList.remove('active');
+}
+
+function setDecision(type) {
+  document.querySelectorAll('.dec-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const txt = document.getElementById('decText');
+  if (type === 'single') {
+    txt.innerHTML = "<strong>Recommended: Single-Sample Assembly + Multi-Sample Co-Binning</strong><br>Assemble each sample individually to avoid chimeric contig collapse between distinct strains. Then, map reads from ALL samples across all assemblies to build a high-dimensional depth matrix for MetaBAT2.";
+  } else if (type === 'coassembly') {
+    txt.innerHTML = "<strong>Recommended: Multi-Sample Co-Assembly (MEGAHIT)</strong><br>Best for low-biomass or very low-depth sequencing where single samples fail to assemble contigs > 1000 bp. Pool reads across biological replicates.";
+  } else if (type === 'longread') {
+    txt.innerHTML = "<strong>Recommended: hifiasm-meta or metaFlye</strong><br>PacBio HiFi or Nanopore Q20+ long reads directly span repetitive 16S operons and transposable elements, yielding circular single-contig Metagenome-Assembled Genomes (cMAGs).";
+  }
+}
+
+function copyCode(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    toast("Command copied to clipboard!");
+  });
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function toggleTheme() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  if (isDark) {
+    document.body.removeAttribute('data-theme');
+    document.getElementById('themeBtn').textContent = '🌙 Theme';
+    localStorage.setItem('bioTheme', 'light');
+  } else {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+    localStorage.setItem('bioTheme', 'dark');
+  }
+}
+
+function exportScript() {
+  const script = `#!/usr/bin/env bash
+# ==============================================================
+# Complete Shotgun Assembly & MAG Binning Pipeline
+# Generated by Shotgun Metagenome Master Interactive Lab
+# ==============================================================
+set -euo pipefail
+THREADS=16
+SAMPLE="sample_01"
+
+echo "[1/6] Quality Filtering with fastp..."
+fastp -w \${THREADS} \\
+  -i \${SAMPLE}_R1.fq.gz -I \${SAMPLE}_R2.fq.gz \\
+  -o \${SAMPLE}_clean_R1.fq.gz -O \${SAMPLE}_clean_R2.fq.gz
+
+echo "[2/6] De Novo Metagenome Assembly with MEGAHIT..."
+megahit -t \${THREADS} \\
+  -1 \${SAMPLE}_clean_R1.fq.gz -2 \${SAMPLE}_clean_R2.fq.gz \\
+  --min-contig-len 1000 -o megahit_\${SAMPLE}
+
+echo "[3/6] Mapping Reads for Depth Profiling..."
+bowtie2-build megahit_\${SAMPLE}/final.contigs.fa contigs_index
+bowtie2 -p \${THREADS} -x contigs_index \\
+  -1 \${SAMPLE}_clean_R1.fq.gz -2 \${SAMPLE}_clean_R2.fq.gz | \\
+  samtools sort -@ 8 -m 2G -o \${SAMPLE}.contigs.bam -
+samtools index \${SAMPLE}.contigs.bam
+jgi_summarize_bam_contig_depths --outputDepth depth_\${SAMPLE}.txt \${SAMPLE}.contigs.bam
+
+echo "[4/6] Binning with MetaBAT2..."
+metabat2 -t \${THREADS} \\
+  -i megahit_\${SAMPLE}/final.contigs.fa \\
+  -a depth_\${SAMPLE}.txt \\
+  -m 1500 -o bins_\${SAMPLE}/bin
+
+echo "[5/6] Quality Assessment with CheckM2..."
+checkm2 predict --threads \${THREADS} -x fa \\
+  --input bins_\${SAMPLE}/ --output-directory checkm2_\${SAMPLE}/
+
+echo "[6/6] Taxonomic Classification with GTDB-Tk..."
+gtdbtk classify_wf --genome_dir bins_\${SAMPLE}/ -x fa \\
+  --out_dir gtdbtk_\${SAMPLE}/ --cpus \${THREADS}
+
+echo "Shotgun assembly and MAG binning complete!"
+`;
+  const blob = new Blob([script], { type: 'text/x-sh' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'shotgun_mag_pipeline.sh';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("Bash script exported!");
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  calcMAGQuality();
+  calcAsmRAM();
+  if (localStorage.getItem('bioTheme') === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+  }
+});
+</script>
+</body>
+</html>

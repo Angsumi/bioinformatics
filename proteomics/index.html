@@ -1,0 +1,921 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>MaxQuant & MSFragger Proteomics Lab | Bioinformatics Hub</title>
+<style>
+:root {
+  --bg: #f8fafc;
+  --panel: #ffffff;
+  --panel-alt: #f1f5f9;
+  --panel-hover: #f8fafc;
+  --text: #0f172a;
+  --text-muted: #64748b;
+  --text-dim: #94a3b8;
+  --border: #e2e8f0;
+  --border-subtle: #f1f5f9;
+  --border-focus: #0284c7;
+  --primary: #0284c7;
+  --primary-hover: #0369a1;
+  --primary-light: #f0f9ff;
+  --primary-dark: #075985;
+  --primary-glow: rgba(2, 132, 199, 0.12);
+  --accent: #ec4899;
+  --accent-light: #fdf2f8;
+  --code-bg: #0d1117;
+  --code-header: #161b22;
+  --code-text: #e6edf3;
+  --card-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.04), 0 1px 2px -1px rgba(0, 0, 0, 0.03);
+  --header-bg: rgba(255, 255, 255, 0.88);
+  --header-border: rgba(226, 232, 240, 0.8);
+  --font-sans: -apple-system, BlinkMacSystemFont, "Inter", "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  --font-mono: "JetBrains Mono", "SF Mono", Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+[data-theme="dark"] {
+  --bg: #090d16;
+  --panel: #0f172a;
+  --panel-alt: #161f30;
+  --panel-hover: #1b263b;
+  --text: #f1f5f9;
+  --text-muted: #94a3b8;
+  --text-dim: #64748b;
+  --border: #1e293b;
+  --border-subtle: #141c2e;
+  --border-focus: #38bdf8;
+  --primary: #38bdf8;
+  --primary-hover: #7dd3fc;
+  --primary-light: #082f49;
+  --primary-dark: #bae6fd;
+  --primary-glow: rgba(56, 189, 248, 0.15);
+  --accent: #f472b6;
+  --accent-light: #500724;
+  --code-bg: #05080f;
+  --code-header: #0d121f;
+  --code-text: #f1f5f9;
+  --card-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.4);
+  --header-bg: rgba(9, 13, 22, 0.88);
+  --header-border: rgba(30, 41, 59, 0.8);
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 14.5px/1.65 var(--font-sans);
+  letter-spacing: -0.011em;
+  transition: background 0.25s ease, color 0.25s ease;
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 80;
+  background: var(--header-bg);
+  border-bottom: 1px solid var(--header-border);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+}
+
+.header-inner {
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 12px 24px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.brand-wrapper { display: flex; align-items: center; gap: 12px; }
+.brand-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: linear-gradient(135deg, #0284c7, #ec4899);
+  color: white;
+  padding: 4px 10px;
+  border-radius: 8px;
+  font-weight: 800;
+  font-size: 13px;
+  text-decoration: none;
+  box-shadow: 0 2px 6px rgba(2, 132, 199, 0.25);
+}
+.brand-text h1 { margin: 0; font-size: 16px; font-weight: 700; color: var(--text); }
+.brand-text p { margin: 1px 0 0; font-size: 11.5px; color: var(--text-muted); }
+
+.header-controls { display: flex; align-items: center; gap: 10px; }
+.nav-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  font-size: 12.5px;
+  font-weight: 600;
+  padding: 7px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  text-decoration: none;
+  transition: all 0.15s ease;
+}
+.nav-btn:hover { background: var(--panel-alt); border-color: var(--border-focus); }
+.nav-btn.primary { background: var(--primary); color: white; border-color: var(--primary); }
+
+.layout {
+  display: flex;
+  max-width: 1560px;
+  margin: 0 auto;
+  padding: 24px;
+  gap: 28px;
+}
+
+aside.sidebar {
+  width: 290px;
+  flex-shrink: 0;
+  position: sticky;
+  top: 75px;
+  max-height: calc(100vh - 95px);
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.nav-group-title {
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--text-dim);
+  letter-spacing: 0.05em;
+  margin: 18px 0 8px 6px;
+}
+.nav-link {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 7px 10px;
+  font-size: 12.8px;
+  color: var(--text-muted);
+  text-decoration: none;
+  border-radius: 7px;
+  transition: all 0.12s;
+  margin-bottom: 2px;
+}
+.nav-link:hover, .nav-link.active {
+  background: var(--panel-alt);
+  color: var(--primary);
+  font-weight: 600;
+}
+
+main.content { flex: 1; min-width: 0; }
+
+.hero-box {
+  background: linear-gradient(135deg, rgba(2, 132, 199, 0.08), rgba(236, 72, 153, 0.08));
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px 28px;
+  margin-bottom: 28px;
+}
+.hero-box h2 { margin: 0 0 8px; font-size: 24px; font-weight: 800; }
+.hero-box p { margin: 0; color: var(--text-muted); font-size: 14.5px; max-width: 880px; }
+
+section.lab-section {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  padding: 24px;
+  margin-bottom: 28px;
+  box-shadow: var(--card-shadow);
+  scroll-margin-top: 85px;
+}
+
+.section-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 1px solid var(--border-subtle);
+  padding-bottom: 12px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+.section-head h2 { margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.tag-badge {
+  font-size: 11px;
+  font-weight: 700;
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary-glow);
+}
+
+.tool-calc-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 16px;
+  margin-bottom: 16px;
+}
+.calc-card {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+}
+.calc-card h4 { margin: 0 0 10px; font-size: 13.5px; font-weight: 700; }
+
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 12px; font-weight: 600; color: var(--text-muted); margin-bottom: 4px; }
+.form-control {
+  width: 100%;
+  padding: 7px 10px;
+  font-size: 13px;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--panel);
+  color: var(--text);
+  font-family: inherit;
+}
+
+.ion-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12px;
+  font-family: var(--font-mono);
+  margin-top: 10px;
+}
+.ion-table th, .ion-table td {
+  padding: 5px 8px;
+  border: 1px solid var(--border);
+  text-align: center;
+}
+.ion-table th { background: var(--panel-alt); font-weight: 700; color: var(--text); }
+.ion-table td.b-ion { color: #3b82f6; font-weight: 600; }
+.ion-table td.y-ion { color: #ec4899; font-weight: 600; }
+
+.code-block {
+  background: var(--code-bg);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 10px;
+  overflow: hidden;
+  margin: 14px 0;
+}
+.code-header {
+  background: var(--code-header);
+  padding: 8px 14px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+.code-lang { font-family: var(--font-mono); font-size: 11.5px; color: #94a3b8; }
+.copy-btn {
+  background: rgba(255, 255, 255, 0.1);
+  color: #e2e8f0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  padding: 4px 10px;
+  border-radius: 5px;
+  font-size: 11.5px;
+  cursor: pointer;
+}
+pre {
+  margin: 0;
+  padding: 14px;
+  color: var(--code-text);
+  font-family: var(--font-mono);
+  font-size: 12.8px;
+  overflow-x: auto;
+  line-height: 1.5;
+}
+
+.explain-btn {
+  background: var(--primary-light);
+  color: var(--primary);
+  border: 1px solid var(--primary);
+  border-radius: 6px;
+  padding: 4px 9px;
+  font-size: 11.5px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+/* Modal */
+.modal-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.65);
+  backdrop-filter: blur(4px);
+  z-index: 100;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+.modal-overlay.active { display: flex; }
+.modal-card {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  border-radius: 14px;
+  max-width: 650px;
+  width: 100%;
+  max-height: 85vh;
+  overflow-y: auto;
+  padding: 24px;
+  position: relative;
+}
+.modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  background: transparent;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  color: var(--text-dim);
+}
+
+.decision-box {
+  background: var(--panel-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 18px;
+  margin: 16px 0;
+}
+.decision-options { display: flex; gap: 10px; flex-wrap: wrap; margin: 12px 0; }
+.dec-btn {
+  background: var(--panel);
+  border: 1px solid var(--border);
+  color: var(--text);
+  padding: 7px 14px;
+  border-radius: 7px;
+  font-size: 12.5px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.dec-btn.active { background: var(--primary); color: white; border-color: var(--primary); }
+.dec-result {
+  background: var(--panel);
+  border-left: 4px solid var(--primary);
+  padding: 12px 14px;
+  border-radius: 0 8px 8px 0;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+.toast {
+  position: fixed;
+  bottom: 24px;
+  right: 24px;
+  background: #0f172a;
+  color: #f8fafc;
+  padding: 10px 18px;
+  border-radius: 8px;
+  font-size: 13px;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.3);
+  z-index: 200;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.2s ease;
+}
+.toast.show { opacity: 1; transform: translateY(0); }
+
+@media(max-width: 900px) {
+  .layout { flex-direction: column; }
+  aside.sidebar { width: 100%; position: static; max-height: none; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="brand-wrapper">
+      <a href="../" class="brand-badge">🧬 Hub</a>
+      <div class="brand-text">
+        <h1>Quantitative Proteomics Lab (MaxQuant & MSFragger)</h1>
+        <p>LC-MS/MS Bottom-Up Proteomics, MaxLFQ, TMT Isobaric Tagging & PTM Discovery</p>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button class="nav-btn" onclick="exportScript()">⬇ Export Shell Script</button>
+      <button class="nav-btn" onclick="toggleTheme()" id="themeBtn">🌙 Theme</button>
+      <a href="../" class="nav-btn primary">← Back to Hub</a>
+    </div>
+  </div>
+</header>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="nav-group-title">Interactive Simulators</div>
+    <a href="#sec-pep-calc" class="nav-link">🔬 Peptide Mass & Fragment Ladder</a>
+    <a href="#sec-quant-guide" class="nav-link">⚖️ Quantification Selector</a>
+
+    <div class="nav-group-title">Pipeline Workflow</div>
+    <a href="#stage-0" class="nav-link">0. Mass Spectrometry Physics</a>
+    <a href="#stage-1" class="nav-link">1. RAW to mzML Conversion</a>
+    <a href="#stage-2" class="nav-link">2. Target-Decoy FASTA & cRAP</a>
+    <a href="#stage-3" class="nav-link">3. Protease Digestion Parameters</a>
+    <a href="#stage-4" class="nav-link">4. PTM & Modification Rules</a>
+    <a href="#stage-5" class="nav-link">5. Peptide-Spectrum Matching</a>
+    <a href="#stage-6" class="nav-link">6. MaxLFQ & Match-Between-Runs</a>
+    <a href="#stage-7" class="nav-link">7. MSFragger Open Search</a>
+    <a href="#stage-8" class="nav-link">8. Statistical Testing in R</a>
+    <a href="#stage-9" class="nav-link">9. Missing Value Imputation</a>
+    <a href="#stage-10" class="nav-link">10. STRING Network & Pathways</a>
+
+    <div class="nav-group-title">Decision Guide</div>
+    <a href="#sec-decision" class="nav-link">🔀 Decision Architecture</a>
+  </aside>
+
+  <main class="content">
+    <div class="hero-box">
+      <h2>🔬 High-Resolution LC-MS/MS Data Science</h2>
+      <p>Modern bottom-up mass spectrometry identifies thousands of proteins in complex biological lysates. MaxQuant and MSFragger provide state-of-the-art algorithms for high mass accuracy peptide-spectrum matching (PSM), label-free quantification (MaxLFQ), isobaric multiplexing (TMT), and post-translational modification (PTM) localization.</p>
+    </div>
+
+    <!-- CALCULATOR 1: Peptide Mass & Ion Ladder -->
+    <section class="lab-section" id="sec-pep-calc">
+      <div class="section-head">
+        <h2><span>🔬</span> Peptide Monoisotopic Mass & Fragment Ion Ladder</h2>
+        <span class="tag-badge">Interactive Tool</span>
+      </div>
+      <div class="tool-calc-grid">
+        <div class="calc-card">
+          <h4>Peptide Sequence</h4>
+          <div class="form-group">
+            <label>Amino Acid Sequence (Standard 1-letter code):</label>
+            <input type="text" id="pepSeq" class="form-control" value="PEPTIDEK" oninput="calcPeptideIons()">
+            <span style="font-size:11px;color:var(--text-dim);">Examples: PEPTIDEK, ALVNEVTEFAK, VVDALGNAIDGK</span>
+          </div>
+          <div style="font-size:12.5px;color:var(--text-muted);margin-top:10px;">
+            Monoisotopic Neutral Mass: <strong id="pepNeutralMass" style="color:var(--primary);">900.4338 Da</strong>
+          </div>
+        </div>
+
+        <div class="calc-card" style="display:flex;flex-direction:column;justify-content:center;">
+          <h4>Precursor m/z by Charge State</h4>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;font-size:12.5px;">
+            <div>[M + H]⁺ (z=1): <strong id="mz1" style="color:var(--accent);">901.4411</strong></div>
+            <div>[M + 2H]²⁺ (z=2): <strong id="mz2" style="color:var(--primary);">451.2242</strong></div>
+            <div>[M + 3H]³⁺ (z=3): <strong id="mz3" style="color:var(--text);">301.1519</strong></div>
+            <div>[M + 4H]⁴⁺ (z=4): <strong id="mz4" style="color:var(--text-dim);">226.1158</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px;overflow-x:auto;">
+        <div style="font-weight:700;font-size:13px;margin-bottom:6px;">Theoretical CID / HCD Fragment Ion Ladder (b-ions and y-ions):</div>
+        <table class="ion-table" id="ionTable">
+          <!-- Populated by JS -->
+        </table>
+      </div>
+    </section>
+
+    <!-- CALCULATOR 2: Quantification Guide -->
+    <section class="lab-section" id="sec-quant-guide">
+      <div class="section-head">
+        <h2><span>⚖️</span> Proteomics Quantification Method Advisor</h2>
+        <span class="tag-badge">Method Selector</span>
+      </div>
+      <div class="tool-calc-grid">
+        <div class="calc-card">
+          <h4>Workflow Preference</h4>
+          <div class="form-group">
+            <label>Quantification Strategy:</label>
+            <select id="quantMethodSelect" class="form-control" onchange="updateQuantMethod()">
+              <option value="lfq">Label-Free Quantification (MaxLFQ)</option>
+              <option value="tmt16">Isobaric Tagging (TMTpro 16-plex / 18-plex)</option>
+              <option value="dia">Data-Independent Acquisition (DIA / DIA-NN)</option>
+              <option value="silac">Stable Isotope Labeling with Amino Acids (SILAC)</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="calc-card" style="display:flex;flex-direction:column;justify-content:center;">
+          <h4>Key Characteristics</h4>
+          <div id="quantMethodDesc" style="font-size:13px;color:var(--text-muted);line-height:1.5;">
+            <strong>MaxLFQ:</strong> Free of expensive chemical tags, unlimited sample cohort sizes. Uses peptide ratio extraction across runs with match-between-runs (MBR).
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- STAGE 0 -->
+    <section class="lab-section" id="stage-0">
+      <div class="section-head">
+        <h2>0. Bottom-Up Mass Spectrometry Physics</h2>
+        <button class="explain-btn" onclick="showExplain('stage-0')">💡 Explain</button>
+      </div>
+      <p>In shotgun bottom-up proteomics, complex protein extracts are enzymatically digested into peptides, separated by nano-LC reversed-phase chromatography, electrospray ionized (ESI), and analyzed in a high-resolution mass spectrometer (e.g. Orbitrap, timsTOF). Survey MS1 scans determine peptide precursor $m/z$ and intensity, while MS2 tandem fragmentation spectra provide sequence information.</p>
+    </section>
+
+    <!-- STAGE 1 -->
+    <section class="lab-section" id="stage-1">
+      <div class="section-head">
+        <h2>1. Vendor RAW to Open mzML Conversion (msconvert)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-1')">💡 Explain</button>
+      </div>
+      <p>Convert proprietary mass spec vendor files (Thermo .raw, Sciex .wiff, Bruker .d) into open standard mzML using ProteoWizard with 64-bit centroiding.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st1')">Copy</button></div>
+        <pre id="c-st1"># Centroid raw MS1 and MS2 scans to mzML
+msconvert sample.raw \
+  --mzML --filter "peakPicking true 1-" \
+  --filter "zeroSamples removeExtra" \
+  -o mzml_output/</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 2 -->
+    <section class="lab-section" id="stage-2">
+      <div class="section-head">
+        <h2>2. Target-Decoy FASTA & Contaminants Database (cRAP)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-2')">💡 Explain</button>
+      </div>
+      <p>Concatenate canonical protein sequences (UniProt Swiss-Prot) with reversed decoy sequences and the common Repository of Adventitious Proteins (cRAP - keratins, trypsin, bovine serum).</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st2')">Copy</button></div>
+        <pre id="c-st2"># Combine UniProt human proteome with common contaminants
+cat UP000005640_human_sprot.fasta crap_contaminants.fasta > reference_proteome.fasta</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 3 -->
+    <section class="lab-section" id="stage-3">
+      <div class="section-head">
+        <h2>3. Protease Digestion Parameters</h2>
+        <button class="explain-btn" onclick="showExplain('stage-3')">💡 Explain</button>
+      </div>
+      <p>Standard digestion utilizes Trypsin (cleaves C-terminal to Arg and Lys, blocked by Proline: Trypsin/P). Permit up to 2 missed cleavages to account for adjacent basic residues.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st3')">Copy</button></div>
+        <pre id="c-st3"># Typical search engine enzyme configuration
+enzyme = Trypsin/P
+max_missed_cleavages = 2
+min_peptide_len = 7
+max_peptide_len = 45</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 4 -->
+    <section class="lab-section" id="stage-4">
+      <div class="section-head">
+        <h2>4. Fixed & Variable PTM Modification Rules</h2>
+        <button class="explain-btn" onclick="showExplain('stage-4')">💡 Explain</button>
+      </div>
+      <p>Specify fixed modifications from sample alkylation (+57.021 Da Carbamidomethyl on Cysteine) and biological/oxidation variable modifications.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st4')">Copy</button></div>
+        <pre id="c-st4"># Modifications Configuration
+Fixed: Carbamidomethyl [C] (+57.021464 Da)
+Variable: Oxidation [M] (+15.994915 Da)
+Variable: Acetyl [Protein N-term] (+42.010565 Da)
+Optional (Phosphoproteomics): Phospho [STY] (+79.966331 Da)</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 5 -->
+    <section class="lab-section" id="stage-5">
+      <div class="section-head">
+        <h2>5. Peptide-Spectrum Matching (PSM) & Target-Decoy FDR</h2>
+        <button class="explain-btn" onclick="showExplain('stage-5')">💡 Explain</button>
+      </div>
+      <p>The search engine calculates theoretical fragment spectra and computes cross-correlation scores against acquired MS2 scans. A target-decoy strategy enforces a strict 1% False Discovery Rate at both PSM and protein levels.</p>
+    </section>
+
+    <!-- STAGE 6 -->
+    <section class="lab-section" id="stage-6">
+      <div class="section-head">
+        <h2>6. MaxLFQ Normalization & Match-Between-Runs (MBR)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-6')">💡 Explain</button>
+      </div>
+      <p>MaxLFQ extracts pairwise peptide ratio graphs to compute accurate relative protein abundances. Match-Between-Runs transfers peptide identifications from adjacent runs using calibrated retention time windows.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st6')">Copy</button></div>
+        <pre id="c-st6"># MaxQuant CLI execution (configured via mqpar.xml)
+maxquant mqpar.xml</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 7 -->
+    <section class="lab-section" id="stage-7">
+      <div class="section-head">
+        <h2>7. Ultrafast Open Search with MSFragger</h2>
+        <button class="explain-btn" onclick="showExplain('stage-7')">💡 Explain</button>
+      </div>
+      <p>MSFragger uses fragment-index matching to perform wide precursor tolerance open searches ([-500 Da, +500 Da]) 100x faster than traditional search engines, revealing unanticipated post-translational modifications.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">BASH</span><button class="copy-btn" onclick="copyCode('c-st7')">Copy</button></div>
+        <pre id="c-st7"># Execute MSFragger search with open mass window
+java -Xmx32G -jar MSFragger.jar \
+  closed_fragger.params \
+  sample_01.mzML sample_02.mzML</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 8 -->
+    <section class="lab-section" id="stage-8">
+      <div class="section-head">
+        <h2>8. Differential Protein Expression in R (DEP / Limma)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-8')">💡 Explain</button>
+      </div>
+      <p>Filter out contaminant proteins, log2-transform MaxLFQ intensities, normalize median intensity, and test differential abundance using empirical Bayes moderated t-tests.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">R</span><button class="copy-btn" onclick="copyCode('c-st8')">Copy</button></div>
+        <pre id="c-st8">library(DEP)
+library(limma)
+
+# Ingest MaxQuant proteinGroups.txt
+data <- read.delim("proteinGroups.txt", stringsAsFactors = FALSE)
+data_filtered <- data[data$Reverse != "+" & data$Potential.contaminant != "+", ]</pre>
+      </div>
+    </section>
+
+    <!-- STAGE 9 -->
+    <section class="lab-section" id="stage-9">
+      <div class="section-head">
+        <h2>9. Missing Value Imputation (Missing Not At Random - MNAR)</h2>
+        <button class="explain-btn" onclick="showExplain('stage-9')">💡 Explain</button>
+      </div>
+      <p>Mass spectrometry suffers from left-censored missing values (peptides below the limit of detection). Use left-shifted Gaussian truncation (QRILC or MinProb) to impute missing values realistically.</p>
+    </section>
+
+    <!-- STAGE 10 -->
+    <section class="lab-section" id="stage-10">
+      <div class="section-head">
+        <h2>10. STRING-db Protein Interaction Networks & Pathways</h2>
+        <button class="explain-btn" onclick="showExplain('stage-10')">💡 Explain</button>
+      </div>
+      <p>Map significantly altered proteins onto physical protein-protein interaction networks and identify functional complexes.</p>
+      <div class="code-block">
+        <div class="code-header"><span class="code-lang">R</span><button class="copy-btn" onclick="copyCode('c-st10')">Copy</button></div>
+        <pre id="c-st10">library(STRINGdb)
+
+string_db <- STRINGdb$new(version="12.0", species=9606, score_threshold=400)
+mapped_proteins <- string_db$map(diff_proteins, "Gene.names", removeUnmappedRows = TRUE)
+string_db$plot_network(mapped_proteins$STRING_id)</pre>
+      </div>
+    </section>
+
+    <!-- DECISION GUIDE -->
+    <section class="lab-section" id="sec-decision">
+      <div class="section-head">
+        <h2>🔀 Decision Architecture: Proteomics Technology Choice</h2>
+        <span class="tag-badge">Decision Tree</span>
+      </div>
+      <div class="decision-box">
+        <div style="font-weight:700;font-size:13.5px;">Select Experimental Paradigm:</div>
+        <div class="decision-options">
+          <button class="dec-btn active" onclick="setDecision('lfq')">Large Cohort Discovery (Clinical Biopsies, N > 30)</button>
+          <button class="dec-btn" onclick="setDecision('tmt')">Precise Multiplexing (Perturbations, Timecourse, N &le; 18)</button>
+          <button class="dec-btn" onclick="setDecision('dia')">Deep Quantitative Completeness (DIA-NN)</button>
+        </div>
+        <div class="dec-result" id="decText">
+          <strong>Recommended: MaxLFQ (Label-Free Quantification) with Match-Between-Runs</strong><br>
+          Cost-effective, zero reagent tagging cost, scales to hundreds of samples. Use MaxQuant or MSFragger FragPipe with Match-Between-Runs enabled to maximize identification transfer.
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<!-- Modal -->
+<div class="modal-overlay" id="explainModal" onclick="closeModal(event)">
+  <div class="modal-card">
+    <button class="modal-close" onclick="closeModalDirect()">&times;</button>
+    <h3 id="modalTitle" style="margin-top:0;">Explanation</h3>
+    <div id="modalContent" style="color:var(--text-muted);font-size:13.5px;line-height:1.6;"></div>
+  </div>
+</div>
+
+<div class="toast" id="toast">Copied to clipboard!</div>
+
+<script>
+// Standard monoisotopic amino acid residue masses
+const AA_MASSES = {
+  'A': 71.03711, 'R': 156.10111, 'N': 114.04293, 'D': 115.02694,
+  'C': 103.00919, 'E': 129.04259, 'Q': 128.05858, 'G': 57.02146,
+  'H': 137.05891, 'I': 113.08406, 'L': 113.08406, 'K': 128.09496,
+  'M': 131.04049, 'F': 147.06841, 'P': 97.05276, 'S': 87.03203,
+  'T': 101.04768, 'W': 186.07931, 'Y': 163.06333, 'V': 99.06841
+};
+const MASS_H = 1.007825;
+const MASS_O = 15.994915;
+const MASS_H2O = 18.010565;
+const MASS_PROTON = 1.007276;
+
+function calcPeptideIons() {
+  const seq = (document.getElementById('pepSeq').value || '').trim().toUpperCase();
+  let neutralMass = MASS_H2O;
+  for (let i = 0; i < seq.length; i++) {
+    const aa = seq[i];
+    neutralMass += AA_MASSES[aa] || 110.0;
+  }
+
+  document.getElementById('pepNeutralMass').textContent = neutralMass.toFixed(4) + " Da";
+  document.getElementById('mz1').textContent = ((neutralMass + 1 * MASS_PROTON) / 1).toFixed(4);
+  document.getElementById('mz2').textContent = ((neutralMass + 2 * MASS_PROTON) / 2).toFixed(4);
+  document.getElementById('mz3').textContent = ((neutralMass + 3 * MASS_PROTON) / 3).toFixed(4);
+  document.getElementById('mz4').textContent = ((neutralMass + 4 * MASS_PROTON) / 4).toFixed(4);
+
+  // Calculate b and y ions
+  const table = document.getElementById('ionTable');
+  table.innerHTML = `
+    <tr>
+      <th>b-ion</th>
+      <th>b (m/z)</th>
+      <th>AA</th>
+      <th>Position</th>
+      <th>y-ion</th>
+      <th>y (m/z)</th>
+    </tr>
+  `;
+
+  let bMass = MASS_PROTON; // N-terminus H + proton
+  let yMassArr = [];
+  let curY = MASS_H2O + MASS_PROTON; // C-terminal OH + H + proton
+
+  for (let i = seq.length - 1; i >= 0; i--) {
+    yMassArr[i] = curY;
+    curY += AA_MASSES[seq[i]] || 110.0;
+  }
+
+  for (let i = 0; i < seq.length - 1; i++) {
+    const aa = seq[i];
+    bMass += AA_MASSES[aa] || 110.0;
+    const yMass = yMassArr[i + 1];
+
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td class="b-ion">b${i + 1}</td>
+      <td class="b-ion">${bMass.toFixed(3)}</td>
+      <td style="font-weight:700;">${aa}</td>
+      <td style="color:var(--text-dim);">${i + 1}</td>
+      <td class="y-ion">y${seq.length - 1 - i}</td>
+      <td class="y-ion">${yMass.toFixed(3)}</td>
+    `;
+    table.appendChild(tr);
+  }
+}
+
+function updateQuantMethod() {
+  const m = document.getElementById('quantMethodSelect').value;
+  const desc = document.getElementById('quantMethodDesc');
+  if (m === 'lfq') {
+    desc.innerHTML = "<strong>MaxLFQ:</strong> Free of expensive chemical tags, unlimited sample cohort sizes. Uses peptide ratio extraction across runs with match-between-runs (MBR).";
+  } else if (m === 'tmt16') {
+    desc.innerHTML = "<strong>TMTpro 16/18-plex:</strong> Chemical isobaric amine labeling. Combines up to 18 samples into a single LC-MS injection. Zero missing values across plex; subject to ratio compression (suppressed with SPS-MS3).";
+  } else if (m === 'dia') {
+    desc.innerHTML = "<strong>DIA / DIA-NN:</strong> Wide isolation windows fragment all co-eluting peptides simultaneously. Unrivaled quantitative reproducibility and proteome depth without stochastic precursor selection.";
+  } else {
+    desc.innerHTML = "<strong>SILAC:</strong> Metabolic incorporation of 13C/15N labeled Lys/Arg during cell culture. Unrivaled accuracy for comparing 2-3 cell line states (e.g. Forward and Reverse chase experiments).";
+  }
+}
+
+const EXPLAINS = {
+  'stage-0': {
+    title: 'DDA vs DIA Mass Spectrometry',
+    content: 'In Data-Dependent Acquisition (DDA), the instrument detects top $N$ precursor peaks in MS1 and stochastically isolates each for MS2. In Data-Independent Acquisition (DIA), sequential wide $m/z$ isolation windows (e.g. 25 Da windows) fragment all ions simultaneously, creating highly complex multiplexed spectra resolved by deep neural networks.'
+  },
+  'stage-1': {
+    title: 'Centroiding with msconvert',
+    content: 'Raw mass spectra contain continuous profile waveforms with thousands of sample points per peak. Centroiding applies a peak-picking filter to calculate the exact center and area of each peak, reducing file size by 90% without loss of identification accuracy.'
+  },
+  'stage-2': {
+    title: 'Target-Decoy Strategy (1% FDR)',
+    content: 'By searching real (target) sequences alongside reversed or randomized (decoy) sequences, any hit to a decoy is known to be false. Setting a score cutoff where Decoy Hits = 1% of Target Hits guarantees a rigorous 1% empirical False Discovery Rate.'
+  },
+  'stage-3': {
+    title: 'Trypsin Cleavage Specificity',
+    content: 'Trypsin cleaves specifically at the carboxyl side of Lysine (K) and Arginine (R) residues, except when followed by Proline (P). This creates peptides with predictable average lengths of 8-25 amino acids and strong positive charges ideal for electrospray ionization.'
+  },
+  'stage-4': {
+    title: 'Fixed vs Variable Modifications',
+    content: 'Fixed modifications are assumed present on 100% of target residues (e.g. Cysteine alkylation by iodoacetamide). Variable modifications (e.g. Methionine oxidation) may or may not occur; allowing too many variable modifications exponentially expands search space and decreases search sensitivity.'
+  },
+  'stage-5': {
+    title: 'Peptide-Spectrum Matching',
+    content: 'The search engine matches observed MS2 fragment peaks against predicted b-ions and y-ions, calculating cross-correlation scores (Andromeda score in MaxQuant, Hyperscore in MSFragger).'
+  },
+  'stage-6': {
+    title: 'MaxLFQ Normalization & Match-Between-Runs',
+    content: 'MaxLFQ calculates pairwise peptide intensity ratios between all pairs of runs and finds the maximum likelihood estimation of protein ratios. Match-Between-Runs (MBR) rescues missing peptide identifications in run B by looking up high-mass-accuracy features detected in run A within aligned retention time windows.'
+  },
+  'stage-7': {
+    title: 'MSFragger Ultrafast Open Search',
+    content: 'MSFragger uses a novel fragment-ion index that allows searching precursor mass tolerances of +/- 500 Da in minutes, detecting unknown chemical modifications, adducts, and truncated peptides.'
+  },
+  'stage-8': {
+    title: 'Statistical Testing for Proteomics',
+    content: 'Unlike RNA-seq which produces discrete counts, proteomics yields continuous fluorescence/ion intensity signals. Empirical Bayes moderated t-tests (Limma) are applied to log2-transformed LFQ intensities.'
+  },
+  'stage-9': {
+    title: 'Left-Censored Missing Values',
+    content: 'Missing values in proteomics usually represent low-abundance proteins below the instrument detection threshold (Missing Not At Random - MNAR), rather than random technical failures. Left-shifted Gaussian imputation accurately models these detection dropouts.'
+  },
+  'stage-10': {
+    title: 'STRING Protein Networks',
+    content: 'Mapping significantly dysregulated proteins onto protein-protein interaction (PPI) databases reveals functional co-regulated complexes (e.g. 26S proteasome, ribosome, spliceosome) rather than isolated genes.'
+  }
+};
+
+function showExplain(id) {
+  const item = EXPLAINS[id];
+  if (!item) return;
+  document.getElementById('modalTitle').textContent = item.title;
+  document.getElementById('modalContent').innerHTML = item.content;
+  document.getElementById('explainModal').classList.add('active');
+}
+
+function closeModal(e) {
+  if (e.target.id === 'explainModal') document.getElementById('explainModal').classList.remove('active');
+}
+function closeModalDirect() {
+  document.getElementById('explainModal').classList.remove('active');
+}
+
+function setDecision(type) {
+  document.querySelectorAll('.dec-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  const txt = document.getElementById('decText');
+  if (type === 'lfq') {
+    txt.innerHTML = "<strong>Recommended: MaxLFQ (Label-Free Quantification) with Match-Between-Runs</strong><br>Cost-effective, zero reagent tagging cost, scales to hundreds of samples. Use MaxQuant or MSFragger FragPipe with Match-Between-Runs enabled to maximize identification transfer.";
+  } else if (type === 'tmt') {
+    txt.innerHTML = "<strong>Recommended: TMTpro 16-plex / 18-plex with SPS-MS3</strong><br>Optimal for tight time-course or drug perturbation experiments where missing values cannot be tolerated. Use an Orbitrap Eclipse/Ascent with Synchronous Precursor Selection (SPS-MS3) to eliminate ratio compression.";
+  } else if (type === 'dia') {
+    txt.innerHTML = "<strong>Recommended: DIA-NN or Spectronaut with Astral / timsTOF</strong><br>State-of-the-art methodology for clinical proteomics. Yields comprehensive proteome coverage with superior quantitative precision across large cohorts.";
+  }
+}
+
+function copyCode(id) {
+  const el = document.getElementById(id);
+  navigator.clipboard.writeText(el.innerText).then(() => {
+    toast("Code copied to clipboard!");
+  });
+}
+
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+function toggleTheme() {
+  const isDark = document.body.getAttribute('data-theme') === 'dark';
+  if (isDark) {
+    document.body.removeAttribute('data-theme');
+    document.getElementById('themeBtn').textContent = '🌙 Theme';
+    localStorage.setItem('bioTheme', 'light');
+  } else {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+    localStorage.setItem('bioTheme', 'dark');
+  }
+}
+
+function exportScript() {
+  const script = `#!/usr/bin/env bash
+# ==============================================================
+# Production MSConvert & FragPipe Proteomics Pre-processing
+# Generated by Proteomics Master Interactive Lab
+# ==============================================================
+set -euo pipefail
+THREADS=16
+
+echo "[1/3] Converting raw vendor files to centroided mzML..."
+for raw_file in *.raw; do
+  msconvert "\${raw_file}" --mzML --filter "peakPicking true 1-" -o mzml/
+done
+
+echo "[2/3] Downloading Swiss-Prot Human Proteome..."
+wget -c https://ftp.uniprot.org/pub/databases/uniprot/current_release/knowledgebase/reference_proteomes/Eukaryota/UP000005640/UP000005640_9606.fasta.gz
+gzip -d UP000005640_9606.fasta.gz
+
+echo "[3/3] Ready for MaxQuant or MSFragger FragPipe analysis!"
+`;
+  const blob = new Blob([script], { type: 'text/x-sh' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'proteomics_pipeline.sh';
+  a.click();
+  URL.revokeObjectURL(url);
+  toast("Shell script exported!");
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  calcPeptideIons();
+  updateQuantMethod();
+  if (localStorage.getItem('bioTheme') === 'dark') {
+    document.body.setAttribute('data-theme', 'dark');
+    document.getElementById('themeBtn').textContent = '☀️ Theme';
+  }
+});
+</script>
+</body>
+</html>
